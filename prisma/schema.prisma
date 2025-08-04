@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  phone     String   @db.VarChar(20)
+  email     String?  @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  salesCalls SalesCall[]
+  priority   CustomerPriority?
+
+  @@map("customers")
+}
+
+model SalesCall {
+  id              Int      @id @default(autoincrement())
+  customerId      Int      @map("customer_id")
+  audioFilePath   String   @map("audio_file_path") @db.VarChar(255)
+  transcript      String?  @db.Text
+  urgencyScore    Int?     @map("urgency_score")
+  budgetScore     Int?     @map("budget_score")
+  interestScore   Int?     @map("interest_score")
+  engagementScore Int?     @map("engagement_score")
+  overallScore    Int?     @map("overall_score")
+  analysisNotes   String?  @map("analysis_notes") @db.Text
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("sales_calls")
+}
+
+model CustomerPriority {
+  customerId       Int      @id @map("customer_id")
+  totalCalls       Int      @map("total_calls")
+  avgOverallScore  Decimal  @map("avg_overall_score") @db.Decimal(5, 2)
+  lastCallDate     DateTime @map("last_call_date")
+  priorityRank     Int      @map("priority_rank")
+
+  // Relations
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("customer_priorities")
+} 
