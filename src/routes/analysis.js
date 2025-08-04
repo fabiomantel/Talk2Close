@@ -2,6 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { prisma } = require('../database/connection');
 const whisperService = require('../services/whisperService');
+const scoringService = require('../services/scoringService');
 
 const router = express.Router();
 
@@ -68,11 +69,24 @@ router.post('/',
       // Get transcription statistics
       const stats = whisperService.getTranscriptionStats(transcription);
 
-      // Update sales call with transcript
+      // Perform scoring analysis
+      const scoringResults = scoringService.analyzeTranscript(
+        transcription.text,
+        transcription.duration || 0,
+        stats.wordCount || 0
+      );
+
+      // Update sales call with transcript and scores
       const updatedSalesCall = await prisma.salesCall.update({
         where: { id: parseInt(salesCallId) },
         data: {
-          transcript: transcription.text
+          transcript: transcription.text,
+          urgencyScore: scoringResults.scores.urgency,
+          budgetScore: scoringResults.scores.budget,
+          interestScore: scoringResults.scores.interest,
+          engagementScore: scoringResults.scores.engagement,
+          overallScore: scoringResults.scores.overall,
+          analysisNotes: scoringResults.analysis.notes
         },
         include: {
           customer: true
@@ -81,10 +95,11 @@ router.post('/',
 
       console.log(`✅ Analysis completed for sales call ID: ${salesCallId}`);
       console.log(`📊 Transcription stats:`, stats);
+      console.log(`🎯 Scoring results:`, scoringResults.scores);
 
       res.json({
         success: true,
-        message: 'Audio analysis completed successfully',
+        message: 'Audio analysis and scoring completed successfully',
         data: {
           salesCallId: updatedSalesCall.id,
           customer: {
@@ -98,8 +113,13 @@ router.post('/',
             duration: transcription.duration,
             stats: stats
           },
-          analysisStatus: 'transcribed',
-          nextStep: 'Calculate scores using scoring algorithm'
+          scoring: {
+            scores: scoringResults.scores,
+            analysis: scoringResults.analysis,
+            metadata: scoringResults.metadata
+          },
+          analysisStatus: 'completed',
+          scoringStatus: 'completed'
         }
       });
 
@@ -289,11 +309,24 @@ router.post('/:id/retry', async (req, res, next) => {
     const transcription = await whisperService.transcribeAudio(salesCall.audioFilePath);
     const stats = whisperService.getTranscriptionStats(transcription);
 
-    // Update with new transcript
+    // Perform scoring analysis
+    const scoringResults = scoringService.analyzeTranscript(
+      transcription.text,
+      transcription.duration || 0,
+      stats.wordCount || 0
+    );
+
+    // Update with new transcript and scores
     const updatedSalesCall = await prisma.salesCall.update({
       where: { id: parseInt(id) },
       data: {
-        transcript: transcription.text
+        transcript: transcription.text,
+        urgencyScore: scoringResults.scores.urgency,
+        budgetScore: scoringResults.scores.budget,
+        interestScore: scoringResults.scores.interest,
+        engagementScore: scoringResults.scores.engagement,
+        overallScore: scoringResults.scores.overall,
+        analysisNotes: scoringResults.analysis.notes
       },
       include: {
         customer: true
@@ -301,10 +334,11 @@ router.post('/:id/retry', async (req, res, next) => {
     });
 
     console.log(`✅ Retry analysis completed for sales call ID: ${id}`);
+    console.log(`🎯 Scoring results:`, scoringResults.scores);
 
     res.json({
       success: true,
-      message: 'Analysis retry completed successfully',
+      message: 'Analysis retry and scoring completed successfully',
       data: {
         salesCallId: updatedSalesCall.id,
         customer: {
@@ -318,13 +352,113 @@ router.post('/:id/retry', async (req, res, next) => {
           duration: transcription.duration,
           stats: stats
         },
-        analysisStatus: 'transcribed',
-        nextStep: 'Calculate scores using scoring algorithm'
+        scoring: {
+          scores: scoringResults.scores,
+          analysis: scoringResults.analysis,
+          metadata: scoringResults.metadata
+        },
+        analysisStatus: 'completed',
+        scoringStatus: 'completed'
       }
     });
 
   } catch (error) {
     console.error('❌ Retry analysis error:', error);
+    next(error);
+  }
+});
+
+/**
+ * POST /api/analyze/:id/score
+ * Score an existing transcript (for transcripts without scores)
+ */
+router.post('/:id/score', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const salesCall = await prisma.salesCall.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        customer: true
+      }
+    });
+
+    if (!salesCall) {
+      return res.status(404).json({
+        error: true,
+        message: 'Sales call not found'
+      });
+    }
+
+    if (!salesCall.transcript) {
+      return res.status(400).json({
+        error: true,
+        message: 'No transcript available for scoring'
+      });
+    }
+
+    if (salesCall.overallScore !== null) {
+      return res.status(400).json({
+        error: true,
+        message: 'Sales call has already been scored'
+      });
+    }
+
+    console.log(`🎯 Scoring transcript for sales call ID: ${id}`);
+
+    // Get transcription stats
+    const stats = whisperService.getTranscriptionStats({
+      text: salesCall.transcript,
+      duration: null // We don't store duration in DB yet
+    });
+
+    // Perform scoring analysis
+    const scoringResults = scoringService.analyzeTranscript(
+      salesCall.transcript,
+      0, // Duration not available
+      stats.wordCount || 0
+    );
+
+    // Update with scores
+    const updatedSalesCall = await prisma.salesCall.update({
+      where: { id: parseInt(id) },
+      data: {
+        urgencyScore: scoringResults.scores.urgency,
+        budgetScore: scoringResults.scores.budget,
+        interestScore: scoringResults.scores.interest,
+        engagementScore: scoringResults.scores.engagement,
+        overallScore: scoringResults.scores.overall,
+        analysisNotes: scoringResults.analysis.notes
+      },
+      include: {
+        customer: true
+      }
+    });
+
+    console.log(`✅ Scoring completed for sales call ID: ${id}`);
+    console.log(`🎯 Scoring results:`, scoringResults.scores);
+
+    res.json({
+      success: true,
+      message: 'Transcript scoring completed successfully',
+      data: {
+        salesCallId: updatedSalesCall.id,
+        customer: {
+          id: updatedSalesCall.customer.id,
+          name: updatedSalesCall.customer.name,
+          phone: updatedSalesCall.customer.phone
+        },
+        scoring: {
+          scores: scoringResults.scores,
+          analysis: scoringResults.analysis,
+          metadata: scoringResults.metadata
+        },
+        scoringStatus: 'completed'
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Scoring error:', error);
     next(error);
   }
 });

@@ -4,6 +4,36 @@ const { prisma } = require('../database/connection');
 const router = express.Router();
 
 /**
+ * Get improvement recommendation for a scoring category
+ * @param {string} category - Scoring category
+ * @param {number} averageScore - Average score for the category
+ * @returns {string} Recommendation
+ */
+function getImprovementRecommendation(category, averageScore) {
+  const recommendations = {
+    urgency: {
+      low: "עודדו לקוחות לדבר על דחיפות וזמנים - שאלו על תאריכי יעד ומצבי דחיפות",
+      medium: "חפשו סימני דחיפות נוספים בשיחות - שאלו על מצבים דחופים"
+    },
+    budget: {
+      low: "עודדו לקוחות לחשוף מידע על תקציב - שאלו על משכנתאות והון עצמי",
+      medium: "בקשו פרטים נוספים על תקציב - שאלו על טווחי מחירים"
+    },
+    interest: {
+      low: "עודדו שאלות על הנכס - הציעו צפיות ופרטים נוספים",
+      medium: "חפשו הזדמנויות להעלות עניין - הציעו מידע נוסף"
+    },
+    engagement: {
+      low: "עודדו שיחה פעילה יותר - שאלו שאלות פתוחות",
+      medium: "האריכו את השיחות - עודדו שאלות נוספות"
+    }
+  };
+
+  const level = averageScore < 40 ? 'low' : 'medium';
+  return recommendations[category]?.[level] || "שפרו את הביצועים בתחום זה";
+}
+
+/**
  * GET /api/dashboard/stats
  * Get dashboard statistics
  */
@@ -129,6 +159,116 @@ router.get('/stats', async (req, res, next) => {
 
   } catch (error) {
     console.error('❌ Error getting dashboard stats:', error);
+    next(error);
+  }
+});
+
+/**
+ * GET /api/dashboard/scoring-analytics
+ * Get detailed scoring analytics
+ */
+router.get('/scoring-analytics', async (req, res, next) => {
+  try {
+    // Get all scored sales calls
+    const scoredCalls = await prisma.salesCall.findMany({
+      where: { overallScore: { not: null } },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            phone: true
+          }
+        }
+      },
+      orderBy: {
+        overallScore: 'desc'
+      }
+    });
+
+    // Calculate scoring statistics
+    const scoringStats = {
+      totalScored: scoredCalls.length,
+      averageOverallScore: 0,
+      scoreDistribution: {
+        high: 0,    // 80-100
+        good: 0,    // 60-79
+        medium: 0,  // 40-59
+        low: 0      // 0-39
+      },
+      categoryAverages: {
+        urgency: 0,
+        budget: 0,
+        interest: 0,
+        engagement: 0
+      },
+      topPerformers: [],
+      improvementAreas: []
+    };
+
+    if (scoredCalls.length > 0) {
+      // Calculate averages
+      const totalScores = scoredCalls.reduce((acc, call) => {
+        acc.overall += call.overallScore;
+        acc.urgency += call.urgencyScore;
+        acc.budget += call.budgetScore;
+        acc.interest += call.interestScore;
+        acc.engagement += call.engagementScore;
+        return acc;
+      }, { overall: 0, urgency: 0, budget: 0, interest: 0, engagement: 0 });
+
+      scoringStats.averageOverallScore = Math.round(totalScores.overall / scoredCalls.length);
+      scoringStats.categoryAverages.urgency = Math.round(totalScores.urgency / scoredCalls.length);
+      scoringStats.categoryAverages.budget = Math.round(totalScores.budget / scoredCalls.length);
+      scoringStats.categoryAverages.interest = Math.round(totalScores.interest / scoredCalls.length);
+      scoringStats.categoryAverages.engagement = Math.round(totalScores.engagement / scoredCalls.length);
+
+      // Score distribution
+      scoredCalls.forEach(call => {
+        if (call.overallScore >= 80) scoringStats.scoreDistribution.high++;
+        else if (call.overallScore >= 60) scoringStats.scoreDistribution.good++;
+        else if (call.overallScore >= 40) scoringStats.scoreDistribution.medium++;
+        else scoringStats.scoreDistribution.low++;
+      });
+
+      // Top performers (top 5)
+      scoringStats.topPerformers = scoredCalls.slice(0, 5).map(call => ({
+        id: call.id,
+        customerName: call.customer.name,
+        customerPhone: call.customer.phone,
+        overallScore: call.overallScore,
+        urgencyScore: call.urgencyScore,
+        budgetScore: call.budgetScore,
+        interestScore: call.interestScore,
+        engagementScore: call.engagementScore,
+        createdAt: call.createdAt
+      }));
+
+      // Identify improvement areas
+      const categoryScores = [
+        { name: 'urgency', avg: scoringStats.categoryAverages.urgency },
+        { name: 'budget', avg: scoringStats.categoryAverages.budget },
+        { name: 'interest', avg: scoringStats.categoryAverages.interest },
+        { name: 'engagement', avg: scoringStats.categoryAverages.engagement }
+      ];
+
+      scoringStats.improvementAreas = categoryScores
+        .filter(cat => cat.avg < 60)
+        .sort((a, b) => a.avg - b.avg)
+        .map(cat => ({
+          category: cat.name,
+          averageScore: cat.avg,
+          recommendation: getImprovementRecommendation(cat.name, cat.avg)
+        }));
+    }
+
+    res.json({
+      success: true,
+      data: scoringStats
+    });
+
+  } catch (error) {
+    console.error('❌ Error getting scoring analytics:', error);
     next(error);
   }
 });
