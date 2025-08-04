@@ -107,4 +107,14 @@ uploads/
 prisma/migrations/
 
 # Test files
-test-results/ 
+test-results/
+
+# Project specific files
+POSTGRESQL_SETUP.md
+env.example
+package-lock.json
+
+# Documentation files (generated/updated during development)
+DATABASE_VISUALIZATION_GUIDE.md
+PHASE1_COMPLETION.md
+PHASE1_TESTING_RESULTS.md 
