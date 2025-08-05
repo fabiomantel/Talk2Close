@@ -4,6 +4,8 @@ const { upload, handleUploadError, cleanupOnError } = require('../middleware/fil
 const { prisma } = require('../database/connection');
 const fs = require('fs-extra');
 const path = require('path');
+const whisperService = require('../services/whisperService');
+const scoringService = require('../services/scoringService');
 
 const router = express.Router();
 
@@ -79,26 +81,107 @@ router.post('/',
       console.log(`👤 Customer: ${customer.name} (${customer.phone})`);
       console.log(`📁 Stored at: ${req.file.path}`);
 
-      res.status(201).json({
-        success: true,
-        message: 'Audio file uploaded successfully',
-        data: {
-          salesCallId: salesCall.id,
-          customer: {
-            id: customer.id,
-            name: customer.name,
-            phone: customer.phone,
-            email: customer.email
+      // Automatically trigger analysis after successful upload
+      console.log(`🔍 Starting automatic analysis for sales call ID: ${salesCall.id}`);
+      
+      try {
+        // Validate audio file
+        await whisperService.validateAudioFile(salesCall.audioFilePath);
+
+        // Transcribe audio using Whisper API
+        const transcription = await whisperService.transcribeAudio(salesCall.audioFilePath);
+
+        // Get transcription statistics
+        const stats = whisperService.getTranscriptionStats(transcription);
+
+        // Perform scoring analysis
+        const scoringResults = scoringService.analyzeTranscript(
+          transcription.text,
+          transcription.duration || 0,
+          stats.wordCount || 0
+        );
+
+        // Update sales call with transcript and scores
+        const updatedSalesCall = await prisma.salesCall.update({
+          where: { id: salesCall.id },
+          data: {
+            transcript: transcription.text,
+            urgencyScore: scoringResults.scores.urgency,
+            budgetScore: scoringResults.scores.budget,
+            interestScore: scoringResults.scores.interest,
+            engagementScore: scoringResults.scores.engagement,
+            overallScore: scoringResults.scores.overall,
+            analysisNotes: scoringResults.analysis.notes
           },
-          file: {
-            originalName: req.file.originalname,
-            size: req.file.size,
-            mimetype: req.file.mimetype,
-            path: req.file.path
-          },
-          uploadedAt: salesCall.createdAt
-        }
-      });
+          include: {
+            customer: true
+          }
+        });
+
+        console.log(`✅ Automatic analysis completed for sales call ID: ${salesCall.id}`);
+        console.log(`📊 Transcription stats:`, stats);
+        console.log(`🎯 Scoring results:`, scoringResults.scores);
+
+        res.status(201).json({
+          success: true,
+          message: 'Audio file uploaded and analyzed successfully',
+          data: {
+            salesCallId: salesCall.id,
+            customer: {
+              id: customer.id,
+              name: customer.name,
+              phone: customer.phone,
+              email: customer.email
+            },
+            file: {
+              originalName: req.file.originalname,
+              size: req.file.size,
+              mimetype: req.file.mimetype,
+              path: req.file.path
+            },
+            transcription: {
+              text: transcription.text,
+              duration: transcription.duration || 0,
+              wordCount: stats.wordCount || 0
+            },
+            scoring: {
+              scores: scoringResults.scores,
+              analysis: scoringResults.analysis,
+              metadata: scoringResults.metadata
+            },
+            analysisStatus: 'completed',
+            scoringStatus: 'completed',
+            uploadedAt: salesCall.createdAt
+          }
+        });
+
+      } catch (analysisError) {
+        console.error(`❌ Analysis failed for sales call ID: ${salesCall.id}`, analysisError);
+        
+        // Still return success for upload, but indicate analysis failed
+        res.status(201).json({
+          success: true,
+          message: 'Audio file uploaded successfully, but analysis failed',
+          data: {
+            salesCallId: salesCall.id,
+            customer: {
+              id: customer.id,
+              name: customer.name,
+              phone: customer.phone,
+              email: customer.email
+            },
+            file: {
+              originalName: req.file.originalname,
+              size: req.file.size,
+              mimetype: req.file.mimetype,
+              path: req.file.path
+            },
+            analysisStatus: 'failed',
+            analysisError: analysisError.message,
+            uploadedAt: salesCall.createdAt
+          }
+        });
+      }
 
     } catch (error) {
       console.error('❌ File upload error:', error);

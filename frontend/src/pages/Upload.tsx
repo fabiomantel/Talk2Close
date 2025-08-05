@@ -24,6 +24,16 @@ const Upload: React.FC = () => {
     mutationFn: apiService.uploadFile,
     onSuccess: (data) => {
       console.log('✅ Upload Mutation Success:', data);
+      
+      // Show success message with analysis status
+      if (data.data.analysisStatus === 'completed') {
+        alert(`✅ Upload and analysis completed successfully!\n\nCustomer: ${data.data.customer.name}\nOverall Score: ${data.data.scoring?.scores.overall}/100\n\nYou can view the detailed analysis in the Analysis section.`);
+      } else if (data.data.analysisStatus === 'failed') {
+        alert(`⚠️ File uploaded successfully, but analysis failed.\n\nError: ${data.data.analysisError}\n\nYou can retry the analysis later.`);
+      } else {
+        alert('✅ File uploaded successfully!');
+      }
+      
       try {
         queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
         queryClient.invalidateQueries({ queryKey: ['analyses'] });
@@ -37,6 +47,7 @@ const Upload: React.FC = () => {
     },
     onError: (error) => {
       console.error('❌ Upload Mutation Error:', error);
+      alert('❌ Upload failed. Please try again.');
       setUploading(false);
     },
     onMutate: () => {
@@ -93,7 +104,7 @@ const Upload: React.FC = () => {
             disabled={!file || !customerData.name || !customerData.phone || uploading}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {uploading ? 'Uploading...' : 'Upload & Analyze'}
+            {uploading ? 'Uploading & Analyzing...' : 'Upload & Analyze'}
           </button>
         </div>
       </div>

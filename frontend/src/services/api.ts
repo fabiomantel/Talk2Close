@@ -80,6 +80,41 @@ export interface UploadResponse {
   data: {
     salesCallId: number;
     customer: Customer;
+    file?: {
+      originalName: string;
+      size: number;
+      mimetype: string;
+      path: string;
+    };
+    transcription?: {
+      text: string;
+      duration: number;
+      wordCount: number;
+    };
+    scoring?: {
+      scores: {
+        urgency: number;
+        budget: number;
+        interest: number;
+        engagement: number;
+        overall: number;
+      };
+      analysis: {
+        keyPhrases: Record<string, string[]>;
+        objections: string[];
+        notes: string;
+        confidence: number;
+      };
+      metadata: {
+        duration: number;
+        wordCount: number;
+        wordsPerMinute: number;
+      };
+    };
+    analysisStatus?: string;
+    scoringStatus?: string;
+    analysisError?: string;
+    uploadedAt: string;
   };
 }
 
