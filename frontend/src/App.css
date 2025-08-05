@@ -1,0 +1,16 @@
+/* App-specific styles */
+.App {
+  text-align: left;
+}
+
+/* Hebrew RTL support for specific elements */
+.hebrew-text {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Custom focus styles */
+.focus-ring:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

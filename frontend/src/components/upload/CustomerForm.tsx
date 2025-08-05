@@ -1,0 +1,70 @@
+import React from 'react';
+
+interface CustomerData {
+  name: string;
+  phone: string;
+  email: string;
+}
+
+interface CustomerFormProps {
+  data: CustomerData;
+  onChange: (data: CustomerData) => void;
+}
+
+const CustomerForm: React.FC<CustomerFormProps> = ({ data, onChange }) => {
+  const handleChange = (field: keyof CustomerData, value: string) => {
+    onChange({ ...data, [field]: value });
+  };
+
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-medium text-gray-900">Customer Information</h3>
+      
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          Name *
+        </label>
+        <input
+          type="text"
+          id="name"
+          value={data.name}
+          onChange={(e) => handleChange('name', e.target.value)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          placeholder="Enter customer name"
+          required
+        />
+      </div>
+
+      <div>
+        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+          Phone *
+        </label>
+        <input
+          type="tel"
+          id="phone"
+          value={data.phone}
+          onChange={(e) => handleChange('phone', e.target.value)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          placeholder="Enter phone number"
+          required
+        />
+      </div>
+
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email (Optional)
+        </label>
+        <input
+          type="email"
+          id="email"
+          value={data.email}
+          onChange={(e) => handleChange('email', e.target.value)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          placeholder="Enter email address"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default CustomerForm; 
