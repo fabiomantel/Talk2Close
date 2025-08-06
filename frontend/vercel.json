@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "name": "talk2close-frontend",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/favicon.ico"
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/manifest.json"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "REACT_APP_API_BASE_URL": "https://talk2close.fly.dev/api",
+    "REACT_APP_BACKEND_URL": "https://talk2close.fly.dev",
+    "REACT_APP_NAME": "Hebrew Sales Call Analysis",
+    "REACT_APP_ENVIRONMENT": "production",
+    "REACT_APP_DEFAULT_LOCALE": "he-IL",
+    "REACT_APP_RTL_SUPPORT": "true"
+  }
+} 
