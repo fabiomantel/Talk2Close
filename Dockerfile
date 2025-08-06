@@ -1,10 +1,8 @@
-# Use Node.js 18 Alpine for smaller image size
-FROM node:18-alpine AS base
+# Use Node.js 18 Debian for better Prisma compatibility
+FROM node:18-slim AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat openssl1.1-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
@@ -27,7 +25,7 @@ WORKDIR /app
 ENV NODE_ENV production
 
 # Install OpenSSL for Prisma
-RUN apk add --no-cache openssl1.1-compat
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nodejs
