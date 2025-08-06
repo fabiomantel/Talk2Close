@@ -9,16 +9,28 @@ export const config = {
   DEBUG_MODE: process.env.REACT_APP_ENABLE_DEBUG_MODE === 'true',
 };
 
+// Debug configuration in development
+if (process.env.NODE_ENV === 'development' || config.DEBUG_MODE) {
+  console.log('🔧 Environment Configuration:', {
+    API_BASE_URL: config.API_BASE_URL,
+    BACKEND_URL: config.BACKEND_URL,
+    ENVIRONMENT: config.ENVIRONMENT,
+    NODE_ENV: process.env.NODE_ENV,
+    REACT_APP_API_BASE_URL: process.env.REACT_APP_API_BASE_URL,
+    REACT_APP_BACKEND_URL: process.env.REACT_APP_BACKEND_URL,
+  });
+}
+
 // Validate required configuration
 export const validateConfig = () => {
   const warnings: string[] = [];
   
   if (!process.env.REACT_APP_API_BASE_URL) {
-    warnings.push('REACT_APP_API_BASE_URL not set, using default: http://localhost:3002/api');
+    warnings.push('REACT_APP_API_BASE_URL not set, using default: https://talk2close.fly.dev/api');
   }
   
   if (!process.env.REACT_APP_BACKEND_URL) {
-    warnings.push('REACT_APP_BACKEND_URL not set, using default: http://localhost:3002');
+    warnings.push('REACT_APP_BACKEND_URL not set, using default: https://talk2close.fly.dev');
   }
   
   if (warnings.length > 0) {

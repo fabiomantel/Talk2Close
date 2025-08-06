@@ -25,6 +25,30 @@ const queryClient = new QueryClient({
   },
 });
 
+// Debug component to show current configuration
+const DebugConfig = () => {
+  if (process.env.NODE_ENV === 'development') {
+    return (
+      <div style={{ 
+        position: 'fixed', 
+        top: 0, 
+        right: 0, 
+        background: '#f0f0f0', 
+        padding: '10px', 
+        fontSize: '12px', 
+        zIndex: 9999,
+        maxWidth: '300px'
+      }}>
+        <strong>🔧 Debug Config:</strong><br/>
+        API: {config.API_BASE_URL}<br/>
+        Backend: {config.BACKEND_URL}<br/>
+        Env: {config.ENVIRONMENT}
+      </div>
+    );
+  }
+  return null;
+};
+
 function App() {
   console.log('🚀 App Component: Initializing Hebrew Sales Call Analysis System');
   console.log('🌐 Environment:', config.ENVIRONMENT);
@@ -37,6 +61,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <Router>
           <div className="min-h-screen bg-gray-50">
+            <DebugConfig />
             <Header />
             <div className="flex">
               <Sidebar />
