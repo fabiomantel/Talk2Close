@@ -34,6 +34,32 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Hebrew Sales Call Analysis System',
+    version: '1.0.0',
+    description: 'AI-powered platform for analyzing Hebrew sales calls and prioritizing customers',
+    status: 'running',
+    environment: process.env.NODE_ENV || 'development',
+    endpoints: {
+      health: '/health',
+      apiHealth: '/api/health',
+      upload: '/api/upload',
+      analyze: '/api/analyze',
+      customers: '/api/customers',
+      dashboard: '/api/dashboard'
+    },
+    features: [
+      'Hebrew speech-to-text transcription',
+      'AI-powered customer scoring',
+      'Sales call analysis',
+      'Customer prioritization',
+      'Real-time dashboard'
+    ]
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
