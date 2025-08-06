@@ -43,6 +43,15 @@ app.get('/health', (req, res) => {
   });
 });
 
+// API health check endpoint for Fly.io
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 // API routes
 app.use('/api/upload', fileUploadRoutes);
 app.use('/api/analyze', analysisRoutes);
