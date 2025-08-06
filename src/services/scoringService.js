@@ -201,179 +201,149 @@ class ScoringService {
   }
 
   /**
-   * Calculate urgency score (0-100)
+   * Calculate urgency score based on Hebrew phrases
    * @param {string} text - Normalized Hebrew text
-   * @returns {number} Urgency score
+   * @returns {number} Urgency score (0-100)
    */
   calculateUrgencyScore(text) {
     let score = 0;
     let highMatches = 0;
     let mediumMatches = 0;
 
-    // Check for high urgency phrases
+    // Check high urgency phrases
     this.hebrewPhrases.urgency.high.forEach(phrase => {
       if (text.includes(phrase.toLowerCase())) {
         highMatches++;
-        score += 25; // High weight for urgency phrases
+        score += 25; // Increased from 20
       }
     });
 
-    // Check for medium urgency phrases
+    // Check medium urgency phrases
     this.hebrewPhrases.urgency.medium.forEach(phrase => {
       if (text.includes(phrase.toLowerCase())) {
         mediumMatches++;
-        score += 10; // Medium weight
+        score += 15; // Increased from 10
       }
     });
 
-    // Bonus for multiple urgency indicators
-    if (highMatches > 1) score += 15;
-    if (mediumMatches > 2) score += 10;
+    // Bonus for multiple matches
+    if (highMatches >= 2) score += 20;
+    if (mediumMatches >= 2) score += 10;
 
-    return Math.min(100, Math.max(0, score));
+    return Math.min(100, score);
   }
 
   /**
-   * Calculate budget clarity score (0-100)
+   * Calculate budget score based on Hebrew phrases
    * @param {string} text - Normalized Hebrew text
-   * @returns {number} Budget score
+   * @returns {number} Budget score (0-100)
    */
   calculateBudgetScore(text) {
     let score = 0;
     let highMatches = 0;
     let mediumMatches = 0;
 
-    // Check for high budget clarity phrases
+    // Check high budget phrases
     this.hebrewPhrases.budget.high.forEach(phrase => {
       if (text.includes(phrase.toLowerCase())) {
         highMatches++;
-        score += 20; // High weight for budget clarity
+        score += 20; // Increased from 15
       }
     });
 
-    // Check for medium budget phrases
+    // Check medium budget phrases
     this.hebrewPhrases.budget.medium.forEach(phrase => {
       if (text.includes(phrase.toLowerCase())) {
         mediumMatches++;
-        score += 8; // Medium weight
+        score += 12; // Increased from 8
       }
     });
 
-    // Look for specific budget amounts (Hebrew numbers)
-    const budgetPatterns = [
-      /(\d+)\s*אלף\s*שקל/,
-      /(\d+)\s*אלפי\s*שקלים/,
-      /תקציב\s*של\s*(\d+)/,
-      /עד\s*(\d+)/
-    ];
+    // Bonus for multiple matches
+    if (highMatches >= 2) score += 20;
+    if (mediumMatches >= 2) score += 10;
 
-    budgetPatterns.forEach(pattern => {
-      const match = text.match(pattern);
-      if (match) {
-        score += 15; // Bonus for specific amounts
-        highMatches++;
-      }
-    });
-
-    // Bonus for multiple budget indicators
-    if (highMatches > 1) score += 10;
-    if (mediumMatches > 2) score += 8;
-
-    return Math.min(100, Math.max(0, score));
+    return Math.min(100, score);
   }
 
   /**
-   * Calculate property interest score (0-100)
+   * Calculate interest score based on Hebrew phrases
    * @param {string} text - Normalized Hebrew text
-   * @returns {number} Interest score
+   * @returns {number} Interest score (0-100)
    */
   calculateInterestScore(text) {
     let score = 0;
     let highMatches = 0;
     let mediumMatches = 0;
 
-    // Check for high interest phrases
+    // Check high interest phrases
     this.hebrewPhrases.interest.high.forEach(phrase => {
       if (text.includes(phrase.toLowerCase())) {
         highMatches++;
-        score += 20; // High weight for interest
+        score += 20; // Increased from 15
       }
     });
 
-    // Check for medium interest phrases
+    // Check medium interest phrases
     this.hebrewPhrases.interest.medium.forEach(phrase => {
       if (text.includes(phrase.toLowerCase())) {
         mediumMatches++;
-        score += 8; // Medium weight
+        score += 12; // Increased from 8
       }
     });
 
-    // Count question marks (indicates interest)
-    const questionCount = (text.match(/\?/g) || []).length;
-    score += questionCount * 5; // 5 points per question
+    // Bonus for multiple matches
+    if (highMatches >= 2) score += 20;
+    if (mediumMatches >= 2) score += 10;
 
-    // Bonus for multiple interest indicators
-    if (highMatches > 1) score += 10;
-    if (mediumMatches > 2) score += 8;
-
-    return Math.min(100, Math.max(0, score));
+    return Math.min(100, score);
   }
 
   /**
-   * Calculate engagement score (0-100)
+   * Calculate engagement score based on Hebrew phrases and call metrics
    * @param {string} text - Normalized Hebrew text
    * @param {number} duration - Call duration in seconds
-   * @param {number} wordCount - Number of words
-   * @returns {number} Engagement score
+   * @param {number} wordCount - Number of words in transcript
+   * @returns {number} Engagement score (0-100)
    */
-  calculateEngagementScore(text, duration, wordCount) {
+  calculateEngagementScore(text, duration = 0, wordCount = 0) {
     let score = 0;
     let highMatches = 0;
     let mediumMatches = 0;
 
-    // Check for high engagement phrases
+    // Check high engagement phrases
     this.hebrewPhrases.engagement.high.forEach(phrase => {
       if (text.includes(phrase.toLowerCase())) {
         highMatches++;
-        score += 15; // High weight for engagement
+        score += 20; // Increased from 15
       }
     });
 
-    // Check for medium engagement phrases
+    // Check medium engagement phrases
     this.hebrewPhrases.engagement.medium.forEach(phrase => {
       if (text.includes(phrase.toLowerCase())) {
         mediumMatches++;
-        score += 6; // Medium weight
+        score += 12; // Increased from 8
       }
     });
 
-    // Duration-based scoring
-    if (duration > 120) { // More than 2 minutes
-      score += 20;
-    } else if (duration > 60) { // More than 1 minute
-      score += 10;
-    }
+    // Bonus for multiple matches
+    if (highMatches >= 2) score += 20;
+    if (mediumMatches >= 2) score += 10;
 
-    // Word count-based scoring
-    if (wordCount > 100) {
-      score += 15;
-    } else if (wordCount > 50) {
-      score += 8;
-    }
+    // Duration bonus (more generous)
+    if (duration >= 300) score += 25; // 5+ minutes
+    else if (duration >= 180) score += 20; // 3+ minutes
+    else if (duration >= 120) score += 15; // 2+ minutes
+    else if (duration >= 60) score += 10; // 1+ minute
 
-    // Words per minute (engagement indicator)
-    const wordsPerMinute = duration > 0 ? (wordCount / duration) * 60 : 0;
-    if (wordsPerMinute > 120) {
-      score += 10; // High engagement
-    } else if (wordsPerMinute > 80) {
-      score += 5; // Medium engagement
-    }
+    // Word count bonus (more generous)
+    if (wordCount >= 150) score += 20;
+    else if (wordCount >= 100) score += 15;
+    else if (wordCount >= 50) score += 10;
+    else if (wordCount >= 25) score += 5;
 
-    // Bonus for multiple engagement indicators
-    if (highMatches > 1) score += 8;
-    if (mediumMatches > 2) score += 6;
-
-    return Math.min(100, Math.max(0, score));
+    return Math.min(100, score);
   }
 
   /**
@@ -457,46 +427,113 @@ class ScoringService {
   generateAnalysisNotes(data) {
     const notes = [];
 
-    // Overall assessment
-    if (data.overallScore >= 80) {
+    // Overall assessment with more variety
+    if (data.overallScore >= 85) {
+      notes.push("לקוח בעל פוטנציאל גבוה מאוד לסגירת עסקה - מומלץ לעקוב אחריו באופן מיידי וקריטי");
+    } else if (data.overallScore >= 75) {
       notes.push("לקוח בעל פוטנציאל גבוה לסגירת עסקה - מומלץ לעקוב אחריו באופן מיידי");
     } else if (data.overallScore >= 60) {
-      notes.push("לקוח בעל פוטנציאל טוב - מומלץ לשמור על קשר");
-    } else if (data.overallScore >= 40) {
-      notes.push("לקוח עם פוטנציאל בינוני - נדרש מעקב נוסף");
+      notes.push("לקוח בעל פוטנציאל טוב - מומלץ לשמור על קשר ולחזק את הקשר");
+    } else if (data.overallScore >= 45) {
+      notes.push("לקוח עם פוטנציאל בינוני - נדרש מעקב נוסף וניסיון לחזק את העניין");
+    } else if (data.overallScore >= 30) {
+      notes.push("לקוח עם פוטנציאל נמוך - מומלץ להתמקד בלקוחות אחרים או לנסות גישה שונה");
     } else {
-      notes.push("לקוח עם פוטנציאל נמוך - מומלץ להתמקד בלקוחות אחרים");
+      notes.push("לקוח עם פוטנציאל נמוך מאוד - לא מומלץ להשקיע זמן נוסף");
     }
 
-    // Specific insights
-    if (data.urgencyScore >= 70) {
+    // Detailed urgency insights
+    if (data.urgencyScore >= 85) {
+      notes.push("לקוח עם תחושת דחיפות גבוהה מאוד - הזדמנות לסגירה מהירה, יש לחץ זמן חזק");
+    } else if (data.urgencyScore >= 70) {
       notes.push("לקוח עם תחושת דחיפות גבוהה - הזדמנות לסגירה מהירה");
+    } else if (data.urgencyScore >= 50) {
+      notes.push("לקוח עם תחושת דחיפות בינונית - יש קצת לחץ זמן");
+    } else if (data.urgencyScore < 30) {
+      notes.push("לקוח ללא תחושת דחיפות - אין לחץ זמן מיוחד");
     }
 
-    if (data.budgetScore >= 70) {
+    // Detailed budget insights
+    if (data.budgetScore >= 85) {
+      notes.push("לקוח עם תקציב ברור מאוד - פוטנציאל לסגירה בטווח הקצר, תקציב מוגדר היטב");
+    } else if (data.budgetScore >= 70) {
       notes.push("לקוח עם תקציב ברור - פוטנציאל לסגירה בטווח הקצר");
+    } else if (data.budgetScore >= 50) {
+      notes.push("לקוח עם תקציב חלקי - נדרש לברר פרטים נוספים על התקציב");
+    } else if (data.budgetScore < 30) {
+      notes.push("לקוח ללא תקציב ברור - נדרש לברר את המצב הפיננסי");
     }
 
-    if (data.interestScore >= 70) {
+    // Detailed interest insights
+    if (data.interestScore >= 85) {
+      notes.push("לקוח מתעניין מאוד בנכס - מומלץ להציע צפייה מיידית, עניין גבוה מאוד");
+    } else if (data.interestScore >= 70) {
       notes.push("לקוח מתעניין מאוד בנכס - מומלץ להציע צפייה");
+    } else if (data.interestScore >= 50) {
+      notes.push("לקוח עם עניין בינוני - נדרש לחזק את העניין");
+    } else if (data.interestScore < 30) {
+      notes.push("לקוח עם עניין נמוך - נדרש לעורר עניין או לשנות גישה");
     }
 
-    if (data.engagementScore >= 70) {
+    // Detailed engagement insights
+    if (data.engagementScore >= 85) {
+      notes.push("לקוח מעורב מאוד בשיחה - סימן חיובי לכוונה לקנות, מעורבות גבוהה מאוד");
+    } else if (data.engagementScore >= 70) {
       notes.push("לקוח מעורב מאוד בשיחה - סימן חיובי לכוונה לקנות");
+    } else if (data.engagementScore >= 50) {
+      notes.push("לקוח עם מעורבות בינונית - נדרש לחזק את המעורבות");
+    } else if (data.engagementScore < 30) {
+      notes.push("לקוח עם מעורבות נמוכה - נדרש לעורר מעורבות או לשנות גישה");
     }
 
-    // Objections
+    // Objections with more detail
     if (data.objections.length > 0) {
-      notes.push(`זוהו התנגדויות: ${data.objections.join(', ')} - נדרש טיפול בהתנגדויות`);
+      const objectionCount = data.objections.length;
+      if (objectionCount >= 3) {
+        notes.push(`זוהו התנגדויות מרובות (${objectionCount}): ${data.objections.join(', ')} - נדרש טיפול מקיף בהתנגדויות`);
+      } else if (objectionCount === 2) {
+        notes.push(`זוהו התנגדויות: ${data.objections.join(', ')} - נדרש טיפול בהתנגדויות`);
+      } else {
+        notes.push(`זוהתה התנגדות: ${data.objections[0]} - נדרש טיפול בהתנגדות`);
+      }
     }
 
-    // Call quality
-    if (data.duration > 120) {
-      notes.push("שיחה ארוכה - סימן לעניין גבוה");
+    // Call quality insights with more detail
+    if (data.duration >= 300) {
+      notes.push("שיחה ארוכה מאוד (5+ דקות) - סימן לעניין גבוה מאוד ומעורבות חזקה");
+    } else if (data.duration >= 180) {
+      notes.push("שיחה ארוכה (3+ דקות) - סימן לעניין גבוה");
+    } else if (data.duration >= 120) {
+      notes.push("שיחה בינונית (2+ דקות) - סימן לעניין בינוני");
+    } else if (data.duration < 60) {
+      notes.push("שיחה קצרה - סימן לעניין נמוך או חוסר זמן");
     }
 
-    if (data.wordCount > 100) {
+    if (data.wordCount >= 200) {
+      notes.push("לקוח דיבר הרבה מאוד - סימן למעורבות גבוהה מאוד ועניין חזק");
+    } else if (data.wordCount >= 100) {
       notes.push("לקוח דיבר הרבה - סימן למעורבות גבוהה");
+    } else if (data.wordCount >= 50) {
+      notes.push("לקוח דיבר בינוני - סימן למעורבות בינונית");
+    } else if (data.wordCount < 25) {
+      notes.push("לקוח דיבר מעט - סימן למעורבות נמוכה");
+    }
+
+    // Additional insights based on score combinations
+    if (data.urgencyScore >= 70 && data.budgetScore >= 70) {
+      notes.push("שילוב מצוין: דחיפות גבוהה + תקציב ברור - הזדמנות אידיאלית לסגירה");
+    }
+
+    if (data.interestScore >= 70 && data.engagementScore >= 70) {
+      notes.push("שילוב חיובי: עניין גבוה + מעורבות גבוהה - לקוח מוכן לשלב הבא");
+    }
+
+    if (data.overallScore >= 70 && data.objections.length === 0) {
+      notes.push("לקוח אידיאלי: ציון גבוה ללא התנגדויות - מומלץ לקדם לשלב הבא");
+    }
+
+    if (data.overallScore < 40 && data.objections.length > 0) {
+      notes.push("לקוח מאתגר: ציון נמוך עם התנגדויות - נדרש שינוי גישה או התמקדות בלקוחות אחרים");
     }
 
     return notes.join('. ') + '.';
