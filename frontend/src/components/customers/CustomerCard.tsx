@@ -8,8 +8,8 @@ interface CustomerCardProps {
 
 const CustomerCard: React.FC<CustomerCardProps> = ({ customer }) => {
   return (
-    <div className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-center space-x-3 mb-4">
+    <div className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow rtl-card">
+      <div className="flex items-center space-x-3 mb-4 rtl-space-x-reverse">
         <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
           <span className="text-sm font-medium text-blue-600">
             {customer.name.charAt(0).toUpperCase()}

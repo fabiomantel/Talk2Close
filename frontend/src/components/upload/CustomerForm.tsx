@@ -18,7 +18,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ data, onChange }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 rtl-form">
       <h3 className="text-lg font-medium text-gray-900 hebrew-content">{getUIText('customer_information')}</h3>
       
       <div>
@@ -30,7 +30,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ data, onChange }) => {
           id="name"
           value={data.name}
           onChange={(e) => handleChange('name', e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm rtl-input"
           placeholder="הכנס שם לקוח"
           required
         />
@@ -45,7 +45,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ data, onChange }) => {
           id="phone"
           value={data.phone}
           onChange={(e) => handleChange('phone', e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm rtl-input"
           placeholder="הכנס מספר טלפון"
           required
         />
@@ -60,7 +60,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ data, onChange }) => {
           id="email"
           value={data.email}
           onChange={(e) => handleChange('email', e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm rtl-input"
           placeholder="הכנס כתובת אימייל"
         />
       </div>

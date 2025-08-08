@@ -32,7 +32,7 @@ const DebugConfig = () => {
       <div style={{ 
         position: 'fixed', 
         top: 0, 
-        right: 0, 
+        left: 0, 
         background: '#f0f0f0', 
         padding: '10px', 
         fontSize: '12px', 
@@ -60,12 +60,12 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <Router>
-          <div className="min-h-screen bg-gray-50">
+          <div className="min-h-screen bg-gray-50 rtl-layout">
             <DebugConfig />
             <Header />
-            <div className="flex">
+            <div className="flex flex-row-reverse">
               <Sidebar />
-              <main className="flex-1 p-6">
+              <main className="flex-1 p-6 rtl-main">
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/upload" element={<Upload />} />

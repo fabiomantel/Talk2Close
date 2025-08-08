@@ -48,8 +48,8 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 rtl-layout">
+      <div className="flex justify-between items-center rtl-flex-row-reverse">
         <h1 className="text-3xl font-bold text-gray-900 hebrew-content">{getUIText('dashboard')}</h1>
         <div className="text-sm text-gray-500 hebrew-content">
           עודכן לאחרונה: {new Date().toLocaleString('he-IL')}

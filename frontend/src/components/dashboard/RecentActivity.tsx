@@ -12,12 +12,12 @@ const RecentActivity: React.FC = () => {
   const recentAnalyses = analysesData?.data.analyses.slice(0, 5) || [];
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
+    <div className="bg-white p-6 rounded-lg shadow rtl-card">
       <h3 className="text-lg font-medium text-gray-900 mb-4 hebrew-content">{getUIText('recent_activity')}</h3>
       <div className="space-y-4">
         {recentAnalyses.length > 0 ? (
           recentAnalyses.map((analysis) => (
-            <div key={analysis.id} className="flex items-center space-x-3">
+            <div key={analysis.id} className="flex items-center space-x-3 rtl-space-x-reverse">
               <div className="flex-shrink-0">
                 <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
                   <span className="text-sm font-medium text-blue-600">

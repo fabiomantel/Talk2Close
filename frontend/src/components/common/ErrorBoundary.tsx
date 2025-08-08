@@ -33,7 +33,7 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="flex items-center justify-center min-h-screen bg-gray-50 rtl-layout">
           <div className="text-center">
             <ExclamationTriangleIcon className="mx-auto h-16 w-16 text-red-500" />
             <h1 className="mt-4 text-2xl font-bold text-gray-900 hebrew-content">{getUIText('something_went_wrong')}</h1>
@@ -41,7 +41,7 @@ class ErrorBoundary extends Component<Props, State> {
               אירעה שגיאה בלתי צפויה. אנא רענן את הדף ונסה שוב.
             </p>
             {this.state.error && (
-              <details className="mt-4 text-left">
+              <details className="mt-4 text-right rtl-text-left">
                 <summary className="cursor-pointer text-sm text-gray-500 hebrew-content">
                   פרטי השגיאה
                 </summary>
@@ -52,7 +52,7 @@ class ErrorBoundary extends Component<Props, State> {
             )}
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 hebrew-content"
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 rtl-button"
             >
               רענן דף
             </button>

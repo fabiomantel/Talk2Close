@@ -36,7 +36,7 @@ const AnalysisDetails: React.FC<AnalysisDetailsProps> = ({ analysisId }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 space-y-6">
+    <div className="bg-white rounded-lg shadow p-6 space-y-6 rtl-card">
       <div>
         <h3 className="text-lg font-medium text-gray-900 mb-2 hebrew-content">
           {getUIText('details')}

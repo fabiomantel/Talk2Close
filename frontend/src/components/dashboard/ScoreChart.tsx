@@ -32,9 +32,9 @@ const ScoreChart: React.FC<ScoreChartProps> = ({ data }) => {
   ];
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
+    <div className="bg-white p-6 rounded-lg shadow rtl-card">
       <h3 className="text-lg font-medium text-gray-900 mb-4 hebrew-content">התפלגות ציונים לפי קטגוריות</h3>
-      <div className="h-80">
+      <div className="h-80 rtl-chart">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={chartData}>
             <PolarGrid />

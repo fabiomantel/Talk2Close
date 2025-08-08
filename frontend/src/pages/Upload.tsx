@@ -84,7 +84,7 @@ const Upload: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto rtl-layout">
       <div className="text-center mb-8">
         <CloudArrowUpIcon className="mx-auto h-12 w-12 text-gray-400" />
         <h1 className="mt-2 text-3xl font-bold text-gray-900 hebrew-content">{getUIText('upload_sales_call')}</h1>
@@ -93,17 +93,17 @@ const Upload: React.FC = () => {
         </p>
       </div>
 
-      <div className="bg-white shadow rounded-lg p-6 space-y-6">
+      <div className="bg-white shadow rounded-lg p-6 space-y-6 rtl-card">
         <FileUpload onFileSelect={setFile} selectedFile={file} />
         <CustomerForm data={customerData} onChange={setCustomerData} />
         
         {uploading && <UploadProgress />}
         
-        <div className="flex justify-end">
+        <div className="flex justify-end rtl-justify-start">
           <button
             onClick={handleUpload}
             disabled={!file || !customerData.name || !customerData.phone || uploading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed hebrew-content"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rtl-button"
           >
             {uploading ? 'מעלה ומנתח...' : 'העלאה וניתוח'}
           </button>

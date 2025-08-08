@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global RTL Layout Support */
+.rtl-layout {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-main {
+  direction: rtl;
+  text-align: right;
+}
+
 /* Hebrew RTL Support */
 .hebrew-content {
   direction: rtl;
@@ -15,9 +26,133 @@
   line-height: 1.6;
 }
 
-.score-card {
-  direction: ltr; /* Keep numbers LTR */
+/* RTL Layout Classes */
+.rtl-sidebar {
+  direction: rtl;
+  text-align: right;
+  border-left: 1px solid #e5e7eb;
+  border-right: none;
+}
+
+.rtl-header {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-navigation {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-form {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-input {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-button {
+  direction: rtl;
+  text-align: center;
+}
+
+.rtl-card {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-list {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-table {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL Spacing and Margins */
+.rtl-ml-auto {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.rtl-mr-auto {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+.rtl-pl-10 {
+  padding-left: 2.5rem;
+  padding-right: 0;
+}
+
+.rtl-pr-10 {
+  padding-right: 2.5rem;
+  padding-left: 0;
+}
+
+/* RTL Flexbox */
+.rtl-flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.rtl-justify-start {
+  justify-content: flex-end;
+}
+
+.rtl-justify-end {
+  justify-content: flex-start;
+}
+
+/* RTL Text Alignment */
+.rtl-text-left {
+  text-align: right;
+}
+
+.rtl-text-right {
   text-align: left;
+}
+
+/* RTL Borders */
+.rtl-border-r {
+  border-right: none;
+  border-left: 1px solid;
+}
+
+.rtl-border-l {
+  border-left: none;
+  border-right: 1px solid;
+}
+
+/* RTL Icons and Spacing */
+.rtl-icon-left {
+  margin-left: 0;
+  margin-right: 0.75rem;
+}
+
+.rtl-icon-right {
+  margin-right: 0;
+  margin-left: 0.75rem;
+}
+
+/* RTL Space Utilities */
+.rtl-space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+/* Score cards - keep numbers LTR for readability */
+.score-card {
+  direction: ltr;
+  text-align: left;
+}
+
+/* RTL Charts and Visualizations */
+.rtl-chart {
+  direction: rtl;
 }
 
 /* Custom scrollbar */
@@ -47,4 +182,166 @@
 
 .animate-spin {
   animation: spin 1s linear infinite;
+}
+
+/* RTL Responsive Design */
+@media (max-width: 768px) {
+  .rtl-mobile-layout {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  .rtl-mobile-sidebar {
+    direction: rtl;
+    text-align: right;
+  }
+}
+
+/* RTL Form Elements */
+.rtl-input::placeholder {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-select {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-textarea {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL Navigation Items */
+.rtl-nav-item {
+  direction: rtl;
+  text-align: right;
+  padding-right: 0.5rem;
+  padding-left: 1rem;
+}
+
+.rtl-nav-item.active {
+  border-right: 2px solid #2563eb;
+  border-left: none;
+}
+
+/* RTL Dropdowns and Menus */
+.rtl-dropdown {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-menu {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL Tooltips */
+.rtl-tooltip {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL Modal and Dialog */
+.rtl-modal {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-dialog {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL Grid and Layout */
+.rtl-grid {
+  direction: rtl;
+}
+
+.rtl-container {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL Button Groups */
+.rtl-button-group {
+  direction: rtl;
+}
+
+.rtl-button-group > * {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+.rtl-button-group > *:last-child {
+  margin-right: 0;
+}
+
+/* RTL Input Groups */
+.rtl-input-group {
+  direction: rtl;
+}
+
+.rtl-input-group > * {
+  border-radius: 0;
+}
+
+.rtl-input-group > *:first-child {
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rtl-input-group > *:last-child {
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* RTL Badge and Status */
+.rtl-badge {
+  direction: rtl;
+  text-align: center;
+}
+
+/* RTL Progress Bars */
+.rtl-progress {
+  direction: rtl;
+}
+
+/* RTL Alerts */
+.rtl-alert {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL Breadcrumbs */
+.rtl-breadcrumb {
+  direction: rtl;
+}
+
+.rtl-breadcrumb > * {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+.rtl-breadcrumb > *:last-child {
+  margin-right: 0;
+}
+
+/* RTL Pagination */
+.rtl-pagination {
+  direction: rtl;
+}
+
+.rtl-pagination > * {
+  margin-left: 0;
+  margin-right: 0.25rem;
+}
+
+.rtl-pagination > *:last-child {
+  margin-right: 0;
 }

@@ -14,7 +14,7 @@ const AnalysisList: React.FC<AnalysisListProps> = ({
   onSelect,
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow">
+    <div className="bg-white rounded-lg shadow rtl-card">
       <div className="p-4 border-b border-gray-200">
         <h3 className="text-lg font-medium text-gray-900 hebrew-content">{getUIText('recent_analyses')}</h3>
       </div>
@@ -24,11 +24,11 @@ const AnalysisList: React.FC<AnalysisListProps> = ({
             <div
               key={analysis.id}
               onClick={() => onSelect(analysis.id)}
-              className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                selectedId === analysis.id ? 'bg-blue-50 border-r-2 border-blue-600' : ''
+              className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors rtl-list ${
+                selectedId === analysis.id ? 'bg-blue-50 rtl-border-l border-blue-600' : ''
               }`}
             >
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start rtl-flex-row-reverse">
                 <div className="flex-1">
                   <h4 className="text-sm font-medium text-gray-900 hebrew-content">
                     {analysis.customer.name}
@@ -39,7 +39,7 @@ const AnalysisList: React.FC<AnalysisListProps> = ({
                   </p>
                 </div>
                 {analysis.overallScore && (
-                  <div className="text-right">
+                  <div className="text-left rtl-text-right">
                     <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getScoreColor(analysis.overallScore)}`}>
                       {analysis.overallScore}/100
                     </div>

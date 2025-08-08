@@ -24,13 +24,13 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, selectedFile }) =
   });
 
   return (
-    <div>
+    <div className="rtl-form">
       <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
         קובץ אודיו
       </label>
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors rtl-card ${
           isDragActive
             ? 'border-blue-400 bg-blue-50'
             : 'border-gray-300 hover:border-gray-400'
@@ -38,7 +38,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, selectedFile }) =
       >
         <input {...getInputProps()} />
         {selectedFile ? (
-          <div className="flex items-center justify-center space-x-2">
+          <div className="flex items-center justify-center space-x-2 rtl-space-x-reverse">
             <MusicalNoteIcon className="h-8 w-8 text-green-500" />
             <div>
               <p className="text-sm font-medium text-gray-900 hebrew-content">{selectedFile.name}</p>

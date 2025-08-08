@@ -8,7 +8,7 @@ interface ErrorMessageProps {
 
 const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
   return (
-    <div className="flex items-center justify-center h-64">
+    <div className="flex items-center justify-center h-64 rtl-layout">
       <div className="text-center">
         <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-red-500" />
         <h3 className="mt-2 text-sm font-medium text-gray-900 hebrew-content">{getUIText('error')}</h3>
