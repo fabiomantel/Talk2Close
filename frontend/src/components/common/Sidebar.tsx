@@ -17,7 +17,7 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <div className="w-64 bg-white shadow-sm border-r border-gray-200">
+    <div className="w-64 bg-white shadow-sm rtl-sidebar">
       <nav className="mt-8">
         <div className="px-4 space-y-1">
           {navigation.map((item) => (
@@ -25,15 +25,15 @@ const Sidebar: React.FC = () => {
               key={item.name}
               to={item.href}
               className={({ isActive }) =>
-                `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors hebrew-content ${
+                `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors rtl-nav-item ${
                   isActive
-                    ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+                    ? 'bg-blue-50 text-blue-700 rtl-border-l border-blue-700'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`
               }
             >
               <item.icon
-                className="mr-3 h-5 w-5"
+                className="rtl-icon-right h-5 w-5"
                 aria-hidden="true"
               />
               {item.name}
