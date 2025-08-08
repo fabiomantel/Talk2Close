@@ -33,7 +33,7 @@ const Customers: React.FC = () => {
 
   return (
     <div className="space-y-6 rtl-layout">
-      <div className="flex justify-between items-center rtl-flex-row-reverse">
+      <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900 hebrew-content">{getUIText('customers')}</h1>
         <div className="text-sm text-gray-500 hebrew-content">
           {customers.length} לקוחות סה"כ

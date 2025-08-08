@@ -33,7 +33,7 @@ const Sidebar: React.FC = () => {
               }
             >
               <item.icon
-                className="rtl-icon-right h-5 w-5"
+                className="ml-3 h-5 w-5"
                 aria-hidden="true"
               />
               <span className="hebrew-content">{item.name}</span>

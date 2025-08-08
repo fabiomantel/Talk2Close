@@ -33,6 +33,7 @@
   border-left: 1px solid #e5e7eb;
   border-right: none;
   position: relative;
+  order: 2; /* Ensure sidebar comes after main content in flex order */
 }
 
 .rtl-sidebar nav {
@@ -117,6 +118,10 @@
 
 .rtl-justify-end {
   justify-content: flex-start;
+}
+
+.rtl-justify-between {
+  justify-content: space-between;
 }
 
 /* RTL Text Alignment */
@@ -230,7 +235,7 @@
   text-align: right;
   padding-right: 0.5rem;
   padding-left: 1rem;
-  flex-direction: row-reverse;
+  flex-direction: row;
   justify-content: flex-start;
 }
 
