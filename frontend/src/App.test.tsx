@@ -10,7 +10,7 @@ test('environment variables are configured', () => {
 });
 
 test('API base URL is correctly configured', () => {
-  expect(process.env.REACT_APP_API_BASE_URL).toBe('http://localhost:3002/api');
+  expect(process.env.REACT_APP_API_BASE_URL).toBe('http://localhost:3000/api');
 });
 
 test('Hebrew locale is configured', () => {

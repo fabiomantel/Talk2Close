@@ -77,8 +77,8 @@ The frontend uses environment variables for configuration. Copy `.env.example` t
 ### Key Environment Variables
 
 - `PORT`: Frontend development server port (default: 3000)
-- `REACT_APP_API_BASE_URL`: Backend API URL (default: http://localhost:3002/api)
-- `REACT_APP_BACKEND_URL`: Backend server URL (default: http://localhost:3002)
+- `REACT_APP_API_BASE_URL`: Backend API URL (default: http://localhost:3000/api)
+- `REACT_APP_BACKEND_URL`: Backend server URL (default: http://localhost:3000)
 - `REACT_APP_NAME`: Application name
 - `REACT_APP_ENVIRONMENT`: Environment (development/production)
 - `REACT_APP_DEFAULT_LOCALE`: Default locale (default: he-IL)
@@ -97,7 +97,7 @@ REACT_APP_ENABLE_DEBUG_MODE=false
 
 ## API Integration
 
-The frontend communicates with the backend API at `http://localhost:3002/api`:
+The frontend communicates with the backend API at `http://localhost:3000/api`:
 
 - **Dashboard**: Statistics and analytics
 - **Upload**: File upload and analysis
