@@ -1,5 +1,6 @@
 import React from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { getUIText } from '../../utils/hebrewUtils';
 
 interface CustomerFiltersProps {
   searchTerm: string;
@@ -26,10 +27,10 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search customers..."
+              placeholder="חיפוש לקוחות..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 hebrew-content"
             />
           </div>
         </div>
@@ -38,22 +39,22 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
           <select
             value={scoreFilter}
             onChange={(e) => onScoreFilterChange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 hebrew-content"
           >
-            <option value="all">All Scores</option>
-            <option value="high">High (80+)</option>
-            <option value="good">Good (60-79)</option>
-            <option value="medium">Medium (40-59)</option>
-            <option value="low">Low (0-39)</option>
+            <option value="all">כל הציונים</option>
+            <option value="high">גבוה (80+)</option>
+            <option value="good">טוב (60-79)</option>
+            <option value="medium">בינוני (40-59)</option>
+            <option value="low">נמוך (0-39)</option>
           </select>
 
           <select
             value={sortBy}
             onChange={(e) => onSortByChange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 hebrew-content"
           >
-            <option value="name">Sort by Name</option>
-            <option value="createdAt">Sort by Date</option>
+            <option value="name">מיון לפי שם</option>
+            <option value="createdAt">מיון לפי תאריך</option>
           </select>
         </div>
       </div>

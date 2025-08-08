@@ -1,6 +1,6 @@
 import React from 'react';
 import { SalesCall } from '../../services/api';
-import { formatHebrewDate, getScoreColor, getScoreLabel } from '../../utils/hebrewUtils';
+import { formatHebrewDate, getScoreColor, getScoreLabel, getUIText } from '../../utils/hebrewUtils';
 
 interface AnalysisListProps {
   analyses: SalesCall[];
@@ -16,7 +16,7 @@ const AnalysisList: React.FC<AnalysisListProps> = ({
   return (
     <div className="bg-white rounded-lg shadow">
       <div className="p-4 border-b border-gray-200">
-        <h3 className="text-lg font-medium text-gray-900">Recent Analyses</h3>
+        <h3 className="text-lg font-medium text-gray-900 hebrew-content">{getUIText('recent_analyses')}</h3>
       </div>
       <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
         {analyses.length > 0 ? (
@@ -30,11 +30,11 @@ const AnalysisList: React.FC<AnalysisListProps> = ({
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <h4 className="text-sm font-medium text-gray-900">
+                  <h4 className="text-sm font-medium text-gray-900 hebrew-content">
                     {analysis.customer.name}
                   </h4>
-                  <p className="text-xs text-gray-500">{analysis.customer.phone}</p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-500 hebrew-content">{analysis.customer.phone}</p>
+                  <p className="text-xs text-gray-400 mt-1 hebrew-content">
                     {formatHebrewDate(analysis.createdAt)}
                   </p>
                 </div>
@@ -43,7 +43,7 @@ const AnalysisList: React.FC<AnalysisListProps> = ({
                     <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getScoreColor(analysis.overallScore)}`}>
                       {analysis.overallScore}/100
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 mt-1 hebrew-content">
                       {getScoreLabel(analysis.overallScore)}
                     </p>
                   </div>
@@ -52,8 +52,8 @@ const AnalysisList: React.FC<AnalysisListProps> = ({
             </div>
           ))
         ) : (
-          <div className="p-4 text-center text-gray-500">
-            No analyses found
+          <div className="p-4 text-center text-gray-500 hebrew-content">
+            {getUIText('no_analyses')}
           </div>
         )}
       </div>

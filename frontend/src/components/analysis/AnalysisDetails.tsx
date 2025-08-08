@@ -5,6 +5,7 @@ import ScoreBreakdown from './ScoreBreakdown';
 import HebrewInsights from './HebrewInsights';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorMessage from '../common/ErrorMessage';
+import { getUIText } from '../../utils/hebrewUtils';
 
 interface AnalysisDetailsProps {
   analysisId: number;
@@ -37,11 +38,11 @@ const AnalysisDetails: React.FC<AnalysisDetailsProps> = ({ analysisId }) => {
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-6">
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          Analysis Details
+        <h3 className="text-lg font-medium text-gray-900 mb-2 hebrew-content">
+          {getUIText('details')}
         </h3>
-        <div className="text-sm text-gray-500">
-          Customer: {analysis.customer.name}
+        <div className="text-sm text-gray-500 hebrew-content">
+          לקוח: {analysis.customer.name}
         </div>
       </div>
 
@@ -63,7 +64,7 @@ const AnalysisDetails: React.FC<AnalysisDetailsProps> = ({ analysisId }) => {
 
       {analysis.transcript && (
         <div>
-          <h4 className="text-sm font-medium text-gray-900 mb-2">Transcript</h4>
+          <h4 className="text-sm font-medium text-gray-900 mb-2 hebrew-content">{getUIText('transcript')}</h4>
           <div className="bg-gray-50 p-4 rounded-md text-sm text-gray-700 hebrew-content">
             {analysis.transcript}
           </div>

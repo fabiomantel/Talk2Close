@@ -6,7 +6,7 @@ import {
   ChartBarIcon, 
   ClockIcon 
 } from '@heroicons/react/24/outline';
-import { getScoreColor } from '../../utils/hebrewUtils';
+import { getScoreColor, getUIText } from '../../utils/hebrewUtils';
 
 interface StatsCardsProps {
   stats: DashboardStats;
@@ -15,7 +15,7 @@ interface StatsCardsProps {
 const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
   const cards = [
     {
-      name: 'Total Customers',
+      name: getUIText('total_customers'),
       value: stats.overview.totalCustomers,
       icon: UsersIcon,
       color: 'bg-blue-500',
@@ -23,7 +23,7 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
       changeType: 'increase',
     },
     {
-      name: 'Total Calls',
+      name: 'סה"כ שיחות',
       value: stats.overview.totalSalesCalls,
       icon: PhoneIcon,
       color: 'bg-green-500',
@@ -31,7 +31,7 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
       changeType: 'increase',
     },
     {
-      name: 'Scored Calls',
+      name: 'שיחות מדורגות',
       value: stats.overview.totalScored,
       icon: ChartBarIcon,
       color: 'bg-purple-500',
@@ -39,7 +39,7 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
       changeType: 'increase',
     },
     {
-      name: 'Avg Overall Score',
+      name: getUIText('average_score'),
       value: Math.round(stats.scores.avgOverall),
       icon: ClockIcon,
       color: 'bg-yellow-500',
@@ -63,7 +63,7 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium text-gray-500 truncate hebrew-content">
                     {card.name}
                   </dt>
                   <dd className="flex items-baseline">

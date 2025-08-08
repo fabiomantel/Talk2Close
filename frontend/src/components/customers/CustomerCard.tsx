@@ -1,6 +1,6 @@
 import React from 'react';
 import { Customer } from '../../services/api';
-import { formatHebrewDate } from '../../utils/hebrewUtils';
+import { formatHebrewDate, getUIText } from '../../utils/hebrewUtils';
 
 interface CustomerCardProps {
   customer: Customer;
@@ -16,20 +16,20 @@ const CustomerCard: React.FC<CustomerCardProps> = ({ customer }) => {
           </span>
         </div>
         <div>
-          <h3 className="text-lg font-medium text-gray-900">{customer.name}</h3>
-          <p className="text-sm text-gray-500">{customer.phone}</p>
+          <h3 className="text-lg font-medium text-gray-900 hebrew-content">{customer.name}</h3>
+          <p className="text-sm text-gray-500 hebrew-content">{customer.phone}</p>
         </div>
       </div>
 
       {customer.email && (
         <div className="mb-4">
-          <p className="text-sm text-gray-600">{customer.email}</p>
+          <p className="text-sm text-gray-600 hebrew-content">{customer.email}</p>
         </div>
       )}
 
       <div className="border-t pt-4">
-        <p className="text-xs text-gray-500">
-          Added: {formatHebrewDate(customer.createdAt)}
+        <p className="text-xs text-gray-500 hebrew-content">
+          {getUIText('created_at')}: {formatHebrewDate(customer.createdAt)}
         </p>
       </div>
     </div>

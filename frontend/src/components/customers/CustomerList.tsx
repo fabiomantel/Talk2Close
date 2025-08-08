@@ -1,7 +1,7 @@
 import React from 'react';
 import { Customer } from '../../services/api';
 import CustomerCard from './CustomerCard';
-
+import { getUIText } from '../../utils/hebrewUtils';
 
 interface CustomerListProps {
   customers: Customer[];
@@ -36,7 +36,7 @@ const CustomerList: React.FC<CustomerListProps> = ({
   if (sortedCustomers.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">No customers found</p>
+        <p className="text-gray-500 hebrew-content">{getUIText('no_customers')}</p>
       </div>
     );
   }

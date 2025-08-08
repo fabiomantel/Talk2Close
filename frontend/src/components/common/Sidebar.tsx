@@ -6,13 +6,14 @@ import {
   UsersIcon, 
   ChartBarIcon 
 } from '@heroicons/react/24/outline';
+import { getUIText } from '../../utils/hebrewUtils';
 
 const Sidebar: React.FC = () => {
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: HomeIcon },
-    { name: 'Upload', href: '/upload', icon: CloudArrowUpIcon },
-    { name: 'Customers', href: '/customers', icon: UsersIcon },
-    { name: 'Analysis', href: '/analysis', icon: ChartBarIcon },
+    { name: getUIText('dashboard_nav'), href: '/', icon: HomeIcon },
+    { name: getUIText('upload_nav'), href: '/upload', icon: CloudArrowUpIcon },
+    { name: getUIText('customers_nav'), href: '/customers', icon: UsersIcon },
+    { name: getUIText('analysis_nav'), href: '/analysis', icon: ChartBarIcon },
   ];
 
   return (
@@ -24,7 +25,7 @@ const Sidebar: React.FC = () => {
               key={item.name}
               to={item.href}
               className={({ isActive }) =>
-                `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+                `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors hebrew-content ${
                   isActive
                     ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'

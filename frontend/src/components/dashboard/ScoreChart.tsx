@@ -1,6 +1,7 @@
 import React from 'react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';
 import { ScoringAnalytics } from '../../services/api';
+import { getCategoryName } from '../../utils/hebrewUtils';
 
 interface ScoreChartProps {
   data: ScoringAnalytics;
@@ -9,22 +10,22 @@ interface ScoreChartProps {
 const ScoreChart: React.FC<ScoreChartProps> = ({ data }) => {
   const chartData = [
     {
-      category: 'Urgency',
+      category: getCategoryName('urgency'),
       score: Math.round(data.categoryAverages.urgency),
       fullMark: 100,
     },
     {
-      category: 'Budget',
+      category: getCategoryName('budget'),
       score: Math.round(data.categoryAverages.budget),
       fullMark: 100,
     },
     {
-      category: 'Interest',
+      category: getCategoryName('interest'),
       score: Math.round(data.categoryAverages.interest),
       fullMark: 100,
     },
     {
-      category: 'Engagement',
+      category: getCategoryName('engagement'),
       score: Math.round(data.categoryAverages.engagement),
       fullMark: 100,
     },
@@ -32,7 +33,7 @@ const ScoreChart: React.FC<ScoreChartProps> = ({ data }) => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">Score Distribution by Category</h3>
+      <h3 className="text-lg font-medium text-gray-900 mb-4 hebrew-content">התפלגות ציונים לפי קטגוריות</h3>
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={chartData}>
@@ -40,7 +41,7 @@ const ScoreChart: React.FC<ScoreChartProps> = ({ data }) => {
             <PolarAngleAxis dataKey="category" />
             <PolarRadiusAxis angle={90} domain={[0, 100]} />
             <Radar
-              name="Average Score"
+              name="ציון ממוצע"
               dataKey="score"
               stroke="#3b82f6"
               fill="#3b82f6"
@@ -50,8 +51,8 @@ const ScoreChart: React.FC<ScoreChartProps> = ({ data }) => {
           </RadarChart>
         </ResponsiveContainer>
       </div>
-      <div className="mt-4 text-sm text-gray-500">
-        Average Overall Score: {Math.round(data.averageOverallScore)}/100
+      <div className="mt-4 text-sm text-gray-500 hebrew-content">
+        ציון כללי ממוצע: {Math.round(data.averageOverallScore)}/100
       </div>
     </div>
   );

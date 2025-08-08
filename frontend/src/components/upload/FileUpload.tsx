@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { CloudArrowUpIcon, MusicalNoteIcon } from '@heroicons/react/24/outline';
+import { getUIText } from '../../utils/hebrewUtils';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -24,8 +25,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, selectedFile }) =
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Audio File
+      <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+        קובץ אודיו
       </label>
       <div
         {...getRootProps()}
@@ -40,8 +41,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, selectedFile }) =
           <div className="flex items-center justify-center space-x-2">
             <MusicalNoteIcon className="h-8 w-8 text-green-500" />
             <div>
-              <p className="text-sm font-medium text-gray-900">{selectedFile.name}</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm font-medium text-gray-900 hebrew-content">{selectedFile.name}</p>
+              <p className="text-xs text-gray-500 hebrew-content">
                 {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
               </p>
             </div>
@@ -49,13 +50,13 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, selectedFile }) =
         ) : (
           <div>
             <CloudArrowUpIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-gray-600 hebrew-content">
               {isDragActive
-                ? 'Drop the audio file here'
-                : 'Drag and drop an audio file, or click to select'}
+                ? 'שחרר את קובץ האודיו כאן'
+                : 'גרור ושחרר קובץ אודיו, או לחץ לבחירה'}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Supports MP3, WAV, M4A, AAC, OGG
+            <p className="text-xs text-gray-500 mt-1 hebrew-content">
+              תומך ב-MP3, WAV, M4A, AAC, OGG
             </p>
           </div>
         )}

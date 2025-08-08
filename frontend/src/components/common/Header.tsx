@@ -1,4 +1,5 @@
 import React from 'react';
+import { getUIText } from '../../utils/hebrewUtils';
 
 const Header: React.FC = () => {
   return (
@@ -9,15 +10,12 @@ const Header: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-900 hebrew-content">
               מערכת ניתוח שיחות מכירה בעברית
             </h1>
-            <span className="ml-4 text-sm text-gray-500">
-              Hebrew Sales Call Analysis System
-            </span>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-500">
-              <span className="font-medium">Status:</span>
-              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                Online
+            <div className="text-sm text-gray-500 hebrew-content">
+              <span className="font-medium">{getUIText('status')}:</span>
+              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 hebrew-content">
+                {getUIText('online')}
               </span>
             </div>
           </div>

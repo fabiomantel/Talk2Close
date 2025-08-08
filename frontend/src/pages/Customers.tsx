@@ -5,6 +5,7 @@ import CustomerList from '../components/customers/CustomerList';
 import CustomerFilters from '../components/customers/CustomerFilters';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
+import { getUIText } from '../utils/hebrewUtils';
 
 const Customers: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,9 +34,9 @@ const Customers: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
-        <div className="text-sm text-gray-500">
-          {customers.length} customers total
+        <h1 className="text-3xl font-bold text-gray-900 hebrew-content">{getUIText('customers')}</h1>
+        <div className="text-sm text-gray-500 hebrew-content">
+          {customers.length} לקוחות סה"כ
         </div>
       </div>
 

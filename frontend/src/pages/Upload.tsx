@@ -5,6 +5,7 @@ import FileUpload from '../components/upload/FileUpload';
 import CustomerForm from '../components/upload/CustomerForm';
 import UploadProgress from '../components/upload/UploadProgress';
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
+import { getUIText } from '../utils/hebrewUtils';
 
 const Upload: React.FC = () => {
   console.log('📤 Upload Component: Initializing file upload interface');
@@ -86,9 +87,9 @@ const Upload: React.FC = () => {
     <div className="max-w-2xl mx-auto">
       <div className="text-center mb-8">
         <CloudArrowUpIcon className="mx-auto h-12 w-12 text-gray-400" />
-        <h1 className="mt-2 text-3xl font-bold text-gray-900">Upload Sales Call</h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Upload a Hebrew sales call recording for analysis and scoring
+        <h1 className="mt-2 text-3xl font-bold text-gray-900 hebrew-content">{getUIText('upload_sales_call')}</h1>
+        <p className="mt-2 text-sm text-gray-600 hebrew-content">
+          העלה הקלטת שיחת מכירה בעברית לניתוח וציון
         </p>
       </div>
 
@@ -102,9 +103,9 @@ const Upload: React.FC = () => {
           <button
             onClick={handleUpload}
             disabled={!file || !customerData.name || !customerData.phone || uploading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed hebrew-content"
           >
-            {uploading ? 'Uploading & Analyzing...' : 'Upload & Analyze'}
+            {uploading ? 'מעלה ומנתח...' : 'העלאה וניתוח'}
           </button>
         </div>
       </div>

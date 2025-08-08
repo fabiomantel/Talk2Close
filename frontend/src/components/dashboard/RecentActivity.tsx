@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from '../../services/api';
-import { formatHebrewDate } from '../../utils/hebrewUtils';
+import { formatHebrewDate, getUIText } from '../../utils/hebrewUtils';
 
 const RecentActivity: React.FC = () => {
   const { data: analysesData } = useQuery({
@@ -13,7 +13,7 @@ const RecentActivity: React.FC = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
+      <h3 className="text-lg font-medium text-gray-900 mb-4 hebrew-content">{getUIText('recent_activity')}</h3>
       <div className="space-y-4">
         {recentAnalyses.length > 0 ? (
           recentAnalyses.map((analysis) => (
@@ -26,20 +26,20 @@ const RecentActivity: React.FC = () => {
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-gray-900 hebrew-content">
                   {analysis.customer.name}
                 </p>
-                <p className="text-sm text-gray-500">
-                  {analysis.overallScore ? `Score: ${analysis.overallScore}/100` : 'Pending analysis'}
+                <p className="text-sm text-gray-500 hebrew-content">
+                  {analysis.overallScore ? `ציון: ${analysis.overallScore}/100` : 'ממתין לניתוח'}
                 </p>
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 hebrew-content">
                 {formatHebrewDate(analysis.createdAt)}
               </div>
             </div>
           ))
         ) : (
-          <p className="text-sm text-gray-500">No recent activity</p>
+          <p className="text-sm text-gray-500 hebrew-content">{getUIText('no_recent_activity')}</p>
         )}
       </div>
     </div>

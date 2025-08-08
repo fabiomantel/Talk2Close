@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { getUIText } from '../../utils/hebrewUtils';
 
 interface Props {
   children: ReactNode;
@@ -35,14 +36,14 @@ class ErrorBoundary extends Component<Props, State> {
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
           <div className="text-center">
             <ExclamationTriangleIcon className="mx-auto h-16 w-16 text-red-500" />
-            <h1 className="mt-4 text-2xl font-bold text-gray-900">Something went wrong</h1>
-            <p className="mt-2 text-gray-600">
-              An unexpected error occurred. Please refresh the page and try again.
+            <h1 className="mt-4 text-2xl font-bold text-gray-900 hebrew-content">{getUIText('something_went_wrong')}</h1>
+            <p className="mt-2 text-gray-600 hebrew-content">
+              אירעה שגיאה בלתי צפויה. אנא רענן את הדף ונסה שוב.
             </p>
             {this.state.error && (
               <details className="mt-4 text-left">
-                <summary className="cursor-pointer text-sm text-gray-500">
-                  Error Details
+                <summary className="cursor-pointer text-sm text-gray-500 hebrew-content">
+                  פרטי השגיאה
                 </summary>
                 <pre className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded overflow-auto">
                   {this.state.error.message}
@@ -51,9 +52,9 @@ class ErrorBoundary extends Component<Props, State> {
             )}
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 hebrew-content"
             >
-              Refresh Page
+              רענן דף
             </button>
           </div>
         </div>

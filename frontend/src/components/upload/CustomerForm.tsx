@@ -1,4 +1,5 @@
 import React from 'react';
+import { getUIText } from '../../utils/hebrewUtils';
 
 interface CustomerData {
   name: string;
@@ -18,11 +19,11 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ data, onChange }) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900">Customer Information</h3>
+      <h3 className="text-lg font-medium text-gray-900 hebrew-content">{getUIText('customer_information')}</h3>
       
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name *
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700 hebrew-content">
+          {getUIText('name')} *
         </label>
         <input
           type="text"
@@ -30,14 +31,14 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ data, onChange }) => {
           value={data.name}
           onChange={(e) => handleChange('name', e.target.value)}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-          placeholder="Enter customer name"
+          placeholder="הכנס שם לקוח"
           required
         />
       </div>
 
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-          Phone *
+        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 hebrew-content">
+          {getUIText('phone')} *
         </label>
         <input
           type="tel"
@@ -45,14 +46,14 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ data, onChange }) => {
           value={data.phone}
           onChange={(e) => handleChange('phone', e.target.value)}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-          placeholder="Enter phone number"
+          placeholder="הכנס מספר טלפון"
           required
         />
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email (Optional)
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 hebrew-content">
+          {getUIText('email')} (אופציונלי)
         </label>
         <input
           type="email"
@@ -60,7 +61,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ data, onChange }) => {
           value={data.email}
           onChange={(e) => handleChange('email', e.target.value)}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-          placeholder="Enter email address"
+          placeholder="הכנס כתובת אימייל"
         />
       </div>
     </div>
