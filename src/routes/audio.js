@@ -6,6 +6,20 @@ const { prisma } = require('../database/connection');
 const router = express.Router();
 
 /**
+ * OPTIONS /api/audio/:salesCallId
+ * Handle preflight requests for CORS
+ */
+router.options('/:salesCallId', (req, res) => {
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+    'Access-Control-Allow-Headers': 'Range, Content-Type',
+    'Access-Control-Max-Age': '86400' // Cache preflight for 24 hours
+  });
+  res.status(200).end();
+});
+
+/**
  * GET /api/audio/:salesCallId
  * Serve audio file for a specific sales call
  */
@@ -57,7 +71,9 @@ router.get('/:salesCallId', async (req, res) => {
       'Accept-Ranges': 'bytes',
       'Cache-Control': 'public, max-age=3600',
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET'
+      'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+      'Access-Control-Allow-Headers': 'Range, Content-Type',
+      'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges'
     });
     
     // Handle range requests for seeking
@@ -71,7 +87,9 @@ router.get('/:salesCallId', async (req, res) => {
       res.status(206);
       res.set({
         'Content-Range': `bytes ${start}-${end}/${stats.size}`,
-        'Content-Length': chunksize
+        'Content-Length': chunksize,
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges'
       });
       
       const stream = fs.createReadStream(salesCall.audioFilePath, { start, end });

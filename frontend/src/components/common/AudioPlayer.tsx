@@ -110,24 +110,26 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         </div>
       )}
       
-      <H5AudioPlayer
-        src={audioUrl}
-        className="audio-player-rtl"
-        showJumpControls={false}
-        showSkipControls={false}
-        showDownloadProgress={true}
-        showFilledProgress={true}
-        hasDefaultKeyBindings={true}
-        preload="metadata"
-        volume={0.8}
-        onError={handleAudioError}
-        onPlay={handlePlay}
-        onEnded={handleEnded}
-        onLoadStart={handleLoadStart}
-        onCanPlay={handleCanPlay}
-        customAdditionalControls={[]}
-        customVolumeControls={[]}
-      />
+      {audioUrl && !isLoading && (
+        <H5AudioPlayer
+          src={audioUrl}
+          className="audio-player-rtl"
+          showJumpControls={false}
+          showSkipControls={false}
+          showDownloadProgress={true}
+          showFilledProgress={true}
+          hasDefaultKeyBindings={true}
+          preload="metadata"
+          volume={0.8}
+          onError={handleAudioError}
+          onPlay={handlePlay}
+          onEnded={handleEnded}
+          onLoadStart={handleLoadStart}
+          onCanPlay={handleCanPlay}
+          customAdditionalControls={[]}
+          customVolumeControls={[]}
+        />
+      )}
     </div>
   );
 };
