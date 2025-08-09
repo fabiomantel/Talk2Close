@@ -1,6 +1,5 @@
 import React from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { getUIText } from '../../utils/hebrewUtils';
 
 interface CustomerFiltersProps {
   searchTerm: string;

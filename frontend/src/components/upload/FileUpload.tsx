@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { CloudArrowUpIcon, MusicalNoteIcon } from '@heroicons/react/24/outline';
-import { getUIText } from '../../utils/hebrewUtils';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;

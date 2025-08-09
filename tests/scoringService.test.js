@@ -38,7 +38,7 @@ describe('ScoringService - Hebrew Analysis Insights', () => {
 
       const lowNotes = scoringService.generateAnalysisNotes(lowPotentialData);
       expect(lowNotes).toContain('לקוח עם פוטנציאל נמוך');
-      expect(lowNotes).toContain('זוהו התנגדויות');
+      expect(lowNotes).toContain('זוהתה התנגדות');
     });
   });
 }); 
