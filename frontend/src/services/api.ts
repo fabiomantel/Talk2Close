@@ -257,6 +257,16 @@ class ApiService {
     return this.request(`/customers/${id}`);
   }
 
+  // Audio
+  getAudioUrl = (salesCallId: number): string => {
+    return `${API_BASE}/audio/${salesCallId}`;
+  }
+
+  // Optional: Audio metadata endpoint for future use
+  getAudioMetadata = async (salesCallId: number) => {
+    return this.request(`/audio/metadata/${salesCallId}`);
+  }
+
   // Health check
   healthCheck = async (): Promise<{ status: string }> => {
     return this.request('/health');

@@ -5,6 +5,7 @@ import ScoreBreakdown from './ScoreBreakdown';
 import HebrewInsights from './HebrewInsights';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorMessage from '../common/ErrorMessage';
+import AudioPlayer from '../common/AudioPlayer';
 import { getUIText } from '../../utils/hebrewUtils';
 
 interface AnalysisDetailsProps {
@@ -45,6 +46,16 @@ const AnalysisDetails: React.FC<AnalysisDetailsProps> = ({ analysisId }) => {
           לקוח: {analysis.customer.name}
         </div>
       </div>
+
+      {/* Audio Player Section */}
+      {analysis.audioFilePath && (
+        <AudioPlayer 
+          salesCallId={analysis.id}
+          onPlaybackStart={() => console.log('Audio playback started for analysis:', analysis.id)}
+          onPlaybackEnd={() => console.log('Audio playback ended for analysis:', analysis.id)}
+          onError={(error) => console.error('Audio error for analysis:', analysis.id, error)}
+        />
+      )}
 
       {analysis.overallScore && (
         <ScoreBreakdown

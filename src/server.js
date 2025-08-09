@@ -10,6 +10,7 @@ const fileUploadRoutes = require('./routes/fileUpload');
 const analysisRoutes = require('./routes/analysis');
 const customerRoutes = require('./routes/customers');
 const dashboardRoutes = require('./routes/dashboard');
+const audioRoutes = require('./routes/audio');
 
 const app = express();
 const prisma = new PrismaClient();
@@ -34,6 +35,35 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Audio file serving for MVP (static file serving)
+app.use('/uploads', express.static('uploads', {
+  setHeaders: (res, path) => {
+    // Set proper MIME types for audio files
+    const ext = path.toLowerCase().substr(path.lastIndexOf('.'));
+    const mimeTypes = {
+      '.mp3': 'audio/mpeg',
+      '.wav': 'audio/wav', 
+      '.m4a': 'audio/mp4',
+      '.aac': 'audio/aac',
+      '.ogg': 'audio/ogg'
+    };
+    
+    if (mimeTypes[ext]) {
+      res.set('Content-Type', mimeTypes[ext]);
+    }
+    
+    // Enable seeking support for audio players
+    res.set('Accept-Ranges', 'bytes');
+    
+    // MVP: Simple caching for development
+    res.set('Cache-Control', 'public, max-age=3600');
+    
+    // CORS headers for audio requests
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'GET');
+  }
+}));
+
 // Root route
 app.get('/', (req, res) => {
   res.json({
@@ -48,7 +78,8 @@ app.get('/', (req, res) => {
       upload: '/api/upload',
       analyze: '/api/analyze',
       customers: '/api/customers',
-      dashboard: '/api/dashboard'
+      dashboard: '/api/dashboard',
+      audio: '/api/audio'
     },
     features: [
       'Hebrew speech-to-text transcription',
@@ -83,6 +114,7 @@ app.use('/api/upload', fileUploadRoutes);
 app.use('/api/analyze', analysisRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/audio', audioRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
