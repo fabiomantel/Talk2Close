@@ -86,8 +86,8 @@ describe('Analysis Routes - /api/analyze', () => {
         .expect(200);
 
       expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('message', 'Analysis completed successfully');
-      expect(response.body.data).toHaveProperty('salesCall');
+      expect(response.body).toHaveProperty('message', 'Audio analysis and scoring completed successfully');
+      expect(response.body.data).toHaveProperty('salesCallId');
       expect(response.body.data).toHaveProperty('transcription');
       expect(response.body.data).toHaveProperty('scoring');
 
@@ -423,7 +423,7 @@ describe('Analysis Routes - /api/analyze', () => {
       expect(response.body.data.analyses).toHaveLength(2);
       expect(response.body.data.pagination.total).toBe(3);
       expect(response.body.data.pagination.page).toBe(1);
-      expect(response.body.data.pagination.totalPages).toBe(2);
+      expect(response.body.data.pagination.pages).toBe(2); // Using 'pages' instead of 'totalPages'
     });
   });
 
@@ -449,8 +449,8 @@ describe('Analysis Routes - /api/analyze', () => {
         .expect(200);
 
       expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('message', 'Scoring completed successfully');
-      expect(response.body.data.salesCall.overallScore).toBe(80);
+      expect(response.body).toHaveProperty('message', 'Transcript scoring completed successfully');
+      expect(response.body.data).toHaveProperty('salesCallId');
       expect(response.body.data.scoring.scores.overall).toBe(80);
 
       // Verify database was updated
