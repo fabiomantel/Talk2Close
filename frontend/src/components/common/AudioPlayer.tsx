@@ -28,7 +28,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     // Use centralized configuration for backend URL
     const url = `${config.BACKEND_URL}/api/audio/${salesCallId}`;
     setAudioUrl(url);
-    setIsLoading(false);
+    // Don't set isLoading to false here - let the audio player events handle it
     
     console.log(`🎧 AudioPlayer: Initialized for sales call ${salesCallId}`);
     console.log(`🔗 Audio URL: ${url}`);
@@ -103,32 +103,34 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         🎧 הקלטה מקורית
       </h4>
       
-      {isLoading && (
-        <div className="audio-loading-state">
-          <div className="loading-spinner"></div>
-          <span className="loading-text hebrew-content">טוען הקלטה...</span>
-        </div>
-      )}
-      
-      {audioUrl && !isLoading && (
-        <H5AudioPlayer
-          src={audioUrl}
-          className="audio-player-rtl"
-          showJumpControls={false}
-          showSkipControls={false}
-          showDownloadProgress={true}
-          showFilledProgress={true}
-          hasDefaultKeyBindings={true}
-          preload="metadata"
-          volume={0.8}
-          onError={handleAudioError}
-          onPlay={handlePlay}
-          onEnded={handleEnded}
-          onLoadStart={handleLoadStart}
-          onCanPlay={handleCanPlay}
-          customAdditionalControls={[]}
-          customVolumeControls={[]}
-        />
+      {audioUrl && (
+        <>
+          {isLoading && (
+            <div className="audio-loading-state">
+              <div className="loading-spinner"></div>
+              <span className="loading-text hebrew-content">טוען הקלטה...</span>
+            </div>
+          )}
+          
+          <H5AudioPlayer
+            src={audioUrl}
+            className="audio-player-rtl"
+            showJumpControls={false}
+            showSkipControls={false}
+            showDownloadProgress={true}
+            showFilledProgress={true}
+            hasDefaultKeyBindings={true}
+            preload="metadata"
+            volume={0.8}
+            onError={handleAudioError}
+            onPlay={handlePlay}
+            onEnded={handleEnded}
+            onLoadStart={handleLoadStart}
+            onCanPlay={handleCanPlay}
+            customAdditionalControls={[]}
+            customVolumeControls={[]}
+          />
+        </>
       )}
     </div>
   );
