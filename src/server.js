@@ -23,9 +23,23 @@ const getServerUrl = () => {
   return `${protocol}://${hostname}:${PORT}`;
 };
 
-// Security middleware
-app.use(helmet());
-app.use(cors());
+// Security middleware with CORS-friendly configuration
+app.use(helmet({
+  crossOriginResourcePolicy: { 
+    policy: "cross-origin" // Allow cross-origin requests for audio content
+  },
+  crossOriginOpenerPolicy: { 
+    policy: "unsafe-none" // More permissive for development
+  }
+}));
+app.use(cors({
+  origin: true, // Allow all origins in development
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Range'],
+  exposedHeaders: ['Content-Length', 'Content-Range', 'Accept-Ranges'],
+  credentials: false,
+  maxAge: 86400 // Cache preflight for 24 hours
+}));
 
 // Rate limiting
 const limiter = rateLimit({
