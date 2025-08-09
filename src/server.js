@@ -16,6 +16,13 @@ const app = express();
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 
+// Backend configuration
+const getServerUrl = () => {
+  const hostname = process.env.HOSTNAME || 'localhost';
+  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+  return `${protocol}://${hostname}:${PORT}`;
+};
+
 // Security middleware
 app.use(helmet());
 app.use(cors());
@@ -154,9 +161,10 @@ process.on('SIGINT', async () => {
 // Start server only if this file is run directly (not imported)
 if (require.main === module) {
   app.listen(PORT, () => {
+    const serverUrl = getServerUrl();
     console.log(`🚀 Hebrew Sales Call Analysis Server running on port ${PORT}`);
     console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+    console.log(`🔗 Health check: ${serverUrl}/health`);
   });
 }
 

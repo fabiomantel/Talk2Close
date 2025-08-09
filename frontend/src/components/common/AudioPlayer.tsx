@@ -71,7 +71,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     setIsLoading(true);
     
     // Force reload by updating the URL with timestamp
-    const url = `${process.env.REACT_APP_API_URL || 'http://localhost:3002'}/api/audio/${salesCallId}?t=${Date.now()}`;
+    const url = `${config.BACKEND_URL}/api/audio/${salesCallId}?t=${Date.now()}`;
     setAudioUrl(url);
   };
 
