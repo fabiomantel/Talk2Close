@@ -32,14 +32,14 @@ const DebugConfig = () => {
       <div style={{ 
         position: 'fixed', 
         bottom: 0, 
-        left: 0, 
+        right: 0, 
         background: '#f0f0f0', 
         padding: '10px', 
         fontSize: '12px', 
         zIndex: 9999,
         maxWidth: '300px',
         borderTop: '1px solid #ccc',
-        borderRight: '1px solid #ccc'
+        borderLeft: '1px solid #ccc'
       }}>
         <strong>🔧 Debug Config:</strong><br/>
         API: {config.API_BASE_URL}<br/>
