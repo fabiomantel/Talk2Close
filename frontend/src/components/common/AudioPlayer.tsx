@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import H5AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import './AudioPlayer.css';
-import { getUIText } from '../../utils/hebrewUtils';
+import { config } from '../../config/environment';
 
 interface AudioPlayerProps {
   salesCallId: number;
@@ -25,8 +25,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const [audioUrl, setAudioUrl] = useState('');
 
   useEffect(() => {
-    // MVP: Direct URL construction to backend audio endpoint
-    const url = `${process.env.REACT_APP_API_URL || 'http://localhost:3002'}/api/audio/${salesCallId}`;
+    // Use centralized configuration for backend URL
+    const url = `${config.BACKEND_URL}/api/audio/${salesCallId}`;
     setAudioUrl(url);
     setIsLoading(false);
     
