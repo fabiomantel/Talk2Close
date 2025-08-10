@@ -180,8 +180,9 @@
   order: 1;
   width: 100%;
   margin: 0;
-  padding: 10px 16px 0 16px;
+  padding: 10px 24px 0 24px;
   background: transparent;
+  position: relative;
 }
 
 .audio-player-rtl .rhap_progress-container {
@@ -191,8 +192,9 @@
   cursor: pointer;
   width: 100%;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   transition: all 0.2s ease;
+  margin: 0;
 }
 
 .audio-player-rtl .rhap_progress-container:hover {
@@ -234,6 +236,12 @@
   border-radius: 50%;
   transform: scale(0);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  top: 50%;
+  left: 0;
+  margin-top: -9px;
+  margin-left: -9px;
+  z-index: 10;
 }
 
 .audio-player-rtl .rhap_progress-container:hover .rhap_progress-indicator {
@@ -382,7 +390,7 @@
   }
   
   .audio-player-rtl .rhap_progress-section {
-    padding: 12px 18px 0 18px;
+    padding: 12px 24px 0 24px;
   }
   
   .audio-player-rtl .rhap_controls-section {
@@ -436,7 +444,7 @@
   }
   
   .audio-player-rtl .rhap_progress-section {
-    padding: 10px 14px 0 14px;
+    padding: 10px 20px 0 20px;
   }
   
   .audio-player-rtl .rhap_play-pause-button {
