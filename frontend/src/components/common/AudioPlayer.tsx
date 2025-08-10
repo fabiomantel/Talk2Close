@@ -37,9 +37,14 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [showSpeedMenu, setShowSpeedMenu] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+
+  // Available playback speeds
+  const playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
   // Create a single track from the sales call
   const currentTrack: Track = {
@@ -115,6 +120,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     };
   }, [isRepeat, salesCallId, onPlaybackStart, onPlaybackEnd, onError]);
 
+  // Update playback speed when it changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackSpeed;
+    }
+  }, [playbackSpeed]);
+
   const togglePlayPause = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -155,6 +167,11 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     const newMuted = !isMuted;
     setIsMuted(newMuted);
     audio.muted = newMuted;
+  };
+
+  const handleSpeedChange = (speed: number) => {
+    setPlaybackSpeed(speed);
+    setShowSpeedMenu(false);
   };
 
   if (hasError) {
@@ -290,23 +307,52 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
           </button>
         </div>
         
-        <div className="volume-controls">
-          <button
-            onClick={toggleMute}
-            className="control-btn"
-            title={isMuted ? 'Unmute' : 'Mute'}
-          >
-            {isMuted ? <LucideIcons.VolumeX size={18} /> : <LucideIcons.Volume2 size={18} />}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={isMuted ? 0 : volume}
-            onChange={handleVolumeChange}
-            className="volume-slider"
-          />
+        <div className="secondary-controls">
+          {/* Speed Control */}
+          <div className="speed-control">
+            <button
+              onClick={() => setShowSpeedMenu(!showSpeedMenu)}
+              className="speed-btn"
+              title={`Playback Speed: ${playbackSpeed}x`}
+            >
+              <span className="speed-text">{playbackSpeed}x</span>
+              <LucideIcons.ChevronDown size={14} />
+            </button>
+            
+            {showSpeedMenu && (
+              <div className="speed-menu">
+                {playbackSpeeds.map((speed) => (
+                  <button
+                    key={speed}
+                    onClick={() => handleSpeedChange(speed)}
+                    className={`speed-option ${playbackSpeed === speed ? 'active' : ''}`}
+                  >
+                    {speed}x
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Volume Controls */}
+          <div className="volume-controls">
+            <button
+              onClick={toggleMute}
+              className="control-btn"
+              title={isMuted ? 'Unmute' : 'Mute'}
+            >
+              {isMuted ? <LucideIcons.VolumeX size={18} /> : <LucideIcons.Volume2 size={18} />}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={isMuted ? 0 : volume}
+              onChange={handleVolumeChange}
+              className="volume-slider"
+            />
+          </div>
         </div>
       </div>
     </div>

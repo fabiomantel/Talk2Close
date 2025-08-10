@@ -135,12 +135,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
 }
 
 .main-controls {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.secondary-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .volume-controls {
@@ -199,6 +206,78 @@
   background: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Speed Control Styles */
+.speed-control {
+  position: relative;
+}
+
+.speed-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 20px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 60px;
+  justify-content: center;
+}
+
+.speed-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.speed-text {
+  font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+.speed-menu {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 12px;
+  padding: 8px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  min-width: 80px;
+}
+
+.speed-option {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+.speed-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.speed-option.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: #667eea;
+  font-weight: 600;
 }
 
 .loading-spinner {
@@ -311,6 +390,25 @@
 
   .volume-slider {
     width: 60px;
+  }
+
+  .speed-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+    min-width: 50px;
+  }
+
+  .speed-menu {
+    min-width: 70px;
+  }
+
+  .speed-option {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .secondary-controls {
+    gap: 8px;
   }
 }
 
