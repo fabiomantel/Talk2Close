@@ -169,18 +169,19 @@
 /* Layout */
 .audio-player-rtl .rhap_main {
   display: flex;
-  flex-direction: column;
-  gap: 0;
+  flex-direction: row;
+  gap: 16px;
   padding: 0;
   min-height: 55px;
+  align-items: center;
 }
 
 /* Progress bar */
 .audio-player-rtl .rhap_progress-section {
-  order: 1;
-  width: 100%;
+  order: 2;
+  flex: 1;
   margin: 0;
-  padding: 10px 24px 0 24px;
+  padding: 10px 16px;
   background: transparent;
   position: relative;
 }
@@ -250,20 +251,21 @@
 
 /* Controls section */
 .audio-player-rtl .rhap_controls-section {
-  order: 2;
+  order: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 12px 16px 8px 16px;
-  gap: 20px;
+  padding: 12px 16px;
+  gap: 16px;
   background: transparent;
+  min-width: 120px;
 }
 
 /* Play button */
 .audio-player-rtl .rhap_play-pause-button {
-  width: 44px;
-  height: 44px;
-  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
   color: white;
   background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
   border: none;
@@ -306,16 +308,16 @@
 
 /* Time display */
 .audio-player-rtl .rhap_time {
-  font-size: 12px;
+  font-size: 11px;
   color: #64748B;
   font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
   font-weight: 600;
-  min-width: 38px;
+  min-width: 32px;
   text-align: center;
   background: #F1F5F9;
-  padding: 5px 10px;
-  border-radius: 20px;
-  letter-spacing: 0.5px;
+  padding: 3px 6px;
+  border-radius: 12px;
+  letter-spacing: 0.3px;
   border: 1px solid #E2E8F0;
   transition: all 0.2s ease;
 }
@@ -329,10 +331,10 @@
 .audio-player-rtl .rhap_volume-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #F8FAFC;
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 4px 8px;
+  border-radius: 16px;
   border: 1px solid #E2E8F0;
   transition: all 0.2s ease;
 }
@@ -357,7 +359,7 @@
 }
 
 .audio-player-rtl .rhap_volume-bar {
-  width: 75px;
+  width: 60px;
   height: 4px;
   background: #E2E8F0;
   border-radius: 4px;
@@ -387,27 +389,29 @@
   
   .audio-player-rtl .rhap_main {
     min-height: 75px;
+    gap: 12px;
   }
   
   .audio-player-rtl .rhap_progress-section {
-    padding: 12px 24px 0 24px;
+    padding: 12px 16px;
   }
   
   .audio-player-rtl .rhap_controls-section {
-    padding: 14px 18px 8px 18px;
-    gap: 18px;
+    padding: 14px 16px;
+    gap: 14px;
+    min-width: 110px;
   }
   
   .audio-player-rtl .rhap_play-pause-button {
-    width: 48px;
-    height: 48px;
-    font-size: 20px;
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
   }
   
   .audio-player-rtl .rhap_time {
-    font-size: 12px;
-    min-width: 40px;
-    padding: 6px 10px;
+    font-size: 11px;
+    min-width: 35px;
+    padding: 4px 8px;
   }
   
   .audio-player-rtl .rhap_volume-container {
@@ -415,7 +419,7 @@
   }
   
   .audio-player-rtl .rhap_volume-bar {
-    width: 55px;
+    width: 50px;
   }
   
   .audio-loading-state {
@@ -439,18 +443,19 @@
   }
   
   .audio-player-rtl .rhap_controls-section {
-    gap: 16px;
-    padding: 12px 14px 6px 14px;
+    gap: 12px;
+    padding: 12px 14px;
+    min-width: 100px;
   }
   
   .audio-player-rtl .rhap_progress-section {
-    padding: 10px 20px 0 20px;
+    padding: 10px 12px;
   }
   
   .audio-player-rtl .rhap_play-pause-button {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
   }
   
   .audio-player-rtl .rhap_volume-container {
