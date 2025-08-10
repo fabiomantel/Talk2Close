@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import * as LucideIcons from 'lucide-react';
 import './AudioPlayer.css';
+import { config } from '../../config/environment';
 
 interface Track {
   id: string;
@@ -45,7 +46,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     id: salesCallId.toString(),
     title: 'הקלטה מקורית',
     artist: `שיחה ${salesCallId}`,
-    src: `${process.env.REACT_APP_API_URL || 'http://localhost:3000'}/api/audio/${salesCallId}`,
+    src: `${config.BACKEND_URL}/api/audio/${salesCallId}`,
   };
 
   // Format time in mm:ss format
