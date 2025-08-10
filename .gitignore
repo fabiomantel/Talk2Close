@@ -112,7 +112,6 @@ test-results/
 # Project specific files
 POSTGRESQL_SETUP.md
 env.example
-package-lock.json
 
 # Documentation folder
 docs/
