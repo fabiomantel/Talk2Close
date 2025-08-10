@@ -55,6 +55,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  direction: rtl;
+  text-align: right;
+  font-family: "Arial Hebrew", "Noto Sans Hebrew", "David", "Times New Roman", Arial, sans-serif;
 }
 
 .track-artist {
@@ -64,6 +67,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  direction: rtl;
+  text-align: right;
+  font-family: "Arial Hebrew", "Noto Sans Hebrew", "David", "Times New Roman", Arial, sans-serif;
 }
 
 .playlist-info {
@@ -102,7 +108,6 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  direction: rtl;
 }
 
 .progress-bar {
@@ -111,7 +116,6 @@
   background: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
   position: relative;
-  direction: rtl;
 }
 
 .progress-filled {
@@ -119,9 +123,6 @@
   background: rgba(255, 255, 255, 0.8);
   border-radius: 3px;
   transition: width 0.1s ease;
-  position: absolute;
-  right: 0;
-  top: 0;
 }
 
 .progress-handle {
@@ -134,7 +135,6 @@
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: left 0.1s ease;
-  right: 0;
 }
 
 .controls-section {
