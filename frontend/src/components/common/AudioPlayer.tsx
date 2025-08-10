@@ -234,7 +234,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             />
             <div 
               className="progress-handle"
-              style={{ left: `${progressPercentage}%` }}
+              style={{ right: `${100 - progressPercentage}%` }}
             />
           </div>
         </div>
