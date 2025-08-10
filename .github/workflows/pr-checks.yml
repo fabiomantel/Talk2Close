@@ -19,37 +19,31 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20.x'
-        cache: 'npm'
-        cache-dependency-path: |
-          package-lock.json
-          frontend/package-lock.json
-        registry-url: 'https://registry.npmjs.org'
         
-    - name: Configure npm
-      run: |
-        npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN || 'dummy-token' }}
-        npm config set registry https://registry.npmjs.org/
-        npm cache clean --force
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
         
     - name: Install backend dependencies
-      run: npm ci --prefer-offline --no-audit
+      run: pnpm install --frozen-lockfile
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm ci --prefer-offline --no-audit
+      run: pnpm install --frozen-lockfile
       
     - name: Create uploads directory
       run: mkdir -p uploads
       
     - name: Run backend tests
-      run: npm test
+      run: pnpm test
       env:
         NODE_ENV: test
         DATABASE_URL: file:./test.db
         
     - name: Run frontend tests
       working-directory: frontend
-      run: npm test -- --watchAll=false --passWithNoTests
+      run: pnpm test -- --watchAll=false --passWithNoTests
       env:
         CI: true
         REACT_APP_API_BASE_URL: http://localhost:3000/api
@@ -57,11 +51,11 @@ jobs:
         
     - name: TypeScript check
       working-directory: frontend
-      run: npx tsc --noEmit
+      run: pnpm tsc --noEmit
       
     - name: Build frontend
       working-directory: frontend
-      run: npm run build
+      run: pnpm build
       env:
         REACT_APP_API_BASE_URL: https://api.example.com/api
         REACT_APP_BACKEND_URL: https://api.example.com
@@ -78,24 +72,18 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20.x'
-        cache: 'npm'
-        cache-dependency-path: |
-          package-lock.json
-          frontend/package-lock.json
-        registry-url: 'https://registry.npmjs.org'
         
-    - name: Configure npm
-      run: |
-        npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN || 'dummy-token' }}
-        npm config set registry https://registry.npmjs.org/
-        npm cache clean --force
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
         
     - name: Install backend dependencies
-      run: npm ci --prefer-offline --no-audit
+      run: pnpm install --frozen-lockfile
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm ci --prefer-offline --no-audit
+      run: pnpm install --frozen-lockfile
       
     - name: Run npm audit (backend)
       run: npm audit --audit-level=high
