@@ -26,14 +26,17 @@ jobs:
       run: |
         npm config set registry https://registry.npmjs.org/
         npm config delete //registry.npmjs.org/:_authToken || true
+        npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
     - name: Install backend dependencies
-      run: npm install --no-audit
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm install --no-audit
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Create uploads directory
       run: mkdir -p uploads
@@ -82,14 +85,17 @@ jobs:
       run: |
         npm config set registry https://registry.npmjs.org/
         npm config delete //registry.npmjs.org/:_authToken || true
+        npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
     - name: Install backend dependencies
-      run: npm install --no-audit
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm install --no-audit
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Run npm audit (backend)
       run: npm audit --audit-level=high

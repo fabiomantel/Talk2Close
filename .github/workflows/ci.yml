@@ -26,8 +26,16 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
+    - name: Configure npm
+      run: |
+        npm config set registry https://registry.npmjs.org/
+        npm config delete //registry.npmjs.org/:_authToken || true
+        npm config set //registry.npmjs.org/:_authToken ""
+        npm cache clean --force
+        
     - name: Install dependencies
-      run: npm install
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Create uploads directory
       run: mkdir -p uploads
@@ -67,9 +75,17 @@ jobs:
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
         
+    - name: Configure npm
+      run: |
+        npm config set registry https://registry.npmjs.org/
+        npm config delete //registry.npmjs.org/:_authToken || true
+        npm config set //registry.npmjs.org/:_authToken ""
+        npm cache clean --force
+        
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm install
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Run frontend tests
       working-directory: frontend
@@ -102,12 +118,21 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
+    - name: Configure npm
+      run: |
+        npm config set registry https://registry.npmjs.org/
+        npm config delete //registry.npmjs.org/:_authToken || true
+        npm config set //registry.npmjs.org/:_authToken ""
+        npm cache clean --force
+        
     - name: Install dependencies
-      run: npm install
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm install
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Run TypeScript check
       working-directory: frontend
@@ -138,12 +163,21 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
+    - name: Configure npm
+      run: |
+        npm config set registry https://registry.npmjs.org/
+        npm config delete //registry.npmjs.org/:_authToken || true
+        npm config set //registry.npmjs.org/:_authToken ""
+        npm cache clean --force
+        
     - name: Install dependencies
-      run: npm install
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm install
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Build frontend
       working-directory: frontend
@@ -174,12 +208,21 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
+    - name: Configure npm
+      run: |
+        npm config set registry https://registry.npmjs.org/
+        npm config delete //registry.npmjs.org/:_authToken || true
+        npm config set //registry.npmjs.org/:_authToken ""
+        npm cache clean --force
+        
     - name: Install dependencies
-      run: npm install
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm install
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Run npm audit
       run: npm audit --audit-level=moderate
@@ -213,8 +256,16 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
+    - name: Configure npm
+      run: |
+        npm config set registry https://registry.npmjs.org/
+        npm config delete //registry.npmjs.org/:_authToken || true
+        npm config set //registry.npmjs.org/:_authToken ""
+        npm cache clean --force
+        
     - name: Install dependencies
-      run: npm install
+      run: |
+        npm ci --prefer-offline --no-audit || npm install --no-audit
       
     - name: Create uploads directory
       run: mkdir -p uploads
