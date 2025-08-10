@@ -26,9 +26,10 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
-    - name: Configure npm
+    - name: Configure npm authentication
       run: |
         npm config set //registry.npmjs.org/:_authToken ""
+        npm config set registry https://registry.npmjs.org/
         npm cache clean --force
         
     - name: Install dependencies
@@ -73,9 +74,10 @@ jobs:
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
         
-    - name: Configure npm
+    - name: Configure npm authentication
       run: |
         npm config set //registry.npmjs.org/:_authToken ""
+        npm config set registry https://registry.npmjs.org/
         npm cache clean --force
         
     - name: Install frontend dependencies
@@ -114,9 +116,10 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
-    - name: Configure npm
+    - name: Configure npm authentication
       run: |
         npm config set //registry.npmjs.org/:_authToken ""
+        npm config set registry https://registry.npmjs.org/
         npm cache clean --force
         
     - name: Install dependencies
@@ -157,9 +160,10 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
-    - name: Configure npm
+    - name: Configure npm authentication
       run: |
         npm config set //registry.npmjs.org/:_authToken ""
+        npm config set registry https://registry.npmjs.org/
         npm cache clean --force
         
     - name: Install dependencies
@@ -200,9 +204,10 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
-    - name: Configure npm
+    - name: Configure npm authentication
       run: |
         npm config set //registry.npmjs.org/:_authToken ""
+        npm config set registry https://registry.npmjs.org/
         npm cache clean --force
         
     - name: Install dependencies
@@ -246,9 +251,10 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
-    - name: Configure npm
+    - name: Configure npm authentication
       run: |
         npm config set //registry.npmjs.org/:_authToken ""
+        npm config set registry https://registry.npmjs.org/
         npm cache clean --force
         
     - name: Install dependencies
