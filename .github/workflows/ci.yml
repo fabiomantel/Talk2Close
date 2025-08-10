@@ -24,9 +24,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        cache-dependency-path: package-lock.json
         
     - name: Install dependencies
-      run: npm ci
+      run: npm install
       
     - name: Create uploads directory
       run: mkdir -p uploads
@@ -68,7 +69,7 @@ jobs:
         
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm ci
+      run: npm install
       
     - name: Run frontend tests
       working-directory: frontend
@@ -99,13 +100,14 @@ jobs:
       with:
         node-version: '20.x'
         cache: 'npm'
+        cache-dependency-path: package-lock.json
         
     - name: Install dependencies
-      run: npm ci
+      run: npm install
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm ci
+      run: npm install
       
     - name: Run TypeScript check
       working-directory: frontend
@@ -134,13 +136,14 @@ jobs:
       with:
         node-version: '20.x'
         cache: 'npm'
+        cache-dependency-path: package-lock.json
         
     - name: Install dependencies
-      run: npm ci
+      run: npm install
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm ci
+      run: npm install
       
     - name: Build frontend
       working-directory: frontend
@@ -169,13 +172,14 @@ jobs:
       with:
         node-version: '20.x'
         cache: 'npm'
+        cache-dependency-path: package-lock.json
         
     - name: Install dependencies
-      run: npm ci
+      run: npm install
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm ci
+      run: npm install
       
     - name: Run npm audit
       run: npm audit --audit-level=moderate
@@ -207,9 +211,10 @@ jobs:
       with:
         node-version: '20.x'
         cache: 'npm'
+        cache-dependency-path: package-lock.json
         
     - name: Install dependencies
-      run: npm ci
+      run: npm install
       
     - name: Create uploads directory
       run: mkdir -p uploads
@@ -219,81 +224,3 @@ jobs:
       env:
         NODE_ENV: test
         DATABASE_URL: file:./test-integration.db
-
-  notify:
-    name: Notify Results
-    runs-on: ubuntu-latest
-    needs: [test-backend, test-frontend, lint-and-type-check, build, security-scan, test-integration]
-    if: always()
-    
-    steps:
-    - name: Check if all jobs succeeded
-      run: |
-        if [[ "${{ needs.test-backend.result }}" == "success" && 
-              "${{ needs.test-frontend.result }}" == "success" && 
-              "${{ needs.lint-and-type-check.result }}" == "success" && 
-              "${{ needs.build.result }}" == "success" && 
-              "${{ needs.security-scan.result }}" == "success" && 
-              "${{ needs.test-integration.result }}" == "success" ]]; then
-          echo "✅ All checks passed!"
-          echo "status=success" >> $GITHUB_OUTPUT
-        else
-          echo "❌ Some checks failed!"
-          echo "status=failure" >> $GITHUB_OUTPUT
-        fi
-      
-    - name: Comment on PR
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const { data: comments } = await github.rest.issues.listComments({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-          });
-          
-          const botComment = comments.find(comment => 
-            comment.user.type === 'Bot' && 
-            comment.body.includes('## 🧪 Test Results')
-          );
-          
-          const status = '${{ steps.check-results.outputs.status }}';
-          const statusEmoji = status === 'success' ? '✅' : '❌';
-          const statusText = status === 'success' ? 'All tests passed!' : 'Some tests failed!';
-          
-          const commentBody = `## 🧪 Test Results
-          
-          ${statusEmoji} **${statusText}**
-          
-          ### 📊 Test Summary
-          - **Backend Tests**: ${{ needs.test-backend.result }}
-          - **Frontend Tests**: ${{ needs.test-frontend.result }}
-          - **Lint & Type Check**: ${{ needs.lint-and-type-check.result }}
-          - **Build**: ${{ needs.build.result }}
-          - **Security Scan**: ${{ needs.security-scan.result }}
-          - **Integration Tests**: ${{ needs.test-integration.result }}
-          
-          ### 🔍 Details
-          - **Node.js Versions**: 18.x, 20.x
-          - **OS**: Ubuntu Latest
-          - **Trigger**: ${{ github.event_name }}
-          - **Branch**: ${{ github.head_ref }}
-          
-          [View full logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
-          
-          if (botComment) {
-            await github.rest.issues.updateComment({
-              comment_id: botComment.id,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: commentBody
-            });
-          } else {
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: commentBody
-            });
-          }
