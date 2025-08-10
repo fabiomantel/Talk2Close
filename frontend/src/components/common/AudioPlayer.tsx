@@ -273,6 +273,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
           ref={progressRef}
           onClick={handleProgressClick}
           onMouseDown={handleMouseDown}
+          data-testid="progress-container"
         >
           <div className="progress-bar">
             <div 
