@@ -34,16 +34,27 @@ create_branch_protection() {
     # Create branch protection rule
     gh api repos/$repo/branches/$branch/protection \
         --method PUT \
-        --field required_status_checks='{"strict":true,"contexts":["Quick Checks","Security Audit"]}' \
-        --field enforce_admins=false \
-        --field required_pull_request_reviews='{"required_approving_review_count":1,"dismiss_stale_reviews":true,"require_code_owner_reviews":false}' \
-        --field restrictions=null \
-        --field allow_force_pushes=false \
-        --field allow_deletions=false \
-        --field block_creations=false \
-        --field required_conversation_resolution=true \
-        --field lock_branch=false \
-        --field allow_fork_syncing=true
+        --input - << EOF
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": ["Quick Checks", "Security Audit"]
+  },
+  "enforce_admins": false,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1,
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": false
+  },
+  "restrictions": null,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "block_creations": false,
+  "required_conversation_resolution": true,
+  "lock_branch": false,
+  "allow_fork_syncing": true
+}
+EOF
     
     echo "✅ Protection rules applied to '$branch' branch"
 }
