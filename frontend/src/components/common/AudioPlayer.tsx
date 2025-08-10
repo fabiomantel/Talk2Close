@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Shuffle } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import './AudioPlayer.css';
 
 interface Track {
@@ -194,7 +194,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
       <div className="track-info">
         <div className="track-cover">
           <div className="default-cover">
-            <Volume2 size={32} className="text-white/60" />
+            <LucideIcons.Volume2 size={32} className="text-white/60" />
           </div>
         </div>
         <div className="track-details">
@@ -238,7 +238,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             className={`control-btn ${isShuffle ? 'active' : ''}`}
             title="Shuffle"
           >
-            <Shuffle size={18} />
+            <LucideIcons.Shuffle size={18} />
           </button>
           
           <button
@@ -250,7 +250,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             className="control-btn"
             title="Restart"
           >
-            <SkipBack size={20} />
+            <LucideIcons.SkipBack size={20} />
           </button>
           
           <button
@@ -262,9 +262,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             {isLoading ? (
               <div className="loading-spinner" />
             ) : isPlaying ? (
-              <Pause size={24} />
+              <LucideIcons.Pause size={24} />
             ) : (
-              <Play size={24} />
+              <LucideIcons.Play size={24} />
             )}
           </button>
           
@@ -277,7 +277,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             className="control-btn"
             title="Skip to end"
           >
-            <SkipForward size={20} />
+            <LucideIcons.SkipForward size={20} />
           </button>
           
           <button
@@ -285,7 +285,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             className={`control-btn ${isRepeat ? 'active' : ''}`}
             title="Repeat"
           >
-            <Repeat size={18} />
+            <LucideIcons.Repeat size={18} />
           </button>
         </div>
         
@@ -295,7 +295,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             className="control-btn"
             title={isMuted ? 'Unmute' : 'Mute'}
           >
-            {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            {isMuted ? <LucideIcons.VolumeX size={18} /> : <LucideIcons.Volume2 size={18} />}
           </button>
           <input
             type="range"
