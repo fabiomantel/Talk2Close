@@ -28,8 +28,6 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
-        npm config delete //registry.npmjs.org/:_authToken || true
         npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
@@ -77,8 +75,6 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
-        npm config delete //registry.npmjs.org/:_authToken || true
         npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
@@ -120,8 +116,6 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
-        npm config delete //registry.npmjs.org/:_authToken || true
         npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
@@ -165,8 +159,6 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
-        npm config delete //registry.npmjs.org/:_authToken || true
         npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
@@ -210,8 +202,6 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
-        npm config delete //registry.npmjs.org/:_authToken || true
         npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
@@ -258,8 +248,6 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
-        npm config delete //registry.npmjs.org/:_authToken || true
         npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
