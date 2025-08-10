@@ -1,4 +1,4 @@
-/* Very Compact Audio Player Container with RTL Support */
+/* Compact Audio Player Container */
 .audio-player-container {
   border: 1px solid #E2E8F0;
   border-radius: 8px;
@@ -6,10 +6,10 @@
   background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 50%, #F1F5F9 100%);
   margin: 12px 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  direction: rtl;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   position: relative;
   overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 }
 
 .audio-player-container::before {
@@ -34,21 +34,24 @@
   opacity: 1;
 }
 
-/* Very Compact Title with RTL Support */
+/* Hebrew RTL Title Only */
 .audio-player-title {
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: #1E293B;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   text-align: right;
   direction: rtl;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Start for RTL context */
-  gap: 6px;
-  letter-spacing: 0.3px;
+  justify-content: flex-start;
+  gap: 8px;
+  letter-spacing: -0.02em; /* Better for Hebrew */
   position: relative;
-  padding-bottom: 4px;
+  padding-bottom: 6px;
+  padding-right: 2px; /* Small padding for better Hebrew alignment */
+  line-height: 1.4;
+  font-family: "Arial Hebrew", "Noto Sans Hebrew", "David", "Times New Roman", Arial, sans-serif;
 }
 
 .audio-player-title::after {
@@ -56,24 +59,23 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 40px;
+  width: 120px;
   height: 2px;
   background: linear-gradient(90deg, #3B82F6 0%, #1E40AF 100%);
   border-radius: 1px;
 }
 
-/* Very Compact Loading State */
+/* Compact Loading State */
 .audio-loading-state {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 10px;
+  padding: 10px 14px;
   color: #64748B;
-  direction: rtl;
   background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
   border-radius: 6px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   border: 1px solid #E2E8F0;
 }
 
@@ -118,8 +120,10 @@
 
 .error-message {
   color: #DC2626;
-  font-weight: 500;
+  font-weight: 600;
   margin: 0;
+  text-align: center;
+  line-height: 1.5;
 }
 
 .error-actions {
@@ -131,20 +135,20 @@
   background: #3B82F6;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 6px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .retry-button:hover {
   background: #2563EB;
+  transform: translateY(-1px);
 }
 
-/* Modern Audio Player Design with RTL Support */
+/* Audio Player Design */
 .audio-player-rtl {
-  direction: ltr; /* Keep controls LTR but design for RTL context */
   width: 100%;
   max-width: none;
   box-shadow: none;
@@ -162,37 +166,43 @@
   overflow: hidden;
 }
 
-/* Very Compact Layout */
+/* Layout */
 .audio-player-rtl .rhap_main {
   display: flex;
   flex-direction: column;
   gap: 0;
   padding: 0;
-  min-height: 50px;
+  min-height: 55px;
 }
 
-/* Very compact progress bar at the top */
+/* Progress bar */
 .audio-player-rtl .rhap_progress-section {
   order: 1;
   width: 100%;
   margin: 0;
-  padding: 8px 12px 0 12px;
+  padding: 10px 16px 0 16px;
   background: transparent;
 }
 
 .audio-player-rtl .rhap_progress-container {
   background: #E2E8F0;
-  border-radius: 6px;
-  height: 6px;
+  border-radius: 8px;
+  height: 7px;
   cursor: pointer;
   width: 100%;
   position: relative;
   overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.audio-player-rtl .rhap_progress-container:hover {
+  height: 8px;
+  background: #CBD5E1;
 }
 
 .audio-player-rtl .rhap_progress-filled {
   background: linear-gradient(90deg, #3B82F6 0%, #1E40AF 50%, #1D4ED8 100%);
-  border-radius: 6px;
+  border-radius: 8px;
   height: 100%;
   transition: width 0.15s ease-out;
   position: relative;
@@ -203,10 +213,11 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 2px;
+  width: 3px;
   height: 100%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.4);
   animation: shimmer 2s ease-in-out infinite;
+  border-radius: 0 8px 8px 0;
 }
 
 @keyframes shimmer {
@@ -215,43 +226,43 @@
 }
 
 .audio-player-rtl .rhap_progress-indicator {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   background: white;
   border: 3px solid #3B82F6;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 3px 12px rgba(59, 130, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   transform: scale(0);
-  transition: transform 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .audio-player-rtl .rhap_progress-container:hover .rhap_progress-indicator {
   transform: scale(1);
 }
 
-/* Very compact controls section with centered play button */
+/* Controls section */
 .audio-player-rtl .rhap_controls-section {
   order: 2;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 8px 12px 4px 12px;
-  gap: 16px;
+  padding: 12px 16px 8px 16px;
+  gap: 20px;
   background: transparent;
 }
 
-/* Smaller, centered play button */
+/* Play button */
 .audio-player-rtl .rhap_play-pause-button {
-  width: 40px;
-  height: 40px;
-  font-size: 16px;
+  width: 44px;
+  height: 44px;
+  font-size: 18px;
   color: white;
   background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
   border: none;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 3px 10px 0 rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 15px 0 rgba(59, 130, 246, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -273,8 +284,8 @@
 }
 
 .audio-player-rtl .rhap_play-pause-button:hover {
-  transform: scale(1.08);
-  box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.6);
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px 0 rgba(59, 130, 246, 0.6);
 }
 
 .audio-player-rtl .rhap_play-pause-button:hover::before {
@@ -282,32 +293,38 @@
 }
 
 .audio-player-rtl .rhap_play-pause-button:active {
-  transform: scale(1.02);
+  transform: scale(1.05);
 }
 
-/* Compact time display */
+/* Time display */
 .audio-player-rtl .rhap_time {
-  font-size: 11px;
+  font-size: 12px;
   color: #64748B;
   font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
   font-weight: 600;
-  min-width: 35px;
+  min-width: 38px;
   text-align: center;
   background: #F1F5F9;
-  padding: 4px 8px;
-  border-radius: 16px;
-  letter-spacing: 0.3px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
   border: 1px solid #E2E8F0;
+  transition: all 0.2s ease;
 }
 
-/* Compact volume controls */
+.audio-player-rtl .rhap_time:hover {
+  background: #E2E8F0;
+  border-color: #CBD5E1;
+}
+
+/* Volume controls */
 .audio-player-rtl .rhap_volume-container {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: #F8FAFC;
-  padding: 4px 8px;
-  border-radius: 16px;
+  padding: 6px 12px;
+  border-radius: 20px;
   border: 1px solid #E2E8F0;
   transition: all 0.2s ease;
 }
@@ -315,6 +332,7 @@
 .audio-player-rtl .rhap_volume-container:hover {
   background: #F1F5F9;
   border-color: #CBD5E1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .audio-player-rtl .rhap_volume-button {
@@ -322,31 +340,86 @@
   font-size: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 2px;
+  padding: 3px;
 }
 
 .audio-player-rtl .rhap_volume-button:hover {
   color: #3B82F6;
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 .audio-player-rtl .rhap_volume-bar {
-  width: 70px;
-  height: 3px;
+  width: 75px;
+  height: 4px;
   background: #E2E8F0;
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .audio-player-rtl .rhap_volume-filled {
   background: linear-gradient(90deg, #3B82F6 0%, #1E40AF 100%);
-  border-radius: 3px;
+  border-radius: 4px;
   height: 100%;
   transition: width 0.15s ease;
 }
 
-/* Compact Mobile Responsive Design */
+/* Enhanced Mobile Responsive Design for Hebrew */
 @media (max-width: 768px) {
+  .audio-player-container {
+    padding: 16px;
+    margin: 14px 0;
+  }
+  
+  .audio-player-title {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    gap: 10px;
+  }
+  
+  .audio-player-rtl .rhap_main {
+    min-height: 75px;
+  }
+  
+  .audio-player-rtl .rhap_progress-section {
+    padding: 12px 18px 0 18px;
+  }
+  
+  .audio-player-rtl .rhap_controls-section {
+    padding: 14px 18px 8px 18px;
+    gap: 18px;
+  }
+  
+  .audio-player-rtl .rhap_play-pause-button {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+  
+  .audio-player-rtl .rhap_time {
+    font-size: 12px;
+    min-width: 40px;
+    padding: 6px 10px;
+  }
+  
+  .audio-player-rtl .rhap_volume-container {
+    padding: 6px 10px;
+  }
+  
+  .audio-player-rtl .rhap_volume-bar {
+    width: 55px;
+  }
+  
+  .audio-loading-state {
+    padding: 12px 16px;
+  }
+  
+  .audio-error-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
   .audio-player-container {
     padding: 14px;
     margin: 12px 0;
@@ -357,17 +430,13 @@
     margin-bottom: 10px;
   }
   
-  .audio-player-rtl .rhap_main {
-    min-height: 70px;
+  .audio-player-rtl .rhap_controls-section {
+    gap: 16px;
+    padding: 12px 14px 6px 14px;
   }
   
   .audio-player-rtl .rhap_progress-section {
     padding: 10px 14px 0 14px;
-  }
-  
-  .audio-player-rtl .rhap_controls-section {
-    padding: 10px 14px 6px 14px;
-    gap: 16px;
   }
   
   .audio-player-rtl .rhap_play-pause-button {
@@ -376,53 +445,36 @@
     font-size: 18px;
   }
   
-  .audio-player-rtl .rhap_time {
-    font-size: 12px;
-    min-width: 36px;
-    padding: 4px 7px;
-  }
-  
-  .audio-player-rtl .rhap_volume-container {
-    padding: 5px 8px;
-  }
-  
-  .audio-player-rtl .rhap_volume-bar {
-    width: 50px;
-  }
-  
-  .audio-loading-state {
-    padding: 10px 14px;
-  }
-  
-  .audio-error-content {
-    padding: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .audio-player-rtl .rhap_controls-section {
-    gap: 14px;
-    padding: 8px 12px 4px 12px;
-  }
-  
-  .audio-player-rtl .rhap_progress-section {
-    padding: 8px 12px 0 12px;
-  }
-  
-  .audio-player-rtl .rhap_play-pause-button {
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
-  }
-  
   .audio-player-rtl .rhap_volume-container {
     display: none; /* Hide volume controls on very small screens */
   }
   
   .audio-player-rtl .rhap_time {
     font-size: 11px;
-    min-width: 32px;
-    padding: 3px 6px;
+    min-width: 35px;
+    padding: 4px 8px;
+  }
+  
+  .loading-text {
+    font-size: 12px;
+  }
+}
+
+/* Hebrew-specific typography improvements */
+@media (max-width: 360px) {
+  .audio-player-title {
+    font-size: 0.85rem;
+    gap: 6px;
+  }
+  
+  .loading-text, .error-message {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  
+  .retry-button {
+    padding: 8px 16px;
+    font-size: 13px;
   }
 }
 
@@ -438,8 +490,13 @@
   }
   
   .audio-player-rtl .rhap_play-pause-button {
-    border-width: 2px;
-    border-color: #000;
+    background: #000;
+    border: 2px solid #fff;
+  }
+  
+  .audio-player-title {
+    color: #000;
+    font-weight: 900;
   }
 }
 
@@ -447,18 +504,21 @@
 @media (prefers-reduced-motion: reduce) {
   .audio-player-container,
   .audio-player-rtl .rhap_play-pause-button,
-  .loading-spinner {
+  .loading-spinner,
+  .audio-player-rtl .rhap_progress-filled::after {
     transition: none;
     animation: none;
   }
 }
 
-/* Focus States for Accessibility */
+/* Enhanced Focus States for Accessibility */
 .audio-player-rtl .rhap_play-pause-button:focus,
 .audio-player-rtl .rhap_volume-button:focus,
+.audio-player-rtl .rhap_progress-container:focus,
 .retry-button:focus {
-  outline: 2px solid #3B82F6;
-  outline-offset: 2px;
+  outline: 3px solid #3B82F6;
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 /* Print Styles */
@@ -467,3 +527,43 @@
     display: none;
   }
 }
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .audio-player-container {
+    background: linear-gradient(135deg, #1E293B 0%, #334155 50%, #475569 100%);
+    border-color: #475569;
+    color: #F1F5F9;
+  }
+  
+  .audio-player-title {
+    color: #F1F5F9;
+  }
+  
+  .audio-loading-state {
+    background: linear-gradient(135deg, #334155 0%, #475569 100%);
+    border-color: #475569;
+    color: #CBD5E1;
+  }
+  
+  .audio-player-rtl .rhap_container {
+    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+    border-color: #475569;
+  }
+  
+  .audio-player-rtl .rhap_time {
+    background: #334155;
+    border-color: #475569;
+    color: #CBD5E1;
+  }
+  
+  .audio-player-rtl .rhap_volume-container {
+    background: #334155;
+    border-color: #475569;
+  }
+  
+  .audio-player-rtl .rhap_progress-container {
+    background: #475569;
+  }
+}
+
