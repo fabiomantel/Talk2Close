@@ -112,7 +112,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, duration]);
+  }, [isDragging, duration, handleMouseMove, handleMouseUp]);
 
   // Audio event handlers
   useEffect(() => {
