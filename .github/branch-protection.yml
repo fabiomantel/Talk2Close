@@ -1,0 +1,51 @@
+# Branch Protection Rules Configuration
+# This file documents the branch protection rules that should be applied to the main branch
+
+branches:
+  main:
+    protection:
+      required_status_checks:
+        strict: true
+        contexts:
+          - "Quick Checks"
+          - "Security Audit"
+      enforce_admins: false
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: false
+      restrictions:
+        users: []
+        teams: []
+      allow_force_pushes: false
+      allow_deletions: false
+      block_creations: false
+      required_conversation_resolution: true
+      lock_branch: false
+      allow_fork_syncing: true
+
+  develop:
+    protection:
+      required_status_checks:
+        strict: true
+        contexts:
+          - "Quick Checks"
+          - "Security Audit"
+      enforce_admins: false
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: false
+      restrictions:
+        users: []
+        teams: []
+      allow_force_pushes: false
+      allow_deletions: false
+      block_creations: false
+      required_conversation_resolution: true
+      lock_branch: false
+      allow_fork_syncing: true
+
+# Note: These rules need to be manually applied in GitHub repository settings
+# Go to Settings > Branches > Add rule
+# Apply the rules for 'main' and 'develop' branches
