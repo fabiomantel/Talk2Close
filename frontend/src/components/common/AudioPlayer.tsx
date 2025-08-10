@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import H5AudioPlayer from 'react-h5-audio-player';
-import 'react-h5-audio-player/lib/styles.css';
+import React, { useState, useRef, useEffect } from 'react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Shuffle } from 'lucide-react';
 import './AudioPlayer.css';
-import { config } from '../../config/environment';
+
+interface Track {
+  id: string;
+  title: string;
+  artist: string;
+  src: string;
+  cover?: string;
+  duration?: string;
+}
 
 interface AudioPlayerProps {
   salesCallId: number;
@@ -13,125 +20,294 @@ interface AudioPlayerProps {
 }
 
 const AudioPlayer: React.FC<AudioPlayerProps> = ({ 
-  salesCallId, 
+  salesCallId,
   className = '',
   onPlaybackStart,
   onPlaybackEnd,
   onError
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isShuffle, setIsShuffle] = useState(false);
+  const [isRepeat, setIsRepeat] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [audioUrl, setAudioUrl] = useState('');
 
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+
+  // Create a single track from the sales call
+  const currentTrack: Track = {
+    id: salesCallId.toString(),
+    title: 'הקלטה מקורית',
+    artist: `שיחה ${salesCallId}`,
+    src: `${process.env.REACT_APP_API_URL || 'http://localhost:3000'}/api/audio/${salesCallId}`,
+  };
+
+  // Format time in mm:ss format
+  const formatTime = (time: number): string => {
+    if (isNaN(time)) return '0:00';
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Audio event handlers
   useEffect(() => {
-    // Use centralized configuration for backend URL
-    const url = `${config.BACKEND_URL}/api/audio/${salesCallId}`;
-    setAudioUrl(url);
-    // Don't set isLoading to false here - let the audio player events handle it
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+      setIsLoading(false);
+      setHasError(false);
+    };
+    const handleCanPlay = () => {
+      setIsLoading(false);
+      setHasError(false);
+    };
+    const handleWaiting = () => setIsLoading(true);
+    const handleEnded = () => {
+      if (isRepeat) {
+        audio.currentTime = 0;
+        audio.play().catch(console.error);
+      } else {
+        setIsPlaying(false);
+        onPlaybackEnd?.();
+      }
+    };
+    const handlePlay = () => {
+      setIsPlaying(true);
+      onPlaybackStart?.();
+    };
+    const handlePause = () => setIsPlaying(false);
+    const handleError = (error: any) => {
+      const errorMsg = `שגיאה בטעינת הקלטה עבור שיחה ${salesCallId}`;
+      setHasError(true);
+      setErrorMessage(errorMsg);
+      onError?.(errorMsg);
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('waiting', handleWaiting);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('error', handleError);
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('waiting', handleWaiting);
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('error', handleError);
+    };
+  }, [isRepeat, salesCallId, onPlaybackStart, onPlaybackEnd, onError]);
+
+  const togglePlayPause = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      audio.play().catch(console.error);
+    }
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const audio = audioRef.current;
+    const progressBar = progressRef.current;
+    if (!audio || !progressBar) return;
+
+    const rect = progressBar.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const progressWidth = rect.width;
+    const newTime = (clickX / progressWidth) * duration;
     
-    console.log(`🎧 AudioPlayer: Initialized for sales call ${salesCallId}`);
-    console.log(`🔗 Audio URL: ${url}`);
-  }, [salesCallId]);
-
-  const handleAudioError = (error: any) => {
-    const errorMsg = `שגיאה בטעינת הקלטה עבור שיחה ${salesCallId}`;
-    setHasError(true);
-    setErrorMessage(errorMsg);
-    
-    console.error('❌ Audio playback error:', error);
-    onError?.(errorMsg);
+    audio.currentTime = newTime;
+    setCurrentTime(newTime);
   };
 
-  const handlePlay = () => {
-    console.log(`▶️ Audio playback started for sales call ${salesCallId}`);
-    onPlaybackStart?.();
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume;
+    }
   };
 
-  const handleEnded = () => {
-    console.log(`⏹️ Audio playback ended for sales call ${salesCallId}`);
-    onPlaybackEnd?.();
-  };
+  const toggleMute = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
 
-  const handleLoadStart = () => {
-    console.log(`📡 Audio loading started for sales call ${salesCallId}`);
-    setIsLoading(true);
-    setHasError(false);
-  };
-
-  const handleCanPlay = () => {
-    console.log(`✅ Audio ready to play for sales call ${salesCallId}`);
-    setIsLoading(false);
-    setHasError(false);
-  };
-
-  const handleRetry = () => {
-    setHasError(false);
-    setErrorMessage('');
-    setIsLoading(true);
-    
-    // Force reload by updating the URL with timestamp
-    const url = `${config.BACKEND_URL}/api/audio/${salesCallId}?t=${Date.now()}`;
-    setAudioUrl(url);
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
+    audio.muted = newMuted;
   };
 
   if (hasError) {
     return (
-      <div className={`audio-player-container audio-error-state ${className}`}>
-        <h4 className="audio-player-title hebrew-content">
-          🎧 הקלטה מקורית
-        </h4>
-        <div className="audio-error-content">
+      <div className={`audio-player-container ${className}`}>
+        <div className="error-content">
           <div className="error-icon">❌</div>
-          <p className="error-message hebrew-content">{errorMessage}</p>
-          <div className="error-actions">
-            <button 
-              onClick={handleRetry}
-              className="retry-button hebrew-content"
-            >
-              נסה שוב
-            </button>
-          </div>
+          <p className="error-message">{errorMessage}</p>
+          <button 
+            onClick={() => {
+              setHasError(false);
+              setErrorMessage('');
+              setIsLoading(true);
+              if (audioRef.current) {
+                audioRef.current.load();
+              }
+            }}
+            className="retry-button"
+          >
+            נסה שוב
+          </button>
         </div>
       </div>
     );
   }
 
+  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+
   return (
     <div className={`audio-player-container ${className}`}>
-      <h4 className="audio-player-title hebrew-content">
-        🎧 הקלטה מקורית
-      </h4>
-      
-      {audioUrl && (
-        <>
-          {isLoading && (
-            <div className="audio-loading-state">
-              <div className="loading-spinner"></div>
-              <span className="loading-text hebrew-content">טוען הקלטה...</span>
-            </div>
-          )}
+      <audio
+        ref={audioRef}
+        src={currentTrack.src}
+        preload="metadata"
+      />
+
+      {/* Track Info Display */}
+      <div className="track-info">
+        <div className="track-cover">
+          <div className="default-cover">
+            <Volume2 size={32} className="text-white/60" />
+          </div>
+        </div>
+        <div className="track-details">
+          <h3 className="track-title">{currentTrack.title}</h3>
+          <p className="track-artist">{currentTrack.artist}</p>
+        </div>
+        <div className="playlist-info">
+          <span className="track-counter">
+            {isLoading ? 'טוען...' : 'הקלטה'}
+          </span>
+        </div>
+      </div>
+
+      {/* Progress Section */}
+      <div className="progress-section">
+        <span className="time-display">{formatTime(currentTime)}</span>
+        <div 
+          className="progress-container"
+          ref={progressRef}
+          onClick={handleProgressClick}
+        >
+          <div className="progress-bar">
+            <div 
+              className="progress-filled"
+              style={{ width: `${progressPercentage}%` }}
+            />
+            <div 
+              className="progress-handle"
+              style={{ left: `${progressPercentage}%` }}
+            />
+          </div>
+        </div>
+        <span className="time-display">{formatTime(duration)}</span>
+      </div>
+
+      {/* Controls Section */}
+      <div className="controls-section">
+        <div className="main-controls">
+          <button
+            onClick={() => setIsShuffle(!isShuffle)}
+            className={`control-btn ${isShuffle ? 'active' : ''}`}
+            title="Shuffle"
+          >
+            <Shuffle size={18} />
+          </button>
           
-          <H5AudioPlayer
-            src={audioUrl}
-            className="audio-player-rtl"
-            showJumpControls={false}
-            showSkipControls={false}
-            showDownloadProgress={true}
-            showFilledProgress={true}
-            hasDefaultKeyBindings={true}
-            preload="metadata"
-            volume={0.8}
-            onError={handleAudioError}
-            onPlay={handlePlay}
-            onEnded={handleEnded}
-            onLoadStart={handleLoadStart}
-            onCanPlay={handleCanPlay}
-            customAdditionalControls={[]}
-            customVolumeControls={[]}
+          <button
+            onClick={() => {
+              if (audioRef.current) {
+                audioRef.current.currentTime = 0;
+              }
+            }}
+            className="control-btn"
+            title="Restart"
+          >
+            <SkipBack size={20} />
+          </button>
+          
+          <button
+            onClick={togglePlayPause}
+            className="play-pause-btn"
+            title={isPlaying ? 'Pause' : 'Play'}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="loading-spinner" />
+            ) : isPlaying ? (
+              <Pause size={24} />
+            ) : (
+              <Play size={24} />
+            )}
+          </button>
+          
+          <button
+            onClick={() => {
+              if (audioRef.current) {
+                audioRef.current.currentTime = duration;
+              }
+            }}
+            className="control-btn"
+            title="Skip to end"
+          >
+            <SkipForward size={20} />
+          </button>
+          
+          <button
+            onClick={() => setIsRepeat(!isRepeat)}
+            className={`control-btn ${isRepeat ? 'active' : ''}`}
+            title="Repeat"
+          >
+            <Repeat size={18} />
+          </button>
+        </div>
+        
+        <div className="volume-controls">
+          <button
+            onClick={toggleMute}
+            className="control-btn"
+            title={isMuted ? 'Unmute' : 'Mute'}
+          >
+            {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+          </button>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={isMuted ? 0 : volume}
+            onChange={handleVolumeChange}
+            className="volume-slider"
           />
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 };
