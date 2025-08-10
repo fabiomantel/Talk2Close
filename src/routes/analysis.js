@@ -3,6 +3,7 @@ const { body, validationResult } = require('express-validator');
 const { prisma } = require('../database/connection');
 const whisperService = require('../services/whisperService');
 const scoringService = require('../services/scoringService');
+const enhancedScoringService = require('../services/enhancedScoringService');
 
 const router = express.Router();
 
@@ -12,7 +13,8 @@ const router = express.Router();
  */
 router.post('/', 
   [
-    body('salesCallId').isInt().withMessage('Valid sales call ID is required')
+    body('salesCallId').isInt().withMessage('Valid sales call ID is required'),
+    body('useEnhancedAnalysis').optional().isBoolean().withMessage('useEnhancedAnalysis must be a boolean')
   ],
   async (req, res, next) => {
     try {
@@ -26,7 +28,7 @@ router.post('/',
         });
       }
 
-      const { salesCallId } = req.body;
+      const { salesCallId, useEnhancedAnalysis = true } = req.body;
 
       // Find the sales call
       const salesCall = await prisma.salesCall.findUnique({
@@ -59,6 +61,7 @@ router.post('/',
       console.log(`🔍 Starting analysis for sales call ID: ${salesCallId}`);
       console.log(`👤 Customer: ${salesCall.customer.name}`);
       console.log(`📁 Audio file: ${salesCall.audioFilePath}`);
+      console.log(`🤖 Enhanced analysis: ${useEnhancedAnalysis}`);
 
       // Validate audio file
       await whisperService.validateAudioFile(salesCall.audioFilePath);
@@ -69,12 +72,48 @@ router.post('/',
       // Get transcription statistics
       const stats = whisperService.getTranscriptionStats(transcription);
 
-      // Perform scoring analysis
-      const scoringResults = scoringService.analyzeTranscript(
-        transcription.text,
-        transcription.duration || 0,
-        stats.wordCount || 0
-      );
+      // Perform scoring analysis (enhanced or traditional)
+      let scoringResults;
+      let analysisVersion = 'traditional-v1.0';
+      let gpt4AnalysisUsed = false;
+
+      if (useEnhancedAnalysis) {
+        try {
+          scoringResults = await enhancedScoringService.analyzeTranscript(
+            transcription.text,
+            transcription.duration || 0,
+            stats.wordCount || 0
+          );
+          analysisVersion = scoringResults.metadata.analysisVersion;
+          gpt4AnalysisUsed = scoringResults.metadata.gpt4Used;
+        } catch (error) {
+          console.warn('⚠️ Enhanced analysis failed, falling back to traditional analysis:', error.message);
+          scoringResults = scoringService.analyzeTranscript(
+            transcription.text,
+            transcription.duration || 0,
+            stats.wordCount || 0
+          );
+        }
+      } else {
+        scoringResults = scoringService.analyzeTranscript(
+          transcription.text,
+          transcription.duration || 0,
+          stats.wordCount || 0
+        );
+      }
+
+      // Prepare enhanced analysis data
+      const enhancedData = {
+        sentimentScore: scoringResults.analysis.gpt4Analysis?.sentiment?.confidence || null,
+        conversationPhases: scoringResults.analysis.gpt4Analysis?.conversationFlow?.phases || null,
+        speakerAnalysis: scoringResults.analysis.gpt4Analysis?.contextInsights || null,
+        objectionAnalysis: scoringResults.analysis.gpt4Analysis?.contextInsights?.objections || null,
+        contextInsights: scoringResults.analysis.gpt4Analysis?.contextInsights || null,
+        analysisConfidence: scoringResults.metadata.gpt4Confidence || null,
+        enhancedNotes: scoringResults.analysis.enhancedNotes || scoringResults.analysis.notes,
+        analysisVersion: analysisVersion,
+        gpt4AnalysisUsed: gpt4AnalysisUsed
+      };
 
       // Update sales call with transcript and scores
       const updatedSalesCall = await prisma.salesCall.update({
@@ -86,7 +125,9 @@ router.post('/',
           interestScore: scoringResults.scores.interest,
           engagementScore: scoringResults.scores.engagement,
           overallScore: scoringResults.scores.overall,
-          analysisNotes: scoringResults.analysis.notes
+          analysisNotes: scoringResults.analysis.notes,
+          // Enhanced analysis fields
+          ...enhancedData
         },
         include: {
           customer: true
@@ -96,6 +137,7 @@ router.post('/',
       console.log(`✅ Analysis completed for sales call ID: ${salesCallId}`);
       console.log(`📊 Transcription stats:`, stats);
       console.log(`🎯 Scoring results:`, scoringResults.scores);
+      console.log(`🤖 Analysis version: ${analysisVersion}`);
 
       res.json({
         success: true,
@@ -117,6 +159,14 @@ router.post('/',
             scores: scoringResults.scores,
             analysis: scoringResults.analysis,
             metadata: scoringResults.metadata
+          },
+          enhancedAnalysis: {
+            version: analysisVersion,
+            gpt4Used: gpt4AnalysisUsed,
+            confidence: enhancedData.analysisConfidence,
+            sentiment: scoringResults.analysis.gpt4Analysis?.sentiment,
+            conversationFlow: scoringResults.analysis.gpt4Analysis?.conversationFlow,
+            contextInsights: enhancedData.contextInsights
           },
           analysisStatus: 'completed',
           scoringStatus: 'completed'
