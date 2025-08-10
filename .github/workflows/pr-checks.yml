@@ -22,9 +22,12 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
-    - name: Clear npm cache
-      run: npm cache clean --force
-      
+    - name: Configure npm
+      run: |
+        npm config set registry https://registry.npmjs.org/
+        npm config delete //registry.npmjs.org/:_authToken || true
+        npm cache clean --force
+        
     - name: Install backend dependencies
       run: npm install --no-audit
       
@@ -75,9 +78,12 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
-    - name: Clear npm cache
-      run: npm cache clean --force
-      
+    - name: Configure npm
+      run: |
+        npm config set registry https://registry.npmjs.org/
+        npm config delete //registry.npmjs.org/:_authToken || true
+        npm cache clean --force
+        
     - name: Install backend dependencies
       run: npm install --no-audit
       
