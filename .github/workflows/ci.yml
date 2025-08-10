@@ -28,7 +28,7 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
+        npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
     - name: Install dependencies
@@ -75,7 +75,7 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
+        npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
     - name: Install frontend dependencies
@@ -116,7 +116,7 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
+        npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
     - name: Install dependencies
@@ -159,7 +159,7 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
+        npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
     - name: Install dependencies
@@ -202,7 +202,7 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
+        npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
     - name: Install dependencies
@@ -248,7 +248,7 @@ jobs:
         
     - name: Configure npm
       run: |
-        npm config set registry https://registry.npmjs.org/
+        npm config set //registry.npmjs.org/:_authToken ""
         npm cache clean --force
         
     - name: Install dependencies
