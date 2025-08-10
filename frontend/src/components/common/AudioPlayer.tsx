@@ -28,8 +28,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   onError
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isShuffle, setIsShuffle] = useState(false);
-  const [isRepeat, setIsRepeat] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -79,13 +77,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     };
     const handleWaiting = () => setIsLoading(true);
     const handleEnded = () => {
-      if (isRepeat) {
-        audio.currentTime = 0;
-        audio.play().catch(console.error);
-      } else {
-        setIsPlaying(false);
-        onPlaybackEnd?.();
-      }
+      setIsPlaying(false);
+      onPlaybackEnd?.();
     };
     const handlePlay = () => {
       setIsPlaying(true);
@@ -118,7 +111,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
       audio.removeEventListener('pause', handlePause);
       audio.removeEventListener('error', handleError);
     };
-  }, [isRepeat, salesCallId, onPlaybackStart, onPlaybackEnd, onError]);
+  }, [salesCallId, onPlaybackStart, onPlaybackEnd, onError]);
 
   // Update playback speed when it changes
   useEffect(() => {
@@ -252,14 +245,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
       <div className="controls-section">
         <div className="main-controls">
           <button
-            onClick={() => setIsShuffle(!isShuffle)}
-            className={`control-btn ${isShuffle ? 'active' : ''}`}
-            title="Shuffle"
-          >
-            <LucideIcons.Shuffle size={18} />
-          </button>
-          
-          <button
             onClick={() => {
               if (audioRef.current) {
                 audioRef.current.currentTime = 0;
@@ -296,14 +281,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             title="Skip to end"
           >
             <LucideIcons.SkipForward size={20} />
-          </button>
-          
-          <button
-            onClick={() => setIsRepeat(!isRepeat)}
-            className={`control-btn ${isRepeat ? 'active' : ''}`}
-            title="Repeat"
-          >
-            <LucideIcons.Repeat size={18} />
           </button>
         </div>
         
