@@ -37,6 +37,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const [errorMessage, setErrorMessage] = useState('');
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -59,6 +60,59 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+
+  // Calculate progress position for RTL
+  const getProgressPosition = (time: number, totalDuration: number): number => {
+    if (totalDuration <= 0) return 0;
+    return (time / totalDuration) * 100;
+  };
+
+  // Handle progress click and drag
+  const handleProgressInteraction = (e: React.MouseEvent<HTMLDivElement> | MouseEvent) => {
+    const audio = audioRef.current;
+    const progressBar = progressRef.current;
+    if (!audio || !progressBar) return;
+
+    const rect = progressBar.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const progressWidth = rect.width;
+    
+    // For RTL, we need to calculate from the right side
+    const rtlClickX = progressWidth - clickX;
+    const newTime = (rtlClickX / progressWidth) * duration;
+    
+    audio.currentTime = Math.max(0, Math.min(newTime, duration));
+    setCurrentTime(audio.currentTime);
+  };
+
+  // Mouse event handlers for dragging
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    handleProgressInteraction(e);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (isDragging) {
+      handleProgressInteraction(e);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Add/remove global mouse event listeners
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, duration]);
 
   // Audio event handlers
   useEffect(() => {
@@ -132,17 +186,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   };
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const audio = audioRef.current;
-    const progressBar = progressRef.current;
-    if (!audio || !progressBar) return;
-
-    const rect = progressBar.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const progressWidth = rect.width;
-    const newTime = (clickX / progressWidth) * duration;
-    
-    audio.currentTime = newTime;
-    setCurrentTime(newTime);
+    if (!isDragging) {
+      handleProgressInteraction(e);
+    }
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -191,7 +237,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     );
   }
 
-  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const progressPercentage = getProgressPosition(currentTime, duration);
 
   return (
     <div className={`audio-player-container ${className}`}>
@@ -226,6 +272,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
           className="progress-container"
           ref={progressRef}
           onClick={handleProgressClick}
+          onMouseDown={handleMouseDown}
         >
           <div className="progress-bar">
             <div 
@@ -234,7 +281,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             />
             <div 
               className="progress-handle"
-              style={{ left: `${progressPercentage}%` }}
+              style={{ right: `${progressPercentage}%` }}
             />
           </div>
         </div>

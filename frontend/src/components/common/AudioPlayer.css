@@ -108,6 +108,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+  direction: rtl;
 }
 
 .progress-bar {
@@ -116,6 +117,7 @@
   background: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
   position: relative;
+  direction: rtl;
 }
 
 .progress-filled {
@@ -123,18 +125,27 @@
   background: rgba(255, 255, 255, 0.8);
   border-radius: 3px;
   transition: width 0.1s ease;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .progress-handle {
   position: absolute;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(50%, -50%);
   width: 16px;
   height: 16px;
   background: white;
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: left 0.1s ease;
+  transition: right 0.1s ease;
+  cursor: grab;
+}
+
+.progress-handle:active {
+  cursor: grabbing;
+  transform: translate(50%, -50%) scale(1.1);
 }
 
 .controls-section {
