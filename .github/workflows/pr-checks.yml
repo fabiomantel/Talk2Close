@@ -22,12 +22,15 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
+    - name: Clear npm cache
+      run: npm cache clean --force
+      
     - name: Install backend dependencies
-      run: npm install
+      run: npm install --no-audit
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm install
+      run: npm install --no-audit
       
     - name: Create uploads directory
       run: mkdir -p uploads
@@ -72,12 +75,15 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
         
+    - name: Clear npm cache
+      run: npm cache clean --force
+      
     - name: Install backend dependencies
-      run: npm install
+      run: npm install --no-audit
       
     - name: Install frontend dependencies
       working-directory: frontend
-      run: npm install
+      run: npm install --no-audit
       
     - name: Run npm audit (backend)
       run: npm audit --audit-level=high
