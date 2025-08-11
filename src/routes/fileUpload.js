@@ -126,10 +126,13 @@ router.post('/',
 
       // Automatically trigger analysis after successful upload
       console.log(`🔍 Starting automatic analysis for sales call ID: ${salesCall.id}`);
+      console.log(`📁 Audio file path: ${salesCall.audioFilePath}`);
       
       try {
         // Track Whisper API call
         const fileStats = await fs.stat(salesCall.audioFilePath);
+        console.log(`📊 File stats: ${fileStats.size} bytes, ${(fileStats.size / 1024 / 1024).toFixed(2)} MB`);
+        
         debugTrackingService.trackWhisper(sessionId, {
           filePath: salesCall.audioFilePath,
           fileSize: fileStats.size,
@@ -139,12 +142,23 @@ router.post('/',
           timestampGranularities: ['word']
         });
 
+        console.log(`🎤 Starting transcription for: ${salesCall.audioFilePath}`);
+        console.log(`📁 File size: ${(fileStats.size / 1024 / 1024).toFixed(2)} MB`);
+
         // Validate audio file
+        console.log(`🔍 Validating audio file...`);
         await whisperService.validateAudioFile(salesCall.audioFilePath);
+        console.log(`✅ Audio file validation passed`);
 
         // Transcribe audio using Whisper API
+        console.log(`🎤 Calling OpenAI Whisper API...`);
         const transcription = await whisperService.transcribeAudio(salesCall.audioFilePath);
 
+        console.log(`✅ Transcription completed successfully`);
+        console.log(`📝 Text length: ${transcription.text.length} characters`);
+        console.log(`⏱️ Duration: ${transcription.duration} seconds`);
+        console.log(`🌐 Language: ${transcription.language}`);
+        
         // Complete Whisper tracking
         debugTrackingService.completeWhisper(sessionId, {
           success: true,
@@ -158,7 +172,11 @@ router.post('/',
 
         // Get transcription statistics
         const stats = whisperService.getTranscriptionStats(transcription);
+        console.log(`📊 Transcription stats:`, stats);
 
+        console.log(`🎯 Starting scoring analysis...`);
+        console.log(`📝 Transcript preview: "${transcription.text.substring(0, 100)}..."`);
+        
         // Track scoring analysis
         debugTrackingService.trackScoring(sessionId, {
           transcript: transcription.text,
@@ -169,16 +187,22 @@ router.post('/',
         });
 
         // Perform scoring analysis
+        console.log(`🔍 Calling scoring service...`);
         const scoringResults = scoringService.analyzeTranscript(
           transcription.text,
           transcription.duration || 0,
           stats.wordCount || 0
         );
 
+        console.log(`✅ Scoring analysis completed`);
+        console.log(`🎯 Scoring results:`, scoringResults.scores);
+        console.log(`📝 Analysis notes: ${scoringResults.analysis.notes}`);
+        
         // Complete scoring tracking
         debugTrackingService.completeScoring(sessionId, scoringResults);
 
         // Track database update
+        console.log(`💾 Updating database with analysis results...`);
         debugTrackingService.trackDatabase(sessionId, {
           operation: 'update',
           table: 'sales_calls',
@@ -195,6 +219,7 @@ router.post('/',
         });
 
         // Update sales call with transcript and scores
+        console.log(`💾 Executing database update...`);
         const updatedSalesCall = await prisma.salesCall.update({
           where: { id: salesCall.id },
           data: {
@@ -211,6 +236,9 @@ router.post('/',
           }
         });
 
+        console.log(`✅ Database update completed successfully`);
+        console.log(`📊 Updated sales call ID: ${updatedSalesCall.id}`);
+
         // Complete database tracking
         debugTrackingService.completeDatabase(sessionId, {
           success: true,
@@ -226,8 +254,8 @@ router.post('/',
         });
 
         console.log(`✅ Automatic analysis completed for sales call ID: ${salesCall.id}`);
-        console.log(`📊 Transcription stats:`, stats);
-        console.log(`🎯 Scoring results:`, scoringResults.scores);
+        console.log(`📊 Final transcription stats:`, stats);
+        console.log(`🎯 Final scoring results:`, scoringResults.scores);
 
         res.status(201).json({
           success: true,
@@ -264,7 +292,23 @@ router.post('/',
         });
 
       } catch (analysisError) {
-        console.error(`❌ Analysis failed for sales call ID: ${salesCall.id}`, analysisError);
+        console.error(`❌ Analysis failed for sales call ID: ${salesCall.id}`);
+        console.error(`🔍 Error details:`, {
+          message: analysisError.message,
+          stack: analysisError.stack,
+          name: analysisError.name,
+          code: analysisError.code
+        });
+        
+        // Log additional context
+        console.error(`📊 Analysis failure context:`, {
+          salesCallId: salesCall.id,
+          audioFilePath: salesCall.audioFilePath,
+          customerId: customer.id,
+          customerName: customer.name,
+          fileSize: req.file.size,
+          fileType: req.file.mimetype
+        });
         
         // Still return success for upload, but indicate analysis failed
         res.status(201).json({
@@ -286,6 +330,11 @@ router.post('/',
             },
             analysisStatus: 'failed',
             analysisError: analysisError.message,
+            errorDetails: {
+              name: analysisError.name,
+              code: analysisError.code,
+              stack: process.env.NODE_ENV === 'development' ? analysisError.stack : undefined
+            },
             uploadedAt: salesCall.createdAt
           }
         });

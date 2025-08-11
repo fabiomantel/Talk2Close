@@ -22,25 +22,41 @@ class WhisperService {
       console.log(`🎤 Starting transcription for: ${filePath}`);
 
       // Check if file exists
+      console.log(`🔍 Checking if file exists: ${filePath}`);
       if (!await fs.pathExists(filePath)) {
+        console.error(`❌ File not found: ${filePath}`);
         throw new Error(`Audio file not found: ${filePath}`);
       }
+      console.log(`✅ File exists`);
 
       // Get file stats for logging
+      console.log(`📊 Getting file statistics...`);
       const stats = await fs.stat(filePath);
       const fileSizeInMB = (stats.size / (1024 * 1024)).toFixed(2);
-      console.log(`📁 File size: ${fileSizeInMB} MB`);
+      console.log(`📁 File size: ${fileSizeInMB} MB (${stats.size} bytes)`);
+      console.log(`📅 File created: ${stats.birthtime}`);
+      console.log(`📅 File modified: ${stats.mtime}`);
 
       // Check if file needs chunking
       if (stats.size > this.maxFileSize) {
-        console.log(`📦 File exceeds 25MB limit, splitting into chunks...`);
+        console.log(`📦 File exceeds 25MB limit (${this.maxFileSize} bytes), splitting into chunks...`);
         return await this.transcribeLargeFile(filePath);
       }
+      console.log(`✅ File size is within limits`);
 
       // Create file stream
+      console.log(`📂 Creating file stream...`);
       const audioFile = fs.createReadStream(filePath);
 
       // Call Whisper API with Hebrew language specification
+      console.log(`🤖 Calling OpenAI Whisper API...`);
+      console.log(`🔧 API parameters:`, {
+        model: "whisper-1",
+        language: "he",
+        response_format: "verbose_json",
+        timestamp_granularities: ["word"]
+      });
+      
       const transcription = await this.openai.audio.transcriptions.create({
         file: audioFile,
         model: "whisper-1",
@@ -52,6 +68,9 @@ class WhisperService {
       console.log(`✅ Transcription completed successfully`);
       console.log(`📝 Text length: ${transcription.text.length} characters`);
       console.log(`⏱️ Duration: ${transcription.duration} seconds`);
+      console.log(`🌐 Language: ${transcription.language}`);
+      console.log(`📊 Segments count: ${transcription.segments?.length || 0}`);
+      console.log(`📝 Text preview: "${transcription.text.substring(0, 100)}..."`);
 
       return {
         success: true,

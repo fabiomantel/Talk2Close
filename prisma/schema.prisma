@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
@@ -12,45 +9,39 @@ datasource db {
 }
 
 model Customer {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(100)
-  phone     String   @db.VarChar(20)
-  email     String?  @db.VarChar(100)
-  createdAt DateTime @default(now()) @map("created_at")
-
-  // Relations
-  salesCalls SalesCall[]
+  id         Int               @id @default(autoincrement())
+  name       String            @db.VarChar(100)
+  phone      String            @db.VarChar(20)
+  email      String?           @db.VarChar(100)
+  createdAt  DateTime          @default(now()) @map("created_at")
   priority   CustomerPriority?
+  salesCalls SalesCall[]
 
   @@map("customers")
 }
 
 model SalesCall {
-  id              Int      @id @default(autoincrement())
-  customerId      Int      @map("customer_id")
-  audioFilePath   String   @map("audio_file_path") @db.VarChar(255)
-  transcript      String?  @db.Text
-  urgencyScore    Int?     @map("urgency_score")
-  budgetScore     Int?     @map("budget_score")
-  interestScore   Int?     @map("interest_score")
-  engagementScore Int?     @map("engagement_score")
-  overallScore    Int?     @map("overall_score")
-  analysisNotes   String?  @map("analysis_notes") @db.Text
-  createdAt       DateTime @default(now()) @map("created_at")
-
-  // Enhanced Analysis Fields
-  sentimentScore      Decimal? @map("sentiment_score") @db.Decimal(3, 2)
-  conversationPhases   Json?    @map("conversation_phases")
-  speakerAnalysis      Json?    @map("speaker_analysis")
-  objectionAnalysis    Json?    @map("objection_analysis")
-  contextInsights      Json?    @map("context_insights")
-  analysisConfidence   Decimal? @map("analysis_confidence") @db.Decimal(3, 2)
-  enhancedNotes        String?  @map("enhanced_notes") @db.Text
-  analysisVersion      String?  @map("analysis_version") @db.VarChar(20)
-  gpt4AnalysisUsed     Boolean  @default(false) @map("gpt4_analysis_used")
-
-  // Relations
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  id                 Int      @id @default(autoincrement())
+  customerId         Int      @map("customer_id")
+  audioFilePath      String   @map("audio_file_path") @db.VarChar(255)
+  transcript         String?
+  urgencyScore       Int?     @map("urgency_score")
+  budgetScore        Int?     @map("budget_score")
+  interestScore      Int?     @map("interest_score")
+  engagementScore    Int?     @map("engagement_score")
+  overallScore       Int?     @map("overall_score")
+  analysisNotes      String?  @map("analysis_notes")
+  createdAt          DateTime @default(now()) @map("created_at")
+  sentimentScore     Decimal? @map("sentiment_score") @db.Decimal(3, 2)
+  conversationPhases Json?    @map("conversation_phases")
+  speakerAnalysis    Json?    @map("speaker_analysis")
+  objectionAnalysis  Json?    @map("objection_analysis")
+  contextInsights    Json?    @map("context_insights")
+  analysisConfidence Decimal? @map("analysis_confidence") @db.Decimal(3, 2)
+  enhancedNotes      String?  @map("enhanced_notes")
+  analysisVersion    String?  @map("analysis_version") @db.VarChar(20)
+  gpt4AnalysisUsed   Boolean  @default(false) @map("gpt4_analysis_used")
+  customer           Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   @@map("sales_calls")
 }
@@ -58,8 +49,8 @@ model SalesCall {
 model ScoringConfiguration {
   id        Int      @id @default(autoincrement())
   name      String   @db.VarChar(100)
-  weights   Json     // Scoring weights for different categories
-  phrases   Json     // Hebrew phrases for different categories
+  weights   Json
+  phrases   Json
   isActive  Boolean  @default(false) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -68,14 +59,12 @@ model ScoringConfiguration {
 }
 
 model CustomerPriority {
-  customerId       Int      @id @map("customer_id")
-  totalCalls       Int      @map("total_calls")
-  avgOverallScore  Decimal  @map("avg_overall_score") @db.Decimal(5, 2)
-  lastCallDate     DateTime @map("last_call_date")
-  priorityRank     Int      @map("priority_rank")
-
-  // Relations
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId      Int      @id @map("customer_id")
+  totalCalls      Int      @map("total_calls")
+  avgOverallScore Decimal  @map("avg_overall_score") @db.Decimal(5, 2)
+  lastCallDate    DateTime @map("last_call_date")
+  priorityRank    Int      @map("priority_rank")
+  customer        Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   @@map("customer_priorities")
-} 
+}

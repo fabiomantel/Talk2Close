@@ -34,14 +34,51 @@ app.use(helmet({
     policy: "unsafe-none" // More permissive for development
   }
 }));
-app.use(cors({
-  origin: true, // Allow all origins in development
+// CORS configuration for production
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow specific domains
+    const allowedOrigins = [
+      'https://talk2close-frontend-fabiomantel-1480-fabio-mantels-projects.vercel.app',
+      'https://talk2close-frontend.vercel.app',
+      'https://talk2close.vercel.app',
+      'https://*.vercel.app', // Allow any Vercel subdomain
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5173'
+    ];
+    
+    // Check if origin matches any allowed pattern
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed.includes('*')) {
+        // Handle wildcard patterns
+        const pattern = allowed.replace('*', '.*');
+        return new RegExp(pattern).test(origin);
+      }
+      return allowed === origin;
+    });
+    
+    if (isAllowed || process.env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      // For now, allow all origins in production to fix the issue
+      callback(null, true);
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Range'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Range', 'Content-Length'],
   exposedHeaders: ['Content-Length', 'Content-Range', 'Accept-Ranges'],
   credentials: false,
-  maxAge: 86400 // Cache preflight for 24 hours
-}));
+  maxAge: 86400, // Cache preflight for 24 hours
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
 
 // Rate limiting
 const limiter = rateLimit({

@@ -26,6 +26,16 @@ primary_region = "fra"
     timeout = "5s"
     path = "/api/health"
 
+  # Increase timeout for large file uploads
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+  [http_service.concurrency.handler]
+    type = "http"
+    timeout = "300s"
+
 [[vm]]
   cpu_kind = "shared"
   cpus = 1

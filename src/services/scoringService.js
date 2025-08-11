@@ -128,31 +128,59 @@ class ScoringService {
    * @returns {Object} Scoring results
    */
   analyzeTranscript(transcript, duration = 0, wordCount = 0) {
+    console.log('🎯 Starting transcript analysis...');
+    console.log(`📝 Input transcript length: ${transcript.length} characters`);
+    console.log(`⏱️ Duration: ${duration} seconds`);
+    console.log(`📊 Word count: ${wordCount} words`);
+    
     if (!transcript || transcript.trim().length === 0) {
+      console.error('❌ Transcript is empty or missing');
       throw new Error('Transcript is required for analysis');
     }
 
+    console.log('🔍 Normalizing Hebrew text...');
     const normalizedText = this.normalizeHebrewText(transcript);
+    console.log(`📝 Normalized text length: ${normalizedText.length} characters`);
+    console.log(`📝 Normalized text preview: "${normalizedText.substring(0, 100)}..."`);
     
     // Calculate individual scores
+    console.log('🚨 Calculating urgency score...');
     const urgencyScore = this.calculateUrgencyScore(normalizedText);
+    console.log(`🚨 Urgency score: ${urgencyScore}`);
+    
+    console.log('💰 Calculating budget score...');
     const budgetScore = this.calculateBudgetScore(normalizedText);
+    console.log(`💰 Budget score: ${budgetScore}`);
+    
+    console.log('🎯 Calculating interest score...');
     const interestScore = this.calculateInterestScore(normalizedText);
+    console.log(`🎯 Interest score: ${interestScore}`);
+    
+    console.log('💬 Calculating engagement score...');
     const engagementScore = this.calculateEngagementScore(normalizedText, duration, wordCount);
+    console.log(`💬 Engagement score: ${engagementScore}`);
 
     // Calculate overall score
+    console.log('📊 Calculating overall score...');
     const overallScore = this.calculateOverallScore({
       urgency: urgencyScore,
       budget: budgetScore,
       interest: interestScore,
       engagement: engagementScore
     });
+    console.log(`📊 Overall score: ${overallScore}`);
 
     // Extract key phrases found
+    console.log('🔍 Extracting key phrases...');
     const keyPhrases = this.extractKeyPhrases(normalizedText);
+    console.log(`🔍 Key phrases found: ${keyPhrases.length}`, keyPhrases);
+    
+    console.log('🚫 Detecting objections...');
     const objections = this.detectObjections(normalizedText);
+    console.log(`🚫 Objections found: ${objections.length}`, objections);
 
     // Generate analysis notes
+    console.log('📝 Generating analysis notes...');
     const analysisNotes = this.generateAnalysisNotes({
       urgencyScore,
       budgetScore,
@@ -164,6 +192,7 @@ class ScoringService {
       duration,
       wordCount
     });
+    console.log(`📝 Analysis notes: ${analysisNotes}`);
 
     return {
       scores: {
@@ -206,15 +235,18 @@ class ScoringService {
    * @returns {number} Urgency score (0-100)
    */
   calculateUrgencyScore(text) {
+    console.log('🚨 Calculating urgency score...');
     let score = 0;
     let highMatches = 0;
     let mediumMatches = 0;
+    let matchedPhrases = [];
 
     // Check high urgency phrases
     this.hebrewPhrases.urgency.high.forEach(phrase => {
       if (text.includes(phrase.toLowerCase())) {
         highMatches++;
         score += 25; // Increased from 20
+        matchedPhrases.push(`HIGH: ${phrase}`);
       }
     });
 
@@ -223,8 +255,12 @@ class ScoringService {
       if (text.includes(phrase.toLowerCase())) {
         mediumMatches++;
         score += 15; // Increased from 10
+        matchedPhrases.push(`MEDIUM: ${phrase}`);
       }
     });
+    
+    console.log(`🚨 Urgency analysis: ${highMatches} high matches, ${mediumMatches} medium matches`);
+    console.log(`🚨 Matched phrases:`, matchedPhrases);
 
     // Bonus for multiple matches
     if (highMatches >= 2) score += 20;
