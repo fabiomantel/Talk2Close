@@ -32,7 +32,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, selectedFile }) =
       
       onFileSelect(file);
     }
-  }, [onFileSelect]);
+  }, [onFileSelect, MAX_FILE_SIZE, LARGE_FILE_THRESHOLD]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

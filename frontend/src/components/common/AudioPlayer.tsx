@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as LucideIcons from 'lucide-react';
 import './AudioPlayer.css';
 import { config } from '../../config/environment';
@@ -68,7 +68,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   };
 
   // Handle progress click and drag
-  const handleProgressInteraction = (e: React.MouseEvent<HTMLDivElement> | MouseEvent) => {
+  const handleProgressInteraction = useCallback((e: React.MouseEvent<HTMLDivElement> | MouseEvent) => {
     const audio = audioRef.current;
     const progressBar = progressRef.current;
     if (!audio || !progressBar) return;
@@ -83,7 +83,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     
     audio.currentTime = Math.max(0, Math.min(newTime, duration));
     setCurrentTime(audio.currentTime);
-  };
+  }, [duration]);
 
   // Mouse event handlers for dragging
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -91,15 +91,15 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     handleProgressInteraction(e);
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isDragging) {
       handleProgressInteraction(e);
     }
-  };
+  }, [isDragging, handleProgressInteraction]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-  };
+  }, []);
 
   // Add/remove global mouse event listeners
   useEffect(() => {
@@ -112,7 +112,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, duration, handleMouseMove, handleMouseUp]);
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   // Audio event handlers
   useEffect(() => {
