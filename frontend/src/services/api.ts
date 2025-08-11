@@ -308,6 +308,29 @@ class ApiService {
     });
   }
 
+  // Debug dashboard methods
+  getDebugSessions = async (): Promise<{ success: boolean; data: { sessions: any[] } }> => {
+    return this.request('/debug/sessions');
+  };
+
+  getDebugSession = async (sessionId: string): Promise<{ success: boolean; data: { session: any } }> => {
+    return this.request(`/debug/sessions/${sessionId}`);
+  };
+
+  getDebugMetrics = async (): Promise<{ success: boolean; data: { metrics: any } }> => {
+    return this.request('/debug/metrics');
+  };
+
+  getDebugStatus = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/debug/status');
+  };
+
+  clearDebugSessions = async (): Promise<{ success: boolean; message: string }> => {
+    return this.request('/debug/clear-sessions', {
+      method: 'POST',
+    });
+  };
+
   // Health check
   healthCheck = async (): Promise<{ status: string }> => {
     return this.request('/health');

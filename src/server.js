@@ -12,6 +12,7 @@ const customerRoutes = require('./routes/customers');
 const dashboardRoutes = require('./routes/dashboard');
 const audioRoutes = require('./routes/audio');
 const configurationRoutes = require('./routes/configuration');
+const debugRoutes = require('./routes/debug');
 
 const app = express();
 const prisma = new PrismaClient();
@@ -102,7 +103,8 @@ app.get('/', (req, res) => {
       customers: '/api/customers',
       dashboard: '/api/dashboard',
       audio: '/api/audio',
-      configuration: '/api/configuration'
+      configuration: '/api/configuration',
+      ...(process.env.DEBUG_TRACKING === 'true' && { debug: '/api/debug' })
     },
     features: [
       'Hebrew speech-to-text transcription',
@@ -110,7 +112,8 @@ app.get('/', (req, res) => {
       'Sales call analysis',
       'Customer prioritization',
       'Real-time dashboard',
-      'Dynamic configuration management'
+      'Dynamic configuration management',
+      ...(process.env.DEBUG_TRACKING === 'true' ? ['Debug dashboard'] : [])
     ]
   });
 });
@@ -140,6 +143,7 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/audio', audioRoutes);
 app.use('/api/configuration', configurationRoutes);
+app.use('/api/debug', debugRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

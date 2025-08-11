@@ -99,6 +99,93 @@ CREATE TABLE scoring_configurations (
    - Speaker analysis breakdown
    - Confidence indicators
 
+### Phase 2: Intelligent Chunking System (Weeks 3-4)
+
+#### 2.1 Chunking Strategy Implementation
+**Goal**: Implement intelligent text chunking for optimal GPT-4 analysis
+
+**Key Components**:
+1. **Chunking Service**
+   - Semantic boundary detection
+   - Hebrew language-aware splitting
+   - Context preservation algorithms
+   - Chunk overlap management
+
+2. **Chunking Strategies**
+   - Sentence-based chunking
+   - Paragraph-based chunking
+   - Semantic chunking
+   - Hybrid adaptive chunking
+
+3. **Chunk Quality Assessment**
+   - Chunk coherence scoring
+   - Context completeness validation
+   - Chunk size optimization
+   - Overlap effectiveness measurement
+
+#### 2.2 Chunking Configuration Management
+**Goal**: Provide configurable chunking parameters
+
+**Configuration Options**:
+```javascript
+const chunkingConfig = {
+  strategy: 'semantic', // 'sentence', 'paragraph', 'semantic', 'hybrid'
+  maxChunkSize: 1500, // tokens
+  minChunkSize: 200, // tokens
+  overlapSize: 100, // tokens
+  preserveContext: true,
+  hebrewAware: true,
+  semanticThreshold: 0.8
+};
+```
+
+#### 2.3 Chunking API Integration
+**Goal**: Integrate chunking with existing analysis pipeline
+
+**New Endpoints**:
+```javascript
+// Chunking management
+POST /api/analyze/chunk - Create chunks from transcript
+GET /api/analyze/:id/chunks - Get chunks for analysis
+POST /api/analyze/:id/rechunk - Regenerate chunks with new config
+GET /api/analyze/chunking-config - Get chunking configuration
+PUT /api/analyze/chunking-config - Update chunking configuration
+```
+
+### Phase 3: Advanced Analytics & Visualization (Weeks 5-6)
+
+#### 3.1 Chunk Analysis Dashboard
+**Goal**: Visualize chunking effectiveness and analysis results
+
+**New Components**:
+1. **Chunking Visualization**
+   - Chunk boundary display
+   - Overlap visualization
+   - Context preservation indicators
+   - Chunk quality metrics
+
+2. **Analysis Comparison**
+   - Chunk vs. full transcript analysis
+   - Chunking strategy comparison
+   - Performance metrics display
+   - Optimization recommendations
+
+#### 3.2 Advanced Analytics
+**Goal**: Leverage chunked analysis for deeper insights
+
+**New Features**:
+1. **Temporal Analysis**
+   - Conversation progression tracking
+   - Phase-specific insights
+   - Time-based pattern recognition
+   - Dynamic scoring adjustments
+
+2. **Context Correlation**
+   - Cross-chunk relationship analysis
+   - Context dependency mapping
+   - Semantic connection visualization
+   - Insight aggregation
+
 ## Detailed Implementation Steps
 
 ### Step 1: Database Schema Updates
@@ -146,7 +233,24 @@ CREATE TABLE scoring_configurations (
 - `src/services/scoringService.js` (enhance existing)
 - `src/routes/analysis.js` (update endpoints)
 
-### Step 4: Configuration Management System
+### Step 4: Chunking System Implementation
+**Duration**: 4-5 days
+
+**Tasks**:
+- [ ] Create chunking service with multiple strategies
+- [ ] Implement Hebrew-aware text processing
+- [ ] Add semantic boundary detection
+- [ ] Create chunk quality assessment
+- [ ] Integrate with analysis pipeline
+- [ ] Add chunking configuration management
+
+**New Files**:
+- `src/services/chunkingService.js`
+- `src/services/semanticChunkingService.js`
+- `src/config/chunkingConfig.js`
+- `src/routes/chunking.js`
+
+### Step 5: Configuration Management System
 **Duration**: 2-3 days
 
 **Tasks**:
@@ -161,7 +265,7 @@ CREATE TABLE scoring_configurations (
 - `src/services/configurationService.js`
 - `src/middleware/configurationValidation.js`
 
-### Step 5: Frontend Configuration Interface
+### Step 6: Frontend Configuration Interface
 **Duration**: 3-4 days
 
 **Tasks**:
@@ -176,7 +280,7 @@ CREATE TABLE scoring_configurations (
 - `frontend/src/components/configuration/`
 - `frontend/src/components/analysis/enhanced/`
 
-### Step 6: Integration & Testing
+### Step 7: Integration & Testing
 **Duration**: 2-3 days
 
 **Tasks**:
@@ -212,6 +316,48 @@ Analyze the emotional tone of this Hebrew conversation:
 - Confidence level in sentiment assessment
 
 Focus on Hebrew language nuances and cultural context.
+```
+
+### Chunking System Specifications
+
+#### Chunking Strategies
+```javascript
+// Sentence-based chunking
+const sentenceChunking = {
+  strategy: 'sentence',
+  maxTokens: 1500,
+  preserveSentences: true,
+  hebrewAware: true
+};
+
+// Semantic chunking
+const semanticChunking = {
+  strategy: 'semantic',
+  maxTokens: 1500,
+  semanticThreshold: 0.8,
+  contextWindow: 200,
+  overlapTokens: 100
+};
+
+// Hybrid chunking
+const hybridChunking = {
+  strategy: 'hybrid',
+  primaryStrategy: 'semantic',
+  fallbackStrategy: 'sentence',
+  adaptiveThreshold: true,
+  qualityCheck: true
+};
+```
+
+#### Chunk Quality Metrics
+```javascript
+const chunkQuality = {
+  coherence: 0.85, // 0-1 scale
+  contextCompleteness: 0.92,
+  semanticClarity: 0.78,
+  overlapEffectiveness: 0.88,
+  overallScore: 0.86
+};
 ```
 
 ### Enhanced Scoring Algorithm
@@ -255,6 +401,12 @@ const configurationSchema = {
     interest: { high: [String], medium: [String] },
     engagement: { high: [String], medium: [String] }
   },
+  chunking: {
+    strategy: String,
+    maxChunkSize: Number,
+    overlapSize: Number,
+    preserveContext: Boolean
+  },
   isActive: Boolean
 };
 ```
@@ -273,13 +425,20 @@ DELETE /api/configuration/:id - Delete configuration
 POST /api/analyze/enhanced - Enhanced analysis with GPT-4
 GET /api/analyze/:id/enhanced - Get enhanced analysis results
 POST /api/analyze/:id/retry-enhanced - Retry enhanced analysis
+
+// Chunking management
+POST /api/analyze/chunk - Create chunks from transcript
+GET /api/analyze/:id/chunks - Get chunks for analysis
+POST /api/analyze/:id/rechunk - Regenerate chunks with new config
+GET /api/analyze/chunking-config - Get chunking configuration
+PUT /api/analyze/chunking-config - Update chunking configuration
 ```
 
 ### Updated Endpoints
 ```javascript
 // Enhanced existing endpoints
-POST /api/analyze - Now includes enhanced analysis
-GET /api/analyze/:id - Now includes enhanced results
+POST /api/analyze - Now includes enhanced analysis and chunking
+GET /api/analyze/:id - Now includes enhanced results and chunks
 ```
 
 ## Frontend Components
@@ -290,6 +449,7 @@ GET /api/analyze/:id - Now includes enhanced results
 interface ConfigurationPanel {
   weights: ScoringWeights;
   phrases: PhraseConfiguration;
+  chunking: ChunkingConfiguration;
   onSave: (config: Configuration) => void;
   onApply: (config: Configuration) => void;
 }
@@ -304,6 +464,12 @@ interface PhraseManager {
   onAdd: (category: string, phrase: string, level: 'high' | 'medium') => void;
   onRemove: (category: string, phrase: string) => void;
 }
+
+interface ChunkingConfigEditor {
+  config: ChunkingConfiguration;
+  onChange: (config: ChunkingConfiguration) => void;
+  onTest: (config: ChunkingConfiguration) => Promise<ChunkingTestResult>;
+}
 ```
 
 ### Enhanced Analysis Display
@@ -315,12 +481,20 @@ interface EnhancedAnalysisView {
   speakerAnalysis: SpeakerAnalysis;
   objectionAnalysis: ObjectionAnalysis;
   confidence: number;
+  chunks: ChunkAnalysis[];
 }
 
 interface SentimentVisualization {
   overallSentiment: 'positive' | 'negative' | 'neutral';
   confidence: number;
   sentimentChanges: SentimentChange[];
+}
+
+interface ChunkingVisualization {
+  chunks: Chunk[];
+  chunkQuality: ChunkQualityMetrics;
+  analysisResults: ChunkAnalysis[];
+  optimizationSuggestions: string[];
 }
 ```
 
@@ -329,11 +503,13 @@ interface SentimentVisualization {
 ### Unit Tests
 - [ ] GPT-4 service integration tests
 - [ ] Enhanced scoring algorithm tests
+- [ ] Chunking service tests
 - [ ] Configuration management tests
 - [ ] Hebrew text analysis tests
 
 ### Integration Tests
 - [ ] End-to-end analysis flow
+- [ ] Chunking pipeline integration
 - [ ] Configuration management flow
 - [ ] API endpoint testing
 - [ ] Database migration testing
@@ -341,6 +517,7 @@ interface SentimentVisualization {
 ### Performance Tests
 - [ ] GPT-4 API response time
 - [ ] Analysis processing time
+- [ ] Chunking performance
 - [ ] Configuration update performance
 - [ ] Memory usage optimization
 
@@ -348,26 +525,30 @@ interface SentimentVisualization {
 
 ### Technical Risks
 1. **GPT-4 API Costs**
-   - Mitigation: Implement caching, batch processing, cost monitoring
+   - Mitigation: Implement caching, batch processing, cost monitoring, chunking optimization
    
 2. **API Rate Limits**
-   - Mitigation: Implement retry logic, queue system, fallback to basic analysis
+   - Mitigation: Implement retry logic, queue system, fallback to basic analysis, chunking batching
    
 3. **Hebrew Language Accuracy**
-   - Mitigation: Extensive testing with real Hebrew transcripts, prompt optimization
+   - Mitigation: Extensive testing with real Hebrew transcripts, prompt optimization, chunking strategies
+   
+4. **Chunking Complexity**
+   - Mitigation: Multiple fallback strategies, quality validation, performance monitoring
 
 ### Business Risks
 1. **User Adoption**
-   - Mitigation: Gradual rollout, user training, clear value demonstration
+   - Mitigation: Gradual rollout, user training, clear value demonstration, chunking visualization
    
 2. **Configuration Complexity**
-   - Mitigation: Intuitive UI, default configurations, guided setup
+   - Mitigation: Intuitive UI, default configurations, guided setup, chunking presets
 
 ## Success Metrics
 
 ### Technical Metrics
 - Analysis accuracy improvement: Target 40%
 - Processing time: Target < 2 minutes per analysis
+- Chunking quality: Target 85%+ coherence score
 - API reliability: Target 99.9% uptime
 - Configuration update time: Target < 10 seconds
 
@@ -376,6 +557,7 @@ interface SentimentVisualization {
 - Configuration adoption rate: Target 80%
 - Analysis confidence improvement: Target 50%
 - False positive reduction: Target 60%
+- Chunking strategy adoption: Target 70%
 
 ## Implementation Timeline
 
@@ -385,11 +567,16 @@ interface SentimentVisualization {
 - [ ] Basic enhanced scoring algorithm
 
 ### Week 2
+- [ ] Chunking system implementation
+- [ ] Chunking strategies and quality assessment
+- [ ] Chunking API integration
+
+### Week 3
 - [ ] Configuration management system
 - [ ] Frontend configuration interface
 - [ ] Integration and testing
 
-### Week 3
+### Week 4
 - [ ] Performance optimization
 - [ ] Documentation and training
 - [ ] Production deployment
@@ -408,15 +595,20 @@ interface SentimentVisualization {
    - [ ] Basic configuration management
 
 3. **Week 2 Goals**:
+   - [ ] Complete chunking system
+   - [ ] Implement chunking strategies
+   - [ ] Chunking API integration
+
+4. **Week 3 Goals**:
    - [ ] Frontend configuration interface
    - [ ] End-to-end integration
    - [ ] Initial testing
 
-4. **Week 3 Goals**:
+5. **Week 4 Goals**:
    - [ ] Performance optimization
    - [ ] Production deployment
    - [ ] User training and documentation
 
 ---
 
-*This plan provides a comprehensive roadmap for implementing enhanced audio transcription analysis with GPT-4 integration, dynamic configuration management, and improved Hebrew language understanding.*
+*This plan provides a comprehensive roadmap for implementing enhanced audio transcription analysis with GPT-4 integration, intelligent chunking system, dynamic configuration management, and improved Hebrew language understanding.*

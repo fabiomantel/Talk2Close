@@ -58,7 +58,7 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024, // 10MB default
+    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 500 * 1024 * 1024, // 500MB default (increased from 10MB)
     files: 1 // Only allow 1 file at a time
   }
 });
@@ -69,7 +69,7 @@ const handleUploadError = (error, req, res, next) => {
     if (error.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({
         error: true,
-        message: 'File too large. Maximum size is 10MB.'
+        message: 'File too large. Maximum size is 500MB.'
       });
     }
     if (error.code === 'LIMIT_FILE_COUNT') {

@@ -1,9 +1,11 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { prisma } = require('../database/connection');
+const fs = require('fs-extra');
 const whisperService = require('../services/whisperService');
 const scoringService = require('../services/scoringService');
 const enhancedScoringService = require('../services/enhancedScoringService');
+const debugTrackingService = require('../services/debugTrackingService');
 
 const router = express.Router();
 
@@ -17,6 +19,13 @@ router.post('/',
     body('useEnhancedAnalysis').optional().isBoolean().withMessage('useEnhancedAnalysis must be a boolean')
   ],
   async (req, res, next) => {
+    // Start debug tracking
+    const sessionId = debugTrackingService.startSession(null, {
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      analysisType: 'manual'
+    });
+
     try {
       // Check validation errors
       const errors = validationResult(req);
@@ -63,14 +72,45 @@ router.post('/',
       console.log(`📁 Audio file: ${salesCall.audioFilePath}`);
       console.log(`🤖 Enhanced analysis: ${useEnhancedAnalysis}`);
 
+      // Track Whisper API call
+      const fileStats = await fs.stat(salesCall.audioFilePath);
+      debugTrackingService.trackWhisper(sessionId, {
+        filePath: salesCall.audioFilePath,
+        fileSize: fileStats.size,
+        model: 'whisper-1',
+        language: 'he',
+        responseFormat: 'verbose_json',
+        timestampGranularities: ['word']
+      });
+
       // Validate audio file
       await whisperService.validateAudioFile(salesCall.audioFilePath);
 
       // Transcribe audio using Whisper API
       const transcription = await whisperService.transcribeAudio(salesCall.audioFilePath);
 
+      // Complete Whisper tracking
+      debugTrackingService.completeWhisper(sessionId, {
+        success: true,
+        text: transcription.text,
+        language: transcription.language,
+        duration: transcription.duration,
+        segments: transcription.segments,
+        tokensUsed: null,
+        cost: null
+      });
+
       // Get transcription statistics
       const stats = whisperService.getTranscriptionStats(transcription);
+
+      // Track scoring analysis
+      debugTrackingService.trackScoring(sessionId, {
+        transcript: transcription.text,
+        duration: transcription.duration || 0,
+        wordCount: stats.wordCount || 0,
+        analysisType: useEnhancedAnalysis ? 'enhanced' : 'traditional',
+        useEnhancedAnalysis
+      });
 
       // Perform scoring analysis (enhanced or traditional)
       let scoringResults;
@@ -79,6 +119,12 @@ router.post('/',
 
       if (useEnhancedAnalysis) {
         try {
+          // Track GPT-4 analysis
+          debugTrackingService.trackGPT4(sessionId, {
+            transcript: transcription.text,
+            analysisTypes: ['context', 'sentiment', 'flow']
+          });
+
           scoringResults = await enhancedScoringService.analyzeTranscript(
             transcription.text,
             transcription.duration || 0,
@@ -86,8 +132,23 @@ router.post('/',
           );
           analysisVersion = scoringResults.metadata.analysisVersion;
           gpt4AnalysisUsed = scoringResults.metadata.gpt4Used;
+
+          // Complete GPT-4 tracking
+          debugTrackingService.completeGPT4(sessionId, {
+            success: true,
+            overallConfidence: scoringResults.metadata.gpt4Confidence || 0,
+            errors: []
+          });
         } catch (error) {
           console.warn('⚠️ Enhanced analysis failed, falling back to traditional analysis:', error.message);
+          
+          // Complete GPT-4 tracking with error
+          debugTrackingService.completeGPT4(sessionId, {
+            success: false,
+            error: error.message,
+            errors: [error.message]
+          });
+
           scoringResults = scoringService.analyzeTranscript(
             transcription.text,
             transcription.duration || 0,
@@ -102,6 +163,9 @@ router.post('/',
         );
       }
 
+      // Complete scoring tracking
+      debugTrackingService.completeScoring(sessionId, scoringResults);
+
       // Prepare enhanced analysis data
       const enhancedData = {
         sentimentScore: scoringResults.analysis.gpt4Analysis?.sentiment?.confidence || null,
@@ -114,6 +178,14 @@ router.post('/',
         analysisVersion: analysisVersion,
         gpt4AnalysisUsed: gpt4AnalysisUsed
       };
+
+      // Track database update
+      debugTrackingService.trackDatabase(sessionId, {
+        operation: 'update',
+        table: 'sales_calls',
+        recordId: parseInt(salesCallId),
+        dataSize: JSON.stringify(enhancedData).length
+      });
 
       // Update sales call with transcript and scores
       const updatedSalesCall = await prisma.salesCall.update({
@@ -134,44 +206,59 @@ router.post('/',
         }
       });
 
+      // Complete database tracking
+      debugTrackingService.completeDatabase(sessionId, {
+        success: true,
+        recordId: parseInt(salesCallId),
+        affectedRows: 1
+      });
+
+      // Complete session tracking
+      debugTrackingService.completeSession(sessionId, {
+        success: true,
+        salesCallId: parseInt(salesCallId),
+        overallScore: scoringResults.scores.overall
+      });
+
       console.log(`✅ Analysis completed for sales call ID: ${salesCallId}`);
       console.log(`📊 Transcription stats:`, stats);
       console.log(`🎯 Scoring results:`, scoringResults.scores);
       console.log(`🤖 Analysis version: ${analysisVersion}`);
 
-      res.json({
-        success: true,
-        message: 'Audio analysis and scoring completed successfully',
-        data: {
-          salesCallId: updatedSalesCall.id,
-          customer: {
-            id: updatedSalesCall.customer.id,
-            name: updatedSalesCall.customer.name,
-            phone: updatedSalesCall.customer.phone
-          },
-          transcription: {
-            text: transcription.text,
-            language: transcription.language,
-            duration: transcription.duration,
-            stats: stats
-          },
-          scoring: {
-            scores: scoringResults.scores,
-            analysis: scoringResults.analysis,
-            metadata: scoringResults.metadata
-          },
-          enhancedAnalysis: {
-            version: analysisVersion,
-            gpt4Used: gpt4AnalysisUsed,
-            confidence: enhancedData.analysisConfidence,
-            sentiment: scoringResults.analysis.gpt4Analysis?.sentiment,
-            conversationFlow: scoringResults.analysis.gpt4Analysis?.conversationFlow,
-            contextInsights: enhancedData.contextInsights
-          },
-          analysisStatus: 'completed',
-          scoringStatus: 'completed'
-        }
-      });
+              res.json({
+          success: true,
+          message: 'Audio analysis and scoring completed successfully',
+          data: {
+            salesCallId: updatedSalesCall.id,
+            ...(debugTrackingService.isDebugEnabled() && { sessionId: sessionId }), // Include session ID only if debug is enabled
+            customer: {
+              id: updatedSalesCall.customer.id,
+              name: updatedSalesCall.customer.name,
+              phone: updatedSalesCall.customer.phone
+            },
+            transcription: {
+              text: transcription.text,
+              language: transcription.language,
+              duration: transcription.duration,
+              stats: stats
+            },
+            scoring: {
+              scores: scoringResults.scores,
+              analysis: scoringResults.analysis,
+              metadata: scoringResults.metadata
+            },
+            enhancedAnalysis: {
+              version: analysisVersion,
+              gpt4Used: gpt4AnalysisUsed,
+              confidence: enhancedData.analysisConfidence,
+              sentiment: scoringResults.analysis.gpt4Analysis?.sentiment,
+              conversationFlow: scoringResults.analysis.gpt4Analysis?.conversationFlow,
+              contextInsights: enhancedData.contextInsights
+            },
+            analysisStatus: 'completed',
+            scoringStatus: 'completed'
+          }
+        });
 
     } catch (error) {
       console.error('❌ Analysis error:', error);
