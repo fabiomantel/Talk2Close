@@ -4,16 +4,24 @@ import {
   HomeIcon, 
   CloudArrowUpIcon, 
   UsersIcon, 
-  ChartBarIcon 
+  ChartBarIcon,
+  Cog6ToothIcon,
+  BugAntIcon
 } from '@heroicons/react/24/outline';
 import { getUIText } from '../../utils/hebrewUtils';
+import { config } from '../../config/environment';
 
 const Sidebar: React.FC = () => {
+  const isDebugEnabled = config.DEBUG_MODE;
+
   const navigation = [
     { name: getUIText('dashboard_nav'), href: '/', icon: HomeIcon },
     { name: getUIText('upload_nav'), href: '/upload', icon: CloudArrowUpIcon },
     { name: getUIText('customers_nav'), href: '/customers', icon: UsersIcon },
     { name: getUIText('analysis_nav'), href: '/analysis', icon: ChartBarIcon },
+    { name: getUIText('configuration'), href: '/configuration', icon: Cog6ToothIcon },
+    // Only show debug navigation if debug mode is enabled
+    ...(isDebugEnabled ? [{ name: 'Debug', href: '/debug', icon: BugAntIcon }] : []),
   ];
 
   return (

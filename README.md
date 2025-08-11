@@ -53,7 +53,7 @@ PORT=3000
 NODE_ENV=development
 
 # Database Configuration
-DATABASE_URL="postgresql://username:password@localhost:5432/hebrew_sales_analysis"
+DATABASE_URL="postgresql://username:password@your-db-host:5432/hebrew_sales_analysis"
 
 # OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key_here
@@ -94,7 +94,7 @@ npm run dev
 npm start
 ```
 
-The server will start on `http://localhost:3000`
+The server will start on the configured port (default: 3000). Check the console output for the exact URL.
 
 ## 📚 API Documentation
 

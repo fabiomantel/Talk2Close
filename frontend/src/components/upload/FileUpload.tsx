@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { CloudArrowUpIcon, MusicalNoteIcon } from '@heroicons/react/24/outline';
+import { CloudArrowUpIcon, MusicalNoteIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -8,9 +8,29 @@ interface FileUploadProps {
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, selectedFile }) => {
+  const [fileWarning, setFileWarning] = useState<string | null>(null);
+  
+  const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
+  const LARGE_FILE_THRESHOLD = 25 * 1024 * 1024; // 25MB (Whisper limit)
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
-      onFileSelect(acceptedFiles[0]);
+      const file = acceptedFiles[0];
+      
+      // Check file size
+      if (file.size > MAX_FILE_SIZE) {
+        setFileWarning(`File is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum size is 500MB.`);
+        return;
+      }
+      
+      // Warn about large files that will need chunking
+      if (file.size > LARGE_FILE_THRESHOLD) {
+        setFileWarning(`Large file detected (${(file.size / 1024 / 1024).toFixed(1)}MB). This file will be automatically split into smaller chunks for transcription, which may take longer.`);
+      } else {
+        setFileWarning(null);
+      }
+      
+      onFileSelect(file);
     }
   }, [onFileSelect]);
 
@@ -27,6 +47,17 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, selectedFile }) =
       <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
         קובץ אודיו
       </label>
+      
+      {/* File size warning */}
+      {fileWarning && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center">
+            <ExclamationTriangleIcon className="h-5 w-5 text-yellow-600 mr-2" />
+            <p className="text-sm text-yellow-800 hebrew-content">{fileWarning}</p>
+          </div>
+        </div>
+      )}
+      
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors rtl-card ${
@@ -55,7 +86,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, selectedFile }) =
                 : 'גרור ושחרר קובץ אודיו, או לחץ לבחירה'}
             </p>
             <p className="text-xs text-gray-500 mt-1 hebrew-content">
-              תומך ב-MP3, WAV, M4A, AAC, OGG
+              תומך ב-MP3, WAV, M4A, AAC, OGG (עד 500MB)
             </p>
           </div>
         )}

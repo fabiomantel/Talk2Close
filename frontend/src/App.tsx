@@ -8,7 +8,10 @@ import Dashboard from './pages/Dashboard';
 import Upload from './pages/Upload';
 import Customers from './pages/Customers';
 import Analysis from './pages/Analysis';
+import Configuration from './pages/Configuration';
+import Debug from './pages/Debug';
 import ErrorBoundary from './components/common/ErrorBoundary';
+
 import './App.css';
 
 const queryClient = new QueryClient({
@@ -32,19 +35,20 @@ const DebugConfig = () => {
       <div style={{ 
         position: 'fixed', 
         bottom: 0, 
-        left: 0, 
+        right: 0, 
         background: '#f0f0f0', 
         padding: '10px', 
         fontSize: '12px', 
         zIndex: 9999,
         maxWidth: '300px',
         borderTop: '1px solid #ccc',
-        borderRight: '1px solid #ccc'
+        borderLeft: '1px solid #ccc'
       }}>
         <strong>🔧 Debug Config:</strong><br/>
         API: {config.API_BASE_URL}<br/>
         Backend: {config.BACKEND_URL}<br/>
-        Env: {config.ENVIRONMENT}
+        Env: {config.ENVIRONMENT}<br/>
+        Debug: {config.DEBUG_MODE ? 'Enabled' : 'Disabled'}
       </div>
     );
   }
@@ -52,11 +56,14 @@ const DebugConfig = () => {
 };
 
 function App() {
+  const isDebugEnabled = config.DEBUG_MODE;
+  
   console.log('🚀 App Component: Initializing Hebrew Sales Call Analysis System');
   console.log('🌐 Environment:', config.ENVIRONMENT);
   console.log('🔗 API Base URL:', config.API_BASE_URL);
   console.log('🌍 Default Locale:', config.DEFAULT_LOCALE);
   console.log('📱 RTL Support:', config.RTL_SUPPORT);
+  console.log('🐛 Debug Mode:', config.DEBUG_MODE);
 
   return (
     <ErrorBoundary>
@@ -73,6 +80,8 @@ function App() {
                   <Route path="/upload" element={<Upload />} />
                   <Route path="/customers" element={<Customers />} />
                   <Route path="/analysis" element={<Analysis />} />
+                  <Route path="/configuration" element={<Configuration />} />
+                  {isDebugEnabled && <Route path="/debug" element={<Debug />} />}
                 </Routes>
               </main>
             </div>

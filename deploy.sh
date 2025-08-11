@@ -38,7 +38,7 @@ read -s OPENAI_API_KEY
 flyctl secrets set OPENAI_API_KEY="$OPENAI_API_KEY"
 flyctl secrets set NODE_ENV="production"
 flyctl secrets set UPLOAD_DIR="./uploads"
-flyctl secrets set MAX_FILE_SIZE="10485760"
+flyctl secrets set MAX_FILE_SIZE="524288000"
 flyctl secrets set ALLOWED_AUDIO_TYPES="audio/mpeg,audio/wav,audio/mp3,audio/mp4"
 
 echo "✅ Environment variables set"

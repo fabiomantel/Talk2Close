@@ -38,10 +38,33 @@ model SalesCall {
   analysisNotes   String?  @map("analysis_notes") @db.Text
   createdAt       DateTime @default(now()) @map("created_at")
 
+  // Enhanced Analysis Fields
+  sentimentScore      Decimal? @map("sentiment_score") @db.Decimal(3, 2)
+  conversationPhases   Json?    @map("conversation_phases")
+  speakerAnalysis      Json?    @map("speaker_analysis")
+  objectionAnalysis    Json?    @map("objection_analysis")
+  contextInsights      Json?    @map("context_insights")
+  analysisConfidence   Decimal? @map("analysis_confidence") @db.Decimal(3, 2)
+  enhancedNotes        String?  @map("enhanced_notes") @db.Text
+  analysisVersion      String?  @map("analysis_version") @db.VarChar(20)
+  gpt4AnalysisUsed     Boolean  @default(false) @map("gpt4_analysis_used")
+
   // Relations
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   @@map("sales_calls")
+}
+
+model ScoringConfiguration {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  weights   Json     // Scoring weights for different categories
+  phrases   Json     // Hebrew phrases for different categories
+  isActive  Boolean  @default(false) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("scoring_configurations")
 }
 
 model CustomerPriority {

@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { apiService } from '../../services/api';
 import ScoreBreakdown from './ScoreBreakdown';
 import HebrewInsights from './HebrewInsights';
+import EnhancedAnalysisView from './EnhancedAnalysisView';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorMessage from '../common/ErrorMessage';
+import AudioPlayer from '../common/AudioPlayer';
 import { getUIText } from '../../utils/hebrewUtils';
 
 interface AnalysisDetailsProps {
@@ -46,6 +48,16 @@ const AnalysisDetails: React.FC<AnalysisDetailsProps> = ({ analysisId }) => {
         </div>
       </div>
 
+      {/* Audio Player Section */}
+      {analysis.audioFilePath && (
+        <AudioPlayer 
+          salesCallId={analysis.id}
+          onPlaybackStart={() => console.log('Audio playback started for analysis:', analysis.id)}
+          onPlaybackEnd={() => console.log('Audio playback ended for analysis:', analysis.id)}
+          onError={(error) => console.error('Audio error for analysis:', analysis.id, error)}
+        />
+      )}
+
       {analysis.overallScore && (
         <ScoreBreakdown
           scores={{
@@ -58,6 +70,43 @@ const AnalysisDetails: React.FC<AnalysisDetailsProps> = ({ analysisId }) => {
         />
       )}
 
+      {/* Enhanced Analysis View */}
+      {analysis.gpt4AnalysisUsed && (
+        <EnhancedAnalysisView
+          enhancedAnalysis={{
+            version: analysis.analysisVersion || 'unknown',
+            gpt4Used: analysis.gpt4AnalysisUsed,
+            confidence: analysis.analysisConfidence || 0,
+            sentiment: analysis.sentimentScore ? {
+              overall: analysis.sentimentScore > 0.6 ? 'positive' : analysis.sentimentScore < 0.4 ? 'negative' : 'neutral',
+              confidence: analysis.sentimentScore
+            } : {
+              overall: 'neutral' as const,
+              confidence: 0
+            },
+            conversationFlow: analysis.conversationPhases ? {
+              phases: analysis.conversationPhases.phases || [],
+              totalDuration: analysis.conversationPhases.totalDuration || 0
+            } : {
+              phases: [],
+              totalDuration: 0
+            },
+            speakerAnalysis: analysis.speakerAnalysis || {
+              customer: { engagement: 0, objections: [], buyingSignals: [] },
+              agent: { effectiveness: 0, techniques: [], areas: [] }
+            },
+            objectionAnalysis: analysis.objectionAnalysis || { objections: [] },
+            contextInsights: analysis.contextInsights || {
+              keyInsights: [],
+              recommendations: [],
+              riskFactors: [],
+              opportunities: []
+            }
+          }}
+        />
+      )}
+
+      {/* Traditional Analysis Notes */}
       {analysis.analysisNotes && (
         <HebrewInsights notes={analysis.analysisNotes} />
       )}

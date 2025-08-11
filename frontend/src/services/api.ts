@@ -21,6 +21,16 @@ export interface SalesCall {
   engagementScore?: number;
   overallScore?: number;
   analysisNotes?: string;
+  // Enhanced analysis fields
+  sentimentScore?: number;
+  conversationPhases?: any;
+  speakerAnalysis?: any;
+  objectionAnalysis?: any;
+  contextInsights?: any;
+  analysisConfidence?: number;
+  enhancedNotes?: string;
+  analysisVersion?: string;
+  gpt4AnalysisUsed?: boolean;
   createdAt: string;
   customer: Customer;
 }
@@ -256,6 +266,70 @@ class ApiService {
   getCustomer = async (id: number): Promise<{ success: boolean; data: Customer }> => {
     return this.request(`/customers/${id}`);
   }
+
+  // Audio
+  getAudioUrl = (salesCallId: number): string => {
+    return `${API_BASE}/audio/${salesCallId}`;
+  }
+
+  // Optional: Audio metadata endpoint for future use
+  getAudioMetadata = async (salesCallId: number) => {
+    return this.request(`/audio/metadata/${salesCallId}`);
+  }
+
+  // Configuration
+  getConfiguration = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/configuration');
+  }
+
+  createConfiguration = async (config: any): Promise<{ success: boolean; data: any }> => {
+    return this.request('/configuration', {
+      method: 'POST',
+      body: JSON.stringify(config),
+    });
+  }
+
+  updateConfiguration = async (id: number, config: any): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/configuration/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(config),
+    });
+  }
+
+  deleteConfiguration = async (id: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/configuration/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  resetConfiguration = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/configuration/reset', {
+      method: 'POST',
+    });
+  }
+
+  // Debug dashboard methods
+  getDebugSessions = async (): Promise<{ success: boolean; data: { sessions: any[] } }> => {
+    return this.request('/debug/sessions');
+  };
+
+  getDebugSession = async (sessionId: string): Promise<{ success: boolean; data: { session: any } }> => {
+    return this.request(`/debug/sessions/${sessionId}`);
+  };
+
+  getDebugMetrics = async (): Promise<{ success: boolean; data: { metrics: any } }> => {
+    return this.request('/debug/metrics');
+  };
+
+  getDebugStatus = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/debug/status');
+  };
+
+  clearDebugSessions = async (): Promise<{ success: boolean; message: string }> => {
+    return this.request('/debug/clear-sessions', {
+      method: 'POST',
+    });
+  };
 
   // Health check
   healthCheck = async (): Promise<{ status: string }> => {

@@ -10,14 +10,38 @@ const fileUploadRoutes = require('./routes/fileUpload');
 const analysisRoutes = require('./routes/analysis');
 const customerRoutes = require('./routes/customers');
 const dashboardRoutes = require('./routes/dashboard');
+const audioRoutes = require('./routes/audio');
+const configurationRoutes = require('./routes/configuration');
+const debugRoutes = require('./routes/debug');
 
 const app = express();
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 
-// Security middleware
-app.use(helmet());
-app.use(cors());
+// Backend configuration
+const getServerUrl = () => {
+  const hostname = process.env.HOSTNAME || 'localhost';
+  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+  return `${protocol}://${hostname}:${PORT}`;
+};
+
+// Security middleware with CORS-friendly configuration
+app.use(helmet({
+  crossOriginResourcePolicy: { 
+    policy: "cross-origin" // Allow cross-origin requests for audio content
+  },
+  crossOriginOpenerPolicy: { 
+    policy: "unsafe-none" // More permissive for development
+  }
+}));
+app.use(cors({
+  origin: true, // Allow all origins in development
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Range'],
+  exposedHeaders: ['Content-Length', 'Content-Range', 'Accept-Ranges'],
+  credentials: false,
+  maxAge: 86400 // Cache preflight for 24 hours
+}));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -34,6 +58,35 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Audio file serving for MVP (static file serving)
+app.use('/uploads', express.static('uploads', {
+  setHeaders: (res, path) => {
+    // Set proper MIME types for audio files
+    const ext = path.toLowerCase().substr(path.lastIndexOf('.'));
+    const mimeTypes = {
+      '.mp3': 'audio/mpeg',
+      '.wav': 'audio/wav', 
+      '.m4a': 'audio/mp4',
+      '.aac': 'audio/aac',
+      '.ogg': 'audio/ogg'
+    };
+    
+    if (mimeTypes[ext]) {
+      res.set('Content-Type', mimeTypes[ext]);
+    }
+    
+    // Enable seeking support for audio players
+    res.set('Accept-Ranges', 'bytes');
+    
+    // MVP: Simple caching for development
+    res.set('Cache-Control', 'public, max-age=3600');
+    
+    // CORS headers for audio requests
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'GET');
+  }
+}));
+
 // Root route
 app.get('/', (req, res) => {
   res.json({
@@ -48,14 +101,19 @@ app.get('/', (req, res) => {
       upload: '/api/upload',
       analyze: '/api/analyze',
       customers: '/api/customers',
-      dashboard: '/api/dashboard'
+      dashboard: '/api/dashboard',
+      audio: '/api/audio',
+      configuration: '/api/configuration',
+      ...(process.env.DEBUG_TRACKING === 'true' && { debug: '/api/debug' })
     },
     features: [
       'Hebrew speech-to-text transcription',
       'AI-powered customer scoring',
       'Sales call analysis',
       'Customer prioritization',
-      'Real-time dashboard'
+      'Real-time dashboard',
+      'Dynamic configuration management',
+      ...(process.env.DEBUG_TRACKING === 'true' ? ['Debug dashboard'] : [])
     ]
   });
 });
@@ -83,6 +141,9 @@ app.use('/api/upload', fileUploadRoutes);
 app.use('/api/analyze', analysisRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/audio', audioRoutes);
+app.use('/api/configuration', configurationRoutes);
+app.use('/api/debug', debugRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -122,9 +183,10 @@ process.on('SIGINT', async () => {
 // Start server only if this file is run directly (not imported)
 if (require.main === module) {
   app.listen(PORT, () => {
+    const serverUrl = getServerUrl();
     console.log(`🚀 Hebrew Sales Call Analysis Server running on port ${PORT}`);
     console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+    console.log(`🔗 Health check: ${serverUrl}/health`);
   });
 }
 
