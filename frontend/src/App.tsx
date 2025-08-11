@@ -11,7 +11,7 @@ import Analysis from './pages/Analysis';
 import Configuration from './pages/Configuration';
 import Debug from './pages/Debug';
 import ErrorBoundary from './components/common/ErrorBoundary';
-import { useDebugStatus } from './hooks/useDebugStatus';
+
 import './App.css';
 
 const queryClient = new QueryClient({
@@ -56,7 +56,7 @@ const DebugConfig = () => {
 };
 
 function App() {
-  const { isEnabled: isDebugEnabled } = useDebugStatus();
+  const isDebugEnabled = config.DEBUG_MODE;
   
   console.log('🚀 App Component: Initializing Hebrew Sales Call Analysis System');
   console.log('🌐 Environment:', config.ENVIRONMENT);

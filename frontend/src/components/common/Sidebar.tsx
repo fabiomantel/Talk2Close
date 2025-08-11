@@ -9,10 +9,10 @@ import {
   BugAntIcon
 } from '@heroicons/react/24/outline';
 import { getUIText } from '../../utils/hebrewUtils';
-import { useDebugStatus } from '../../hooks/useDebugStatus';
+import { config } from '../../config/environment';
 
 const Sidebar: React.FC = () => {
-  const { isEnabled: isDebugEnabled } = useDebugStatus();
+  const isDebugEnabled = config.DEBUG_MODE;
 
   const navigation = [
     { name: getUIText('dashboard_nav'), href: '/', icon: HomeIcon },

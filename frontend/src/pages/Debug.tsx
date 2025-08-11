@@ -13,7 +13,7 @@ import {
   CloudArrowUpIcon
 } from '@heroicons/react/24/outline';
 import { apiService } from '../services/api';
-import { useDebugStatus } from '../hooks/useDebugStatus';
+import { config } from '../config/environment';
 
 interface DebugSession {
   sessionId: string;
@@ -167,7 +167,7 @@ interface DetailedSession {
 
 const Debug: React.FC = () => {
   const navigate = useNavigate();
-  const { isEnabled: isDebugEnabled } = useDebugStatus();
+  const isDebugEnabled = config.DEBUG_MODE;
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
 
