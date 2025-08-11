@@ -50,7 +50,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     id: salesCallId.toString(),
     title: 'הקלטה מקורית',
     artist: `שיחה ${salesCallId}`,
-    src: `${config.BACKEND_URL}/api/audio/${salesCallId}`,
+    src: `${config.API_BASE_URL}/audio/${salesCallId}`,
   };
 
   // Format time in mm:ss format
