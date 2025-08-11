@@ -119,3 +119,5 @@ docs/
 # Deployment files
 .env.production
 .env.staging 
+.vercel
+.env*.local
