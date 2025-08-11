@@ -21,6 +21,16 @@ export interface SalesCall {
   engagementScore?: number;
   overallScore?: number;
   analysisNotes?: string;
+  // Enhanced analysis fields
+  sentimentScore?: number;
+  conversationPhases?: any;
+  speakerAnalysis?: any;
+  objectionAnalysis?: any;
+  contextInsights?: any;
+  analysisConfidence?: number;
+  enhancedNotes?: string;
+  analysisVersion?: string;
+  gpt4AnalysisUsed?: boolean;
   createdAt: string;
   customer: Customer;
 }
@@ -265,6 +275,37 @@ class ApiService {
   // Optional: Audio metadata endpoint for future use
   getAudioMetadata = async (salesCallId: number) => {
     return this.request(`/audio/metadata/${salesCallId}`);
+  }
+
+  // Configuration
+  getConfiguration = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/configuration');
+  }
+
+  createConfiguration = async (config: any): Promise<{ success: boolean; data: any }> => {
+    return this.request('/configuration', {
+      method: 'POST',
+      body: JSON.stringify(config),
+    });
+  }
+
+  updateConfiguration = async (id: number, config: any): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/configuration/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(config),
+    });
+  }
+
+  deleteConfiguration = async (id: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/configuration/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  resetConfiguration = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/configuration/reset', {
+      method: 'POST',
+    });
   }
 
   // Health check

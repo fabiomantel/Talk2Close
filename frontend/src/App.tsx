@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Upload from './pages/Upload';
 import Customers from './pages/Customers';
 import Analysis from './pages/Analysis';
+import Configuration from './pages/Configuration';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import './App.css';
 
@@ -73,6 +74,7 @@ function App() {
                   <Route path="/upload" element={<Upload />} />
                   <Route path="/customers" element={<Customers />} />
                   <Route path="/analysis" element={<Analysis />} />
+                  <Route path="/configuration" element={<Configuration />} />
                 </Routes>
               </main>
             </div>

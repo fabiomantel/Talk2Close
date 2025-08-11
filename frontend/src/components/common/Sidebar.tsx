@@ -4,7 +4,8 @@ import {
   HomeIcon, 
   CloudArrowUpIcon, 
   UsersIcon, 
-  ChartBarIcon 
+  ChartBarIcon,
+  Cog6ToothIcon
 } from '@heroicons/react/24/outline';
 import { getUIText } from '../../utils/hebrewUtils';
 
@@ -14,6 +15,7 @@ const Sidebar: React.FC = () => {
     { name: getUIText('upload_nav'), href: '/upload', icon: CloudArrowUpIcon },
     { name: getUIText('customers_nav'), href: '/customers', icon: UsersIcon },
     { name: getUIText('analysis_nav'), href: '/analysis', icon: ChartBarIcon },
+    { name: getUIText('configuration'), href: '/configuration', icon: Cog6ToothIcon },
   ];
 
   return (
