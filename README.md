@@ -1,7 +1,5 @@
 # Talk2Close - Hebrew Sales Call Analysis System
 
-> **📖 Documentation has been moved to the [.github](./.github/README.md) folder**
-
 This repository contains the Talk2Close Hebrew Sales Call Analysis System - an AI-powered platform for analyzing Hebrew voice recordings of real estate sales calls.
 
 ## 🚀 Quick Links
