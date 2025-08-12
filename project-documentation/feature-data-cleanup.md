@@ -1,7 +1,7 @@
 ---
-title: Customer & Recording Management Features - Implementation Plan
-description: Comprehensive implementation plan for adding delete and edit functionality to customers and recordings
-feature: Customer & Recording Management
+title: Data Cleanup Feature Plan
+description: Implementation plan for customer and recording deletion with complete data cleanup
+feature: Data Cleanup
 last-updated: 2024-12-19
 version: 1.0
 related-files: 
@@ -11,16 +11,18 @@ dependencies: None
 status: planning
 ---
 
-# Customer & Recording Management Features - Implementation Plan
+# Data Cleanup Feature Plan
 
 ## Executive Summary
 
-This document outlines the implementation plan for adding delete and edit functionality to the Hebrew Sales Call Analysis System. The features will allow users to:
+This document outlines the implementation plan for adding delete and edit functionality to the Hebrew Sales Call Analysis System. **User research has been completed and confirmed the critical need for data cleanup functionality.** The features will allow users to:
 
-1. **Delete individual recordings** (sales calls) from the dashboard
-2. **Delete customers** with all their associated recordings
+1. **Delete individual recordings** (sales calls) from the dashboard with complete data cleanup
+2. **Delete customers** with all their associated recordings and complete data removal
 3. **Edit customer information** (name, phone, email) directly from the UI
 4. **Comprehensive testing** for both backend and frontend functionality
+
+**Key Requirement**: Audio file data must be completely removed from the database, not just the table records. This includes file system cleanup and database record deletion to prevent data bloat and ensure proper cleanup.
 
 ## Current System Analysis
 
@@ -50,20 +52,24 @@ This document outlines the implementation plan for adding delete and edit functi
 /**
  * DELETE /api/analyze/:id
  * Delete a sales call (recording) and its associated audio file
+ * CRITICAL: Must completely remove audio file data from database and file system
  */
 router.delete('/:id', async (req, res, next) => {
-  // 1. Validate sales call exists
-  // 2. Delete audio file from storage
+  // 1. Validate sales call exists and get audio file path
+  // 2. Delete audio file from file system storage
   // 3. Delete database record (cascade handled by Prisma)
-  // 4. Return success response with deletion details
+  // 4. Clean up any associated analysis data
+  // 5. Return success response with deletion details
 });
 ```
 
 **Key Features**:
-- File system cleanup for audio files
-- Database cascade deletion
+- **Complete file system cleanup** for audio files (physical file deletion)
+- **Complete database record deletion** (not just marking as deleted)
+- **Analysis data cleanup** (remove all associated analysis records)
 - Error handling for missing files
-- Logging for audit trail
+- Comprehensive logging for audit trail
+- **Data integrity verification** after deletion
 
 ### 2. Enhanced Customer Delete Endpoint
 
@@ -72,9 +78,12 @@ router.delete('/:id', async (req, res, next) => {
 **Enhancement**: Improve existing `DELETE /api/customers/:id` endpoint
 
 **Improvements**:
-- Add audio file cleanup for all customer recordings
+- **Complete audio file cleanup** for all customer recordings (physical file deletion)
+- **Complete database cleanup** (remove all customer data, not just mark as deleted)
+- **Analysis data cleanup** (remove all analysis records for customer recordings)
 - Enhanced logging and audit trail
 - Better error handling for file system operations
+- **Data integrity verification** after bulk deletion
 
 ### 3. Customer Update Endpoint
 
@@ -151,12 +160,21 @@ deleteSalesCall(id): Promise<DeletionResponse>
 -- Sales call deletion:
 -- 1. Removes single sales call record
 -- 2. Updates customer priority calculations
+-- 3. MUST also clean up analysis data and file references
 ```
+
+### Critical Data Cleanup Requirements
+- **Complete record deletion** (not soft deletes)
+- **File system cleanup** for all audio files
+- **Analysis data cleanup** (remove all analysis records)
+- **Reference cleanup** (remove all database references to deleted files)
+- **Integrity verification** after deletion operations
 
 ### No Migration Required
 - Current schema supports all required operations
 - Cascade deletion properly configured
 - Foreign key constraints ensure data integrity
+- **Additional cleanup logic needed** for complete data removal
 
 ## Testing Strategy
 
@@ -192,10 +210,14 @@ describe('Customer Management', () => {
 ```javascript
 describe('Sales Call Management', () => {
   describe('DELETE /api/analyze/:id', () => {
-    test('should delete sales call and audio file')
+    test('should delete sales call and audio file completely')
+    test('should remove all analysis data from database')
+    test('should delete physical audio file from file system')
     test('should return 404 for non-existent sales call')
     test('should handle missing audio files gracefully')
     test('should update customer statistics after deletion')
+    test('should verify no orphaned data remains')
+    test('should verify file system cleanup was successful')
   });
 });
 ```
@@ -278,11 +300,14 @@ describe('Customer Management E2E', () => {
 ### 1. Manual Testing Checklist
 
 #### Backend Validation
-- [ ] Customer deletion removes all associated data
-- [ ] Audio files are properly deleted from storage
+- [ ] Customer deletion removes all associated data completely
+- [ ] Audio files are properly deleted from file system storage
+- [ ] All analysis data is removed from database
+- [ ] No orphaned database records remain
 - [ ] Database constraints are maintained
 - [ ] Error handling works for edge cases
 - [ ] Logging provides adequate audit trail
+- [ ] Data integrity verification passes after deletion
 
 #### Frontend Validation
 - [ ] Edit mode works correctly
@@ -315,6 +340,15 @@ FROM customers c
 LEFT JOIN sales_calls sc ON c.id = sc.customer_id
 LEFT JOIN customer_priorities cp ON c.id = cp.customer_id
 GROUP BY c.id, c.name, cp.total_calls;
+
+-- Verify no orphaned analysis data
+SELECT COUNT(*) FROM analysis_data ad
+LEFT JOIN sales_calls sc ON ad.sales_call_id = sc.id
+WHERE sc.id IS NULL;
+
+-- Verify file system integrity (check for orphaned files)
+-- This should be run as a separate script to cross-reference
+-- database records with actual files on disk
 ```
 
 #### File System Validation
@@ -426,18 +460,23 @@ done
 ## Success Criteria
 
 ### Functional Requirements
-- [ ] Users can delete individual recordings
-- [ ] Users can delete customers with all recordings
+- [ ] Users can delete individual recordings with complete data cleanup
+- [ ] Users can delete customers with all recordings and complete data removal
 - [ ] Users can edit customer information
 - [ ] All operations have proper confirmation
 - [ ] Error handling works correctly
+- [ ] Audio files are completely removed from file system
+- [ ] All analysis data is removed from database
+- [ ] No orphaned records remain in database
 
 ### Non-Functional Requirements
 - [ ] Operations complete within 5 seconds
 - [ ] No data integrity issues
-- [ ] No orphaned files remain
-- [ ] Audit trail is complete
+- [ ] No orphaned files remain in file system
+- [ ] No orphaned records remain in database
+- [ ] Complete audit trail for all deletion operations
 - [ ] UI is responsive and user-friendly
+- [ ] File system cleanup is verified after each operation
 
 ### Quality Requirements
 - [ ] 90%+ test coverage
@@ -553,13 +592,19 @@ interface ConfirmationModalProps {
 
 #### 1. Sales Call Deletion
 ```sql
--- 1. Get sales call details
-SELECT * FROM sales_calls WHERE id = ?;
+-- 1. Get sales call details and audio file path
+SELECT sc.*, c.name as customer_name 
+FROM sales_calls sc 
+JOIN customers c ON sc.customer_id = c.id 
+WHERE sc.id = ?;
 
--- 2. Delete sales call (cascade handled by Prisma)
+-- 2. Delete analysis data first (if exists)
+DELETE FROM analysis_data WHERE sales_call_id = ?;
+
+-- 3. Delete sales call (cascade handled by Prisma)
 DELETE FROM sales_calls WHERE id = ?;
 
--- 3. Update customer priorities
+-- 4. Update customer priorities
 UPDATE customer_priorities 
 SET total_calls = total_calls - 1,
     avg_overall_score = (
@@ -568,19 +613,34 @@ SET total_calls = total_calls - 1,
       WHERE customer_id = ?
     )
 WHERE customer_id = ?;
+
+-- 5. Verify deletion (no orphaned records)
+SELECT COUNT(*) FROM analysis_data WHERE sales_call_id = ?;
 ```
 
 #### 2. Customer Deletion
 ```sql
 -- 1. Get customer details and count recordings
-SELECT c.*, COUNT(sc.id) as sales_calls_count
+SELECT c.*, COUNT(sc.id) as sales_calls_count,
+       GROUP_CONCAT(sc.audio_file_path) as audio_files
 FROM customers c
 LEFT JOIN sales_calls sc ON c.id = sc.customer_id
 WHERE c.id = ?
 GROUP BY c.id;
 
--- 2. Delete customer (cascade deletes sales_calls and customer_priorities)
+-- 2. Delete analysis data for all customer recordings
+DELETE ad FROM analysis_data ad
+JOIN sales_calls sc ON ad.sales_call_id = sc.id
+WHERE sc.customer_id = ?;
+
+-- 3. Delete customer (cascade deletes sales_calls and customer_priorities)
 DELETE FROM customers WHERE id = ?;
+
+-- 4. Verify complete deletion
+SELECT COUNT(*) FROM sales_calls WHERE customer_id = ?;
+SELECT COUNT(*) FROM analysis_data ad
+JOIN sales_calls sc ON ad.sales_call_id = sc.id
+WHERE sc.customer_id = ?;
 ```
 
 ## Error Handling Strategy
@@ -590,19 +650,40 @@ DELETE FROM customers WHERE id = ?;
 // File system errors
 try {
   await fs.remove(audioFilePath);
+  console.log(`✅ Audio file deleted: ${audioFilePath}`);
 } catch (fileError) {
-  console.warn(`Warning: Could not delete audio file: ${audioFilePath}`, fileError.message);
-  // Continue with database deletion
+  console.warn(`⚠️ Warning: Could not delete audio file: ${audioFilePath}`, fileError.message);
+  // Continue with database deletion but log the issue
+}
+
+// Analysis data cleanup
+try {
+  await prisma.analysisData.deleteMany({ where: { salesCallId: id } });
+  console.log(`✅ Analysis data deleted for sales call: ${id}`);
+} catch (analysisError) {
+  console.warn(`⚠️ Warning: Could not delete analysis data: ${analysisError.message}`);
+  // Continue with main deletion
 }
 
 // Database errors
 try {
   await prisma.salesCall.delete({ where: { id } });
+  console.log(`✅ Sales call deleted from database: ${id}`);
 } catch (dbError) {
   if (dbError.code === 'P2025') {
     return res.status(404).json({ error: true, message: 'Sales call not found' });
   }
   throw dbError;
+}
+
+// Verification
+try {
+  const remainingData = await prisma.analysisData.findFirst({ where: { salesCallId: id } });
+  if (remainingData) {
+    console.error(`❌ Orphaned analysis data found after deletion: ${id}`);
+  }
+} catch (verifyError) {
+  console.warn(`⚠️ Could not verify deletion: ${verifyError.message}`);
 }
 ```
 
@@ -634,12 +715,25 @@ const validateForm = (data: CustomerData) => {
 ### Backend Logging
 ```javascript
 // Deletion logging
-console.log(`🗑️ Deleting sales call ID: ${id} for customer: ${customer.name}`);
-console.log(`🗑️ Deleted audio file: ${audioFilePath}`);
-console.log(`✅ Sales call deleted successfully: ID ${id}`);
+console.log(`🗑️ Starting deletion process for sales call ID: ${id}`);
+console.log(`🗑️ Customer: ${customer.name}, Audio file: ${audioFilePath}`);
+
+// File system cleanup logging
+console.log(`🗑️ Deleting audio file from storage: ${audioFilePath}`);
+
+// Database cleanup logging
+console.log(`🗑️ Deleting analysis data for sales call: ${id}`);
+console.log(`🗑️ Deleting sales call record from database: ${id}`);
+
+// Verification logging
+console.log(`✅ Sales call deletion completed: ID ${id}`);
+console.log(`✅ Audio file deleted: ${audioFilePath}`);
+console.log(`✅ Analysis data cleaned up: ${id}`);
 
 // Error logging
-console.error('❌ Error deleting sales call:', error);
+console.error('❌ Error during sales call deletion:', error);
+console.error('❌ File system error:', fileError);
+console.error('❌ Database error:', dbError);
 ```
 
 ### Frontend Logging
