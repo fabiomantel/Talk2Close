@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from '../../services/api';
+import { getUIText } from '../../utils/hebrewUtils';
 import { 
   PlayIcon, 
   StopIcon, 
@@ -139,12 +140,12 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rtl-layout">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Batch Processing Dashboard</h1>
-          <p className="text-gray-600">Monitor and manage batch file processing operations</p>
+          <h1 className="text-2xl font-bold text-gray-900 hebrew-content">{getUIText('batch_processing_dashboard')}</h1>
+          <p className="text-gray-600 hebrew-content">{getUIText('batch_processing_description')}</p>
         </div>
         <div className="flex space-x-3">
           {onStartBatch && (
@@ -154,7 +155,7 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <PlayIcon className="w-4 h-4 mr-2" />
-              Start New Batch
+              {getUIText('start_new_batch')}
             </button>
           )}
         </div>
@@ -170,7 +171,7 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Files Processed</dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate hebrew-content">{getUIText('total_files_processed')}</dt>
                   <dd className="text-lg font-medium text-gray-900">{stats.total.toLocaleString()}</dd>
                 </dl>
               </div>
@@ -186,7 +187,7 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Success Rate</dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate hebrew-content">{getUIText('success_rate')}</dt>
                   <dd className="text-lg font-medium text-gray-900">{stats.successRate.toFixed(1)}%</dd>
                 </dl>
               </div>
@@ -202,7 +203,7 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Avg Processing Time</dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate hebrew-content">{getUIText('avg_processing_time')}</dt>
                   <dd className="text-lg font-medium text-gray-900">{formatDuration(stats.averageProcessingTime)}</dd>
                 </dl>
               </div>
@@ -218,7 +219,7 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Active Jobs</dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate hebrew-content">{getUIText('active_jobs')}</dt>
                   <dd className="text-lg font-medium text-gray-900">{systemStatus.activeJobCount}</dd>
                 </dl>
               </div>
@@ -230,7 +231,7 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
       {/* System Status */}
       <div className="bg-white shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">System Status</h3>
+          <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4 hebrew-content">{getUIText('system_status')}</h3>
           <div className="flex items-center space-x-4">
             <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
               systemStatus.isProcessing 
@@ -240,17 +241,17 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
               {systemStatus.isProcessing ? (
                 <>
                   <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                  Processing
+                  {getUIText('processing')}
                 </>
               ) : (
                 <>
                   <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
-                  Idle
+                  {getUIText('idle')}
                 </>
               )}
             </div>
-            <span className="text-sm text-gray-500">
-              {systemStatus.activeJobCount} active job{systemStatus.activeJobCount !== 1 ? 's' : ''}
+            <span className="text-sm text-gray-500 hebrew-content">
+              {systemStatus.activeJobCount} {getUIText('active_jobs_count')}
             </span>
           </div>
         </div>
@@ -260,46 +261,46 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
       <div className="bg-white shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Recent Batch Jobs</h3>
+            <h3 className="text-lg leading-6 font-medium text-gray-900 hebrew-content">{getUIText('recent_batch_jobs')}</h3>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               className="block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
             >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="running">Running</option>
-              <option value="completed">Completed</option>
-              <option value="failed">Failed</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="all">{getUIText('all_status')}</option>
+              <option value="pending">{getUIText('pending')}</option>
+              <option value="running">{getUIText('running')}</option>
+              <option value="completed">{getUIText('completed')}</option>
+              <option value="failed">{getUIText('failed')}</option>
+              <option value="cancelled">{getUIText('cancelled')}</option>
             </select>
           </div>
 
           {filteredJobs.length === 0 ? (
             <div className="text-center py-8">
               <DocumentIcon className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No batch jobs</h3>
-              <p className="mt-1 text-sm text-gray-500">Get started by creating a new batch processing job.</p>
+              <h3 className="mt-2 text-sm font-medium text-gray-900 hebrew-content">{getUIText('no_batch_jobs')}</h3>
+              <p className="mt-1 text-sm text-gray-500 hebrew-content">{getUIText('no_batch_jobs_description')}</p>
             </div>
           ) : (
             <div className="overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Job Name
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hebrew-content">
+                      {getUIText('job_name')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hebrew-content">
+                      {getUIText('status')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Progress
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hebrew-content">
+                      {getUIText('progress')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Started
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hebrew-content">
+                      {getUIText('started')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hebrew-content">
+                      {getUIText('actions')}
                     </th>
                   </tr>
                 </thead>
@@ -320,7 +321,7 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(job.status)}`}>
                             {getStatusIcon(job.status)}
-                            <span className="ml-1 capitalize">{job.status}</span>
+                            <span className="ml-1 capitalize hebrew-content">{getUIText(job.status)}</span>
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -336,8 +337,8 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
                             </span>
                           </div>
                           {job.failedFiles > 0 && (
-                            <div className="text-xs text-red-500 mt-1">
-                              {job.failedFiles} failed
+                            <div className="text-xs text-red-500 mt-1 hebrew-content">
+                              {job.failedFiles} {getUIText('failed_files')}
                             </div>
                           )}
                         </td>
@@ -349,17 +350,17 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
                             {onViewDetails && (
                               <button
                                 onClick={() => onViewDetails(job.id)}
-                                className="text-blue-600 hover:text-blue-900"
+                                className="text-blue-600 hover:text-blue-900 hebrew-content"
                               >
-                                View Details
+                                {getUIText('view_details')}
                               </button>
                             )}
                             {onStopBatch && job.status === 'running' && (
                               <button
                                 onClick={() => onStopBatch(job.id)}
-                                className="text-red-600 hover:text-red-900"
+                                className="text-red-600 hover:text-red-900 hebrew-content"
                               >
-                                Stop
+                                {getUIText('stop')}
                               </button>
                             )}
                           </div>

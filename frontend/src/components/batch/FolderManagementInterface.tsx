@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiService } from '../../services/api';
+import { getUIText } from '../../utils/hebrewUtils';
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -174,7 +175,7 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
   };
 
   const handleDelete = (folderId: number) => {
-    if (window.confirm('Are you sure you want to delete this folder configuration?')) {
+    if (window.confirm(getUIText('are_you_sure_delete_notification'))) {
       deleteMutation.mutate(folderId);
     }
   };
@@ -193,8 +194,8 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
 
   const getStorageName = (type: string) => {
     switch (type) {
-      case 's3': return 'AWS S3';
-      case 'local': return 'Local File System';
+      case 's3': return getUIText('aws_s3');
+      case 'local': return getUIText('local_file_system');
       default: return type;
     }
   };
@@ -221,19 +222,19 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rtl-layout">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Folder Management</h1>
-          <p className="text-gray-600">Configure and manage external folders for batch processing</p>
+          <h1 className="text-2xl font-bold text-gray-900 hebrew-content">{getUIText('folder_management')}</h1>
+          <p className="text-gray-600 hebrew-content">{getUIText('folder_management_description')}</p>
         </div>
         <button
           onClick={() => openModal()}
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           <PlusIcon className="w-4 h-4 mr-2" />
-          Add Folder
+          {getUIText('add_folder')}
         </button>
       </div>
 
@@ -241,15 +242,15 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
       {folders.length === 0 ? (
         <div className="text-center py-12">
           <FolderIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No folders configured</h3>
-          <p className="mt-1 text-sm text-gray-500">Get started by adding your first external folder.</p>
+          <h3 className="mt-2 text-sm font-medium text-gray-900 hebrew-content">{getUIText('no_folders_configured')}</h3>
+          <p className="mt-1 text-sm text-gray-500 hebrew-content">{getUIText('no_folders_description')}</p>
           <div className="mt-6">
             <button
               onClick={() => openModal()}
               className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               <PlusIcon className="w-4 h-4 mr-2" />
-              Add Folder
+              {getUIText('add_folder')}
             </button>
           </div>
         </div>
@@ -268,14 +269,14 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                       onClick={() => handleTest(folder.id)}
                       disabled={testMutation.isPending}
                       className="text-blue-600 hover:text-blue-900 p-1"
-                      title="Test connection"
+                      title={getUIText('test_connection')}
                     >
                       <EyeIcon className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => openModal(folder)}
                       className="text-gray-600 hover:text-gray-900 p-1"
-                      title="Edit folder"
+                      title={getUIText('edit_folder')}
                     >
                       <PencilIcon className="w-4 h-4" />
                     </button>
@@ -283,7 +284,7 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                       onClick={() => handleDelete(folder.id)}
                       disabled={deleteMutation.isPending}
                       className="text-red-600 hover:text-red-900 p-1"
-                      title="Delete folder"
+                      title={getUIText('delete_folder')}
                     >
                       <TrashIcon className="w-4 h-4" />
                     </button>
@@ -292,28 +293,28 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
 
                 <div className="space-y-3">
                   <div>
-                    <span className="text-sm font-medium text-gray-500">Storage:</span>
+                    <span className="text-sm font-medium text-gray-500 hebrew-content">{getUIText('storage')}:</span>
                     <span className="ml-2 text-sm text-gray-900">
                       {getStorageName(folder.storageConfig.type)}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-sm font-medium text-gray-500">Monitor:</span>
+                    <span className="text-sm font-medium text-gray-500 hebrew-content">{getUIText('monitor')}:</span>
                     <span className="ml-2 text-sm text-gray-900 capitalize">
                       {folder.monitorConfig.type}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-sm font-medium text-gray-500">Max File Size:</span>
+                    <span className="text-sm font-medium text-gray-500 hebrew-content">{getUIText('max_file_size')}:</span>
                     <span className="ml-2 text-sm text-gray-900">
                       {formatFileSize(folder.processingConfig.maxFileSize)}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-sm font-medium text-gray-500">Extensions:</span>
+                    <span className="text-sm font-medium text-gray-500 hebrew-content">{getUIText('extensions')}:</span>
                     <span className="ml-2 text-sm text-gray-900">
                       {folder.processingConfig.allowedExtensions.join(', ')}
                     </span>
@@ -321,7 +322,7 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
 
                   {folder.lastScan && (
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Last Scan:</span>
+                      <span className="text-sm font-medium text-gray-500 hebrew-content">{getUIText('last_scan')}:</span>
                       <span className="ml-2 text-sm text-gray-900">
                         {new Date(folder.lastScan).toLocaleString()}
                       </span>
@@ -334,17 +335,17 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                     <div className={`w-2 h-2 rounded-full mr-2 ${
                       folder.isActive ? 'bg-green-400' : 'bg-gray-400'
                     }`}></div>
-                    <span className="text-sm text-gray-500">
-                      {folder.isActive ? 'Active' : 'Inactive'}
+                    <span className="text-sm text-gray-500 hebrew-content">
+                      {folder.isActive ? getUIText('active') : getUIText('inactive')}
                     </span>
                   </div>
 
                   {onFolderSelect && (
                     <button
                       onClick={() => onFolderSelect(folder.id)}
-                      className="text-sm text-blue-600 hover:text-blue-900 font-medium"
+                      className="text-sm text-blue-600 hover:text-blue-900 font-medium hebrew-content"
                     >
-                      Select
+                      {getUIText('select')}
                     </button>
                   )}
                 </div>
@@ -371,7 +372,7 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
               <span className={`text-sm font-medium ${
                 testMutation.data.success ? 'text-green-800' : 'text-red-800'
               }`}>
-                {testMutation.data.success ? 'Folder test passed' : 'Folder test failed'}
+                {testMutation.data.success ? getUIText('folder_test_passed') : getUIText('folder_test_failed')}
               </span>
               {testMutation.data.data && testMutation.data.data.tests && (
                 <div className="mt-2 space-y-1">
@@ -409,15 +410,15 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
             <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                {editingFolder ? 'Edit Folder' : 'Add New Folder'}
+              <h3 className="text-lg font-medium text-gray-900 mb-4 hebrew-content">
+                {editingFolder ? getUIText('edit_folder_title') : getUIText('add_new_folder_title')}
               </h3>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Basic Information */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Folder Name
+                  <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                    {getUIText('folder_name')}
                   </label>
                   <input
                     type="text"
@@ -430,8 +431,8 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
 
                 {/* Storage Configuration */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Storage Provider
+                  <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                    {getUIText('storage_provider')}
                   </label>
                   <select
                     value={formData.storageType}
@@ -448,8 +449,8 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
 
                 {/* Monitor Configuration */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Monitor Type
+                  <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                    {getUIText('monitor_type')}
                   </label>
                   <select
                     value={formData.monitorType}
@@ -467,8 +468,8 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                 {/* Processing Configuration */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Max File Size (MB)
+                    <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                      {getUIText('max_file_size')} (MB)
                     </label>
                     <input
                       type="number"
@@ -487,8 +488,8 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Auto Start
+                    <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                      {getUIText('auto_start')}
                     </label>
                     <div className="flex items-center">
                       <input
@@ -503,7 +504,7 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                         })}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
-                      <span className="ml-2 text-sm text-gray-700">Start processing automatically</span>
+                      <span className="ml-2 text-sm text-gray-700 hebrew-content">{getUIText('start_processing_automatically')}</span>
                     </div>
                   </div>
                 </div>
@@ -515,14 +516,14 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                     onClick={closeModal}
                     className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
-                    Cancel
+                    {getUIText('cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={folderMutation.isPending}
                     className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                   >
-                    {folderMutation.isPending ? 'Saving...' : (editingFolder ? 'Update' : 'Create')}
+                    {folderMutation.isPending ? getUIText('saving') : (editingFolder ? getUIText('update') : getUIText('create'))}
                   </button>
                 </div>
               </form>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiService } from '../../services/api';
+import { getUIText } from '../../utils/hebrewUtils';
 import { CogIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface ProcessingConfig {
@@ -59,7 +60,7 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
       return response;
     },
     onSuccess: (data) => {
-      setSuccess('Configuration saved successfully');
+      setSuccess(getUIText('configuration_saved_successfully'));
       setError(null);
       onConfigurationChange?.(config);
       queryClient.invalidateQueries({ queryKey: ['batch-config'] });
@@ -68,7 +69,7 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
       setTimeout(() => setSuccess(null), 3000);
     },
     onError: (error) => {
-      setError('Failed to save configuration');
+      setError(getUIText('failed_to_save_configuration'));
       setSuccess(null);
     }
   });
@@ -94,14 +95,14 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
     },
     onSuccess: (data) => {
       setConfig(data.data);
-      setSuccess('Configuration reset to defaults');
+      setSuccess(getUIText('configuration_reset_to_defaults'));
       setError(null);
       onConfigurationChange?.(data.data);
       
       setTimeout(() => setSuccess(null), 3000);
     },
     onError: (error) => {
-      setError('Failed to reset configuration');
+      setError(getUIText('failed_to_reset_configuration'));
       setSuccess(null);
     }
   });
@@ -130,7 +131,7 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
   };
 
   const handleReset = () => {
-    if (window.confirm('Are you sure you want to reset to default configuration?')) {
+    if (window.confirm(getUIText('are_you_sure_reset'))) {
       resetMutation.mutate();
     }
   };
@@ -149,12 +150,12 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rtl-layout">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Batch Processing Configuration</h2>
-          <p className="text-gray-600">Configure global settings for batch processing operations</p>
+          <h2 className="text-2xl font-bold text-gray-900 hebrew-content">{getUIText('batch_processing_configuration')}</h2>
+          <p className="text-gray-600 hebrew-content">{getUIText('batch_config_description')}</p>
         </div>
         <div className="flex space-x-2">
           <button
@@ -163,7 +164,7 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
             className="px-4 py-2 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 disabled:opacity-50 flex items-center"
           >
             <CogIcon className="w-4 h-4 mr-2" />
-            Reset to Default
+            {getUIText('reset_to_default')}
           </button>
           <button
             onClick={handleSave}
@@ -173,12 +174,12 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
             {saving ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Saving...
+                {getUIText('saving')}
               </>
             ) : (
               <>
                 <CheckIcon className="w-4 h-4 mr-2" />
-                Save Configuration
+                {getUIText('save_configuration')}
               </>
             )}
           </button>
@@ -190,7 +191,7 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
         <div className="p-4 bg-red-50 border border-red-200 rounded-md">
           <div className="flex">
             <XMarkIcon className="w-5 h-5 text-red-400 mr-2" />
-            <p className="text-red-800">{error}</p>
+            <p className="text-red-800 hebrew-content">{error}</p>
           </div>
         </div>
       )}
@@ -199,7 +200,7 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
         <div className="p-4 bg-green-50 border border-green-200 rounded-md">
           <div className="flex">
             <CheckIcon className="w-5 h-5 text-green-400 mr-2" />
-            <p className="text-green-800">{success}</p>
+            <p className="text-green-800 hebrew-content">{success}</p>
           </div>
         </div>
       )}
@@ -209,13 +210,13 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
         
         {/* Processing Settings */}
         <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Processing Settings</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 hebrew-content">{getUIText('processing_settings')}</h3>
           
           <div className="space-y-4">
             {/* Max Concurrent Files */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Max Concurrent Files
+              <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                {getUIText('max_concurrent_files')}
               </label>
               <div className="flex items-center space-x-2">
                 <input
@@ -230,14 +231,14 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
                   {config.maxConcurrentFiles}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Number of files to process simultaneously (1-20)
+              <p className="text-xs text-gray-500 mt-1 hebrew-content">
+                {getUIText('max_concurrent_files_help')}
               </p>
             </div>
 
             {/* Processing Triggers */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700">Processing Triggers</label>
+              <label className="block text-sm font-medium text-gray-700 hebrew-content">{getUIText('processing_triggers')}</label>
               
               <div className="flex items-center">
                 <input
@@ -247,8 +248,8 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
                   onChange={(e) => handleConfigChange({ autoStart: e.target.checked })}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="autoStart" className="ml-2 text-sm text-gray-700">
-                  Auto-start processing when files are discovered
+                <label htmlFor="autoStart" className="ml-2 text-sm text-gray-700 hebrew-content">
+                  {getUIText('auto_start_processing')}
                 </label>
               </div>
 
@@ -260,8 +261,8 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
                   onChange={(e) => handleConfigChange({ immediateProcessing: e.target.checked })}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="immediateProcessing" className="ml-2 text-sm text-gray-700">
-                  Process files immediately upon discovery
+                <label htmlFor="immediateProcessing" className="ml-2 text-sm text-gray-700 hebrew-content">
+                  {getUIText('process_files_immediately')}
                 </label>
               </div>
 
@@ -273,8 +274,8 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
                   onChange={(e) => handleConfigChange({ backgroundProcessing: e.target.checked })}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="backgroundProcessing" className="ml-2 text-sm text-gray-700">
-                  Enable background processing
+                <label htmlFor="backgroundProcessing" className="ml-2 text-sm text-gray-700 hebrew-content">
+                  {getUIText('enable_background_processing')}
                 </label>
               </div>
             </div>
@@ -283,7 +284,7 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
 
         {/* Retry Configuration */}
         <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Retry Configuration</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 hebrew-content">{getUIText('retry_configuration')}</h3>
           
           <div className="space-y-4">
             {/* Enable Retries */}
@@ -295,8 +296,8 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
                 onChange={(e) => handleRetryConfigChange({ enabled: e.target.checked })}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="retryEnabled" className="ml-2 text-sm font-medium text-gray-700">
-                Enable automatic retries for failed files
+              <label htmlFor="retryEnabled" className="ml-2 text-sm font-medium text-gray-700 hebrew-content">
+                {getUIText('enable_automatic_retries')}
               </label>
             </div>
 
@@ -304,8 +305,8 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
               <>
                 {/* Max Retries */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Max Retries
+                  <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                    {getUIText('max_retries')}
                   </label>
                   <div className="flex items-center space-x-2">
                     <input
@@ -324,8 +325,8 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
 
                 {/* Delay Seconds */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Delay Between Retries (seconds)
+                  <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                    {getUIText('delay_between_retries')}
                   </label>
                   <div className="flex items-center space-x-2">
                     <input
@@ -352,8 +353,8 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
                     onChange={(e) => handleRetryConfigChange({ exponentialBackoff: e.target.checked })}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <label htmlFor="exponentialBackoff" className="ml-2 text-sm text-gray-700">
-                    Use exponential backoff (delay increases with each retry)
+                  <label htmlFor="exponentialBackoff" className="ml-2 text-sm text-gray-700 hebrew-content">
+                    {getUIText('use_exponential_backoff')}
                   </label>
                 </div>
               </>
@@ -364,13 +365,13 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
 
       {/* Performance Information */}
       <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h4 className="text-sm font-medium text-blue-900 mb-2">Performance Information</h4>
-        <div className="text-sm text-blue-800 space-y-1">
-          <p>• Processing capacity: ~{config.maxConcurrentFiles * 2} files per minute</p>
-          <p>• Memory usage: ~{Math.round(config.maxConcurrentFiles * 200)}MB for concurrent processing</p>
-          <p>• Estimated processing time: ~30 seconds per file</p>
+        <h4 className="text-sm font-medium text-blue-900 mb-2 hebrew-content">{getUIText('performance_information')}</h4>
+        <div className="text-sm text-blue-800 space-y-1 hebrew-content">
+          <p>• {getUIText('processing_capacity')}: ~{config.maxConcurrentFiles * 2} {getUIText('files_per_minute')}</p>
+          <p>• {getUIText('memory_usage')}: ~{Math.round(config.maxConcurrentFiles * 200)}MB {getUIText('for_concurrent_processing')}</p>
+          <p>• {getUIText('estimated_processing_time')}: ~30 {getUIText('seconds_per_file')}</p>
           {config.retryConfig.enabled && (
-            <p>• Retry attempts: Up to {config.retryConfig.maxRetries} per failed file</p>
+            <p>• {getUIText('retry_attempts')}: {getUIText('per_failed_file')} {config.retryConfig.maxRetries}</p>
           )}
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiService } from '../../services/api';
+import { getUIText } from '../../utils/hebrewUtils';
 import { 
   BellIcon, 
   PlusIcon, 
@@ -57,14 +58,14 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
       return response;
     },
     onSuccess: (data) => {
-      setSuccess('Notification configuration created successfully');
+      setSuccess(getUIText('notification_configuration_created'));
       setError(null);
       setShowAddForm(false);
       queryClient.invalidateQueries({ queryKey: ['batch-notifications'] });
       setTimeout(() => setSuccess(null), 3000);
     },
     onError: (error) => {
-      setError('Failed to create notification configuration');
+      setError(getUIText('failed_to_create_notification'));
       setSuccess(null);
     }
   });
@@ -76,14 +77,14 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
       return response;
     },
     onSuccess: (data) => {
-      setSuccess('Notification configuration updated successfully');
+      setSuccess(getUIText('notification_configuration_updated'));
       setError(null);
       setEditingConfig(null);
       queryClient.invalidateQueries({ queryKey: ['batch-notifications'] });
       setTimeout(() => setSuccess(null), 3000);
     },
     onError: (error) => {
-      setError('Failed to update notification configuration');
+      setError(getUIText('failed_to_update_notification'));
       setSuccess(null);
     }
   });
@@ -95,13 +96,13 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
       return response;
     },
     onSuccess: (data) => {
-      setSuccess('Notification configuration deleted successfully');
+      setSuccess(getUIText('notification_configuration_deleted'));
       setError(null);
       queryClient.invalidateQueries({ queryKey: ['batch-notifications'] });
       setTimeout(() => setSuccess(null), 3000);
     },
     onError: (error) => {
-      setError('Failed to delete notification configuration');
+      setError(getUIText('failed_to_delete_notification'));
       setSuccess(null);
     }
   });
@@ -113,12 +114,12 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
       return response;
     },
     onSuccess: (data) => {
-      setSuccess('Test notification sent successfully');
+      setSuccess(getUIText('test_notification_sent'));
       setError(null);
       setTimeout(() => setSuccess(null), 3000);
     },
     onError: (error) => {
-      setError('Failed to send test notification');
+      setError(getUIText('failed_to_send_test'));
       setSuccess(null);
     }
   });
@@ -141,13 +142,13 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
   const getNotificationTypeLabel = (type: string) => {
     switch (type) {
       case 'email':
-        return 'Email';
+        return getUIText('email');
       case 'slack':
-        return 'Slack';
+        return getUIText('slack');
       case 'webhook':
-        return 'Webhook';
+        return getUIText('webhook');
       case 'sms':
-        return 'SMS';
+        return getUIText('sms');
       default:
         return type;
     }
@@ -162,7 +163,7 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
   };
 
   const handleDeleteNotification = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this notification configuration?')) {
+    if (window.confirm(getUIText('are_you_sure_delete_notification'))) {
       deleteMutation.mutate(id);
     }
   };
@@ -185,19 +186,19 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rtl-layout">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Notification Management</h2>
-          <p className="text-gray-600">Configure alert and notification channels for batch processing</p>
+          <h2 className="text-2xl font-bold text-gray-900 hebrew-content">{getUIText('notification_management')}</h2>
+          <p className="text-gray-600 hebrew-content">{getUIText('notification_description')}</p>
         </div>
         <button
           onClick={() => setShowAddForm(true)}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center"
         >
           <PlusIcon className="w-4 h-4 mr-2" />
-          Add Notification
+          {getUIText('add_notification')}
         </button>
       </div>
 
@@ -206,7 +207,7 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
         <div className="p-4 bg-red-50 border border-red-200 rounded-md">
           <div className="flex">
             <XMarkIcon className="w-5 h-5 text-red-400 mr-2" />
-            <p className="text-red-800">{error}</p>
+            <p className="text-red-800 hebrew-content">{error}</p>
           </div>
         </div>
       )}
@@ -215,7 +216,7 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
         <div className="p-4 bg-green-50 border border-green-200 rounded-md">
           <div className="flex">
             <CheckIcon className="w-5 h-5 text-green-400 mr-2" />
-            <p className="text-green-800">{success}</p>
+            <p className="text-green-800 hebrew-content">{success}</p>
           </div>
         </div>
       )}
@@ -223,7 +224,7 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
       {/* Notification Configurations List */}
       <div className="bg-white rounded-lg border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Notification Configurations</h3>
+          <h3 className="text-lg font-medium text-gray-900 hebrew-content">{getUIText('notification_configurations')}</h3>
         </div>
         
         <div className="divide-y divide-gray-200">
@@ -239,7 +240,7 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
                       <h4 className="text-sm font-medium text-gray-900">{notification.name}</h4>
                       <p className="text-sm text-gray-500">
                         {getNotificationTypeLabel(notification.type)} • 
-                        {notification.conditions.length > 0 ? ` ${notification.conditions.join(', ')}` : ' All events'}
+                        {notification.conditions.length > 0 ? ` ${notification.conditions.join(', ')}` : ` ${getUIText('all_events')}`}
                       </p>
                     </div>
                   </div>
@@ -250,7 +251,7 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {notification.isActive ? 'Active' : 'Inactive'}
+                      {notification.isActive ? getUIText('active') : getUIText('inactive')}
                     </span>
                     
                     <button
@@ -258,21 +259,21 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
                       disabled={testMutation.isPending}
                       className="text-sm text-blue-600 hover:text-blue-800 disabled:opacity-50"
                     >
-                      Test
+                      {getUIText('test')}
                     </button>
                     
                     <button
                       onClick={() => setEditingConfig(notification)}
                       className="text-sm text-gray-600 hover:text-gray-800"
                     >
-                      Edit
+                      {getUIText('edit')}
                     </button>
                     
                     <button
                       onClick={() => handleDeleteNotification(notification.id!)}
                       className="text-sm text-red-600 hover:text-red-800"
                     >
-                      Delete
+                      {getUIText('delete')}
                     </button>
                   </div>
                 </div>
@@ -281,9 +282,9 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
           ) : (
             <div className="px-6 py-8 text-center">
               <BellIcon className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No notifications</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                Get started by creating a new notification configuration.
+              <h3 className="mt-2 text-sm font-medium text-gray-900 hebrew-content">{getUIText('no_notifications')}</h3>
+              <p className="mt-1 text-sm text-gray-500 hebrew-content">
+                {getUIText('no_notifications_description')}
               </p>
               <div className="mt-6">
                 <button
@@ -291,7 +292,7 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
                   className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                 >
                   <PlusIcon className="w-4 h-4 mr-2" />
-                  Add Notification
+                  {getUIText('add_notification')}
                 </button>
               </div>
             </div>
