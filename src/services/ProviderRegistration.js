@@ -11,6 +11,7 @@ const S3StorageProvider = require('./providers/storage/S3StorageProvider');
 
 // Monitor Providers
 const PollingMonitor = require('./providers/monitors/PollingMonitor');
+const EventBasedMonitor = require('./providers/monitors/EventBasedMonitor');
 
 // Notification Providers
 const WebhookNotificationProvider = require('./providers/notifications/WebhookNotificationProvider');
@@ -28,6 +29,7 @@ function registerAllProviders() {
 
   // Register Monitor Providers
   providerRegistry.registerMonitorProvider('polling', new PollingMonitor());
+  providerRegistry.registerMonitorProvider('events', new EventBasedMonitor());
 
   // Register Notification Providers
   providerRegistry.registerNotificationProvider('webhook', new WebhookNotificationProvider());
@@ -80,7 +82,7 @@ function validateProviderAvailability() {
   });
 
   // Check monitor providers
-  const requiredMonitorProviders = ['polling'];
+  const requiredMonitorProviders = ['polling', 'events'];
   requiredMonitorProviders.forEach(provider => {
     const available = providerRegistry.hasMonitorProvider(provider);
     results.monitor[provider] = available;
