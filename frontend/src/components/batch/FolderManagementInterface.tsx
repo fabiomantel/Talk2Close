@@ -38,11 +38,23 @@ interface ExternalFolder {
 
 interface FolderFormData {
   name: string;
-  storageType: string;
-  storageConfig: any;
-  monitorType: string;
-  monitorConfig: any;
-  processingConfig: {
+  storage: {
+    type: string;
+    config: {
+      path?: string;
+      bucket?: string;
+      prefix?: string;
+      [key: string]: any;
+    };
+  };
+  monitor: {
+    type: string;
+    config: {
+      scanInterval?: number;
+      [key: string]: any;
+    };
+  };
+  processing: {
     maxFileSize: number;
     allowedExtensions: string[];
     autoStart: boolean;
@@ -62,12 +74,20 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
   const [editingFolder, setEditingFolder] = useState<ExternalFolder | null>(null);
   const [formData, setFormData] = useState<FolderFormData>({
     name: '',
-    storageType: 'local',
-    storageConfig: {},
-    monitorType: 'polling',
-    monitorConfig: {},
-    processingConfig: {
-      maxFileSize: 524288000, // 500MB
+    storage: {
+      type: 'local',
+      config: {
+        path: ''
+      }
+    },
+    monitor: {
+      type: 'polling',
+      config: {
+        scanInterval: 300
+      }
+    },
+    processing: {
+      maxFileSize: 524288000,
       allowedExtensions: ['.mp3', '.wav', '.m4a', '.aac', '.ogg'],
       autoStart: true
     }
@@ -100,14 +120,14 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
       const folderData = {
         name: data.name,
         storage: {
-          type: data.storageType,
-          config: data.storageConfig
+          type: data.storage.type,
+          config: data.storage.config
         },
         monitor: {
-          type: data.monitorType,
-          config: data.monitorConfig
+          type: data.monitor.type,
+          config: data.monitor.config
         },
-        processing: data.processingConfig
+        processing: data.processing
       };
 
       if (editingFolder) {
@@ -140,21 +160,27 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
       setEditingFolder(folder);
       setFormData({
         name: folder.name,
-        storageType: folder.storageConfig.type,
-        storageConfig: folder.storageConfig.config,
-        monitorType: folder.monitorConfig.type,
-        monitorConfig: folder.monitorConfig.config,
-        processingConfig: folder.processingConfig
+        storage: folder.storageConfig,
+        monitor: folder.monitorConfig,
+        processing: folder.processingConfig
       });
     } else {
       setEditingFolder(null);
       setFormData({
         name: '',
-        storageType: 'local',
-        storageConfig: {},
-        monitorType: 'polling',
-        monitorConfig: {},
-        processingConfig: {
+        storage: {
+          type: 'local',
+          config: {
+            path: ''
+          }
+        },
+        monitor: {
+          type: 'polling',
+          config: {
+            scanInterval: 300
+          }
+        },
+        processing: {
           maxFileSize: 524288000,
           allowedExtensions: ['.mp3', '.wav', '.m4a', '.aac', '.ogg'],
           autoStart: true
@@ -175,7 +201,7 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
   };
 
   const handleDelete = (folderId: number) => {
-    if (window.confirm(getUIText('are_you_sure_delete_notification'))) {
+    if (window.confirm(getUIText('are_you_sure_delete_folder'))) {
       deleteMutation.mutate(folderId);
     }
   };
@@ -435,8 +461,15 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                     {getUIText('storage_provider')}
                   </label>
                   <select
-                    value={formData.storageType}
-                    onChange={(e) => setFormData({ ...formData, storageType: e.target.value })}
+                    value={formData.storage.type}
+                    onChange={(e) => setFormData({ 
+                      ...formData, 
+                      storage: { 
+                        ...formData.storage, 
+                        type: e.target.value,
+                        config: e.target.value === 'local' ? { path: '' } : {}
+                      } 
+                    })}
                     className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   >
                     {providers.storage.map((provider: string) => (
@@ -447,14 +480,103 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                   </select>
                 </div>
 
+                {/* Storage Configuration Fields */}
+                {formData.storage.type === 'local' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                      {getUIText('folder_path')}
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.storage.config.path || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        storage: {
+                          ...formData.storage,
+                          config: {
+                            ...formData.storage.config,
+                            path: e.target.value
+                          }
+                        },
+                        monitor: {
+                          ...formData.monitor,
+                          config: {
+                            ...formData.monitor.config,
+                            path: e.target.value
+                          }
+                        }
+                      })}
+                      placeholder="/path/to/folder"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      required
+                    />
+                    <p className="mt-1 text-sm text-gray-500 hebrew-content">
+                      {getUIText('folder_path_description')}
+                    </p>
+                  </div>
+                )}
+
+                {formData.storage.type === 's3' && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                        {getUIText('bucket_name')}
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.storage.config.bucket || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          storage: {
+                            ...formData.storage,
+                            config: {
+                              ...formData.storage.config,
+                              bucket: e.target.value
+                            }
+                          }
+                        })}
+                        className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                        {getUIText('prefix')} (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.storage.config.prefix || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          storage: {
+                            ...formData.storage,
+                            config: {
+                              ...formData.storage.config,
+                              prefix: e.target.value
+                            }
+                          }
+                        })}
+                        placeholder="folder/subfolder/"
+                        className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* Monitor Configuration */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
                     {getUIText('monitor_type')}
                   </label>
                   <select
-                    value={formData.monitorType}
-                    onChange={(e) => setFormData({ ...formData, monitorType: e.target.value })}
+                    value={formData.monitor.type}
+                    onChange={(e) => setFormData({ 
+                      ...formData, 
+                      monitor: { 
+                        ...formData.monitor, 
+                        type: e.target.value 
+                      } 
+                    })}
                     className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   >
                     {providers.monitor.map((provider: string) => (
@@ -465,6 +587,36 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                   </select>
                 </div>
 
+                {/* Monitor Configuration Fields */}
+                {formData.monitor.type === 'polling' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2 hebrew-content">
+                      {getUIText('scan_interval')} (seconds)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.monitor.config.scanInterval || 300}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        monitor: {
+                          ...formData.monitor,
+                          config: {
+                            ...formData.monitor.config,
+                            scanInterval: parseInt(e.target.value),
+                            path: formData.storage.type === 'local' ? formData.storage.config.path : undefined
+                          }
+                        }
+                      })}
+                      min="30"
+                      max="3600"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    />
+                    <p className="mt-1 text-sm text-gray-500 hebrew-content">
+                      {getUIText('scan_interval_description')}
+                    </p>
+                  </div>
+                )}
+
                 {/* Processing Configuration */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -473,11 +625,11 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                     </label>
                     <input
                       type="number"
-                      value={Math.round(formData.processingConfig.maxFileSize / (1024 * 1024))}
+                      value={Math.round(formData.processing.maxFileSize / (1024 * 1024))}
                       onChange={(e) => setFormData({
                         ...formData,
-                        processingConfig: {
-                          ...formData.processingConfig,
+                        processing: {
+                          ...formData.processing,
                           maxFileSize: parseInt(e.target.value) * 1024 * 1024
                         }
                       })}
@@ -494,11 +646,11 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
                     <div className="flex items-center">
                       <input
                         type="checkbox"
-                        checked={formData.processingConfig.autoStart}
+                        checked={formData.processing.autoStart}
                         onChange={(e) => setFormData({
                           ...formData,
-                          processingConfig: {
-                            ...formData.processingConfig,
+                          processing: {
+                            ...formData.processing,
                             autoStart: e.target.checked
                           }
                         })}
