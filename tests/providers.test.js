@@ -11,7 +11,7 @@ const WebhookNotificationProvider = require('../src/services/providers/notificat
 const EmailNotificationProvider = require('../src/services/providers/notifications/EmailNotificationProvider');
 
 // Mock external dependencies
-jest.mock('aws-sdk');
+jest.mock('@aws-sdk/client-s3');
 jest.mock('nodemailer');
 jest.mock('fs-extra');
 

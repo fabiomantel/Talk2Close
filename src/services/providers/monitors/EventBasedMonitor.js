@@ -34,7 +34,7 @@ class EventBasedMonitor extends IFileMonitor {
   async startMonitoring(config) {
     try {
       const validation = this.validateConfig(config);
-      if (!validation.isValid) {
+      if (!validation.valid) {
         throw new Error(`Invalid configuration: ${validation.errors.join(', ')}`);
       }
 
@@ -136,7 +136,7 @@ class EventBasedMonitor extends IFileMonitor {
     }
 
     return {
-      isValid: errors.length === 0,
+      valid: errors.length === 0,
       errors
     };
   }
@@ -157,7 +157,7 @@ class EventBasedMonitor extends IFileMonitor {
   async testMonitoring(config) {
     try {
       const validation = this.validateConfig(config);
-      if (!validation.isValid) {
+      if (!validation.valid) {
         return {
           success: false,
           message: `Configuration validation failed: ${validation.errors.join(', ')}`

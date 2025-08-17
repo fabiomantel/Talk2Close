@@ -4,7 +4,7 @@
  */
 
 const IStorageProvider = require('../../interfaces/IStorageProvider');
-const AWS = require('aws-sdk');
+const { S3Client, ListObjectsV2Command, GetObjectCommand, HeadBucketCommand, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
 class S3StorageProvider extends IStorageProvider {
   constructor() {
@@ -27,20 +27,21 @@ class S3StorageProvider extends IStorageProvider {
     try {
       this.config = config;
       
-      // Configure AWS SDK
-      AWS.config.update({
+      // Configure AWS SDK v3
+      this.s3 = new S3Client({
         region: config.region,
-        accessKeyId: config.credentials.accessKeyId,
-        secretAccessKey: config.credentials.secretAccessKey
+        credentials: {
+          accessKeyId: config.credentials.accessKeyId,
+          secretAccessKey: config.credentials.secretAccessKey
+        }
       });
-
-      this.s3 = new AWS.S3();
       
       // Test connection by listing objects
-      await this.s3.listObjectsV2({
+      const command = new ListObjectsV2Command({
         Bucket: config.bucket,
         MaxKeys: 1
-      }).promise();
+      });
+      await this.s3.send(command);
 
       console.log(`✅ Connected to S3 bucket: ${config.bucket}`);
       return true;
@@ -63,13 +64,13 @@ class S3StorageProvider extends IStorageProvider {
 
       const prefix = path ? `${this.config.prefix || ''}${path}/` : (this.config.prefix || '');
       
-      const params = {
+      const command = new ListObjectsV2Command({
         Bucket: this.config.bucket,
         Prefix: prefix,
         Delimiter: '/'
-      };
+      });
 
-      const result = await this.s3.listObjectsV2(params).promise();
+      const result = await this.s3.send(command);
       
       const files = result.Contents || [];
       const directories = result.CommonPrefixes || [];
@@ -111,12 +112,13 @@ class S3StorageProvider extends IStorageProvider {
       // Ensure local directory exists
       await fs.ensureDir(path.dirname(localPath));
 
-      const params = {
+      const command = new GetObjectCommand({
         Bucket: this.config.bucket,
         Key: remotePath
-      };
+      });
 
-      const fileStream = this.s3.getObject(params).createReadStream();
+      const response = await this.s3.send(command);
+      const fileStream = response.Body;
       const writeStream = fs.createWriteStream(localPath);
 
       return new Promise((resolve, reject) => {
@@ -181,7 +183,7 @@ class S3StorageProvider extends IStorageProvider {
     }
 
     return {
-      isValid: errors.length === 0,
+      valid: errors.length === 0,
       errors
     };
   }
@@ -201,20 +203,24 @@ class S3StorageProvider extends IStorageProvider {
    */
   async testConnection(config) {
     try {
-      const tempS3 = new AWS.S3({
+      const tempS3 = new S3Client({
         region: config.region,
-        accessKeyId: config.credentials.accessKeyId,
-        secretAccessKey: config.credentials.secretAccessKey
+        credentials: {
+          accessKeyId: config.credentials.accessKeyId,
+          secretAccessKey: config.credentials.secretAccessKey
+        }
       });
 
       // Test bucket access
-      await tempS3.headBucket({ Bucket: config.bucket }).promise();
+      const headCommand = new HeadBucketCommand({ Bucket: config.bucket });
+      await tempS3.send(headCommand);
 
       // Test listing objects
-      const listResult = await tempS3.listObjectsV2({
+      const listCommand = new ListObjectsV2Command({
         Bucket: config.bucket,
         MaxKeys: 1
-      }).promise();
+      });
+      const listResult = await tempS3.send(listCommand);
 
       return {
         success: true,
@@ -245,10 +251,11 @@ class S3StorageProvider extends IStorageProvider {
         throw new Error('S3 not connected');
       }
 
-      const result = await this.s3.listObjectsV2({
+      const command = new ListObjectsV2Command({
         Bucket: this.config.bucket,
         Prefix: this.config.prefix || ''
-      }).promise();
+      });
+      const result = await this.s3.send(command);
 
       const totalSize = result.Contents?.reduce((sum, obj) => sum + obj.Size, 0) || 0;
       const objectCount = result.Contents?.length || 0;
@@ -280,17 +287,19 @@ class S3StorageProvider extends IStorageProvider {
 
       const testKey = `${this.config.prefix || ''}test-write-permission-${Date.now()}.txt`;
       
-      await this.s3.putObject({
+      const putCommand = new PutObjectCommand({
         Bucket: this.config.bucket,
         Key: testKey,
         Body: 'test'
-      }).promise();
+      });
+      await this.s3.send(putCommand);
 
       // Clean up test file
-      await this.s3.deleteObject({
+      const deleteCommand = new DeleteObjectCommand({
         Bucket: this.config.bucket,
         Key: testKey
-      }).promise();
+      });
+      await this.s3.send(deleteCommand);
 
       return true;
     } catch (error) {

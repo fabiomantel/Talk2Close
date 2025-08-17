@@ -158,7 +158,7 @@ class EmailNotificationProvider extends INotificationProvider {
     }
 
     return {
-      isValid: errors.length === 0,
+      valid: errors.length === 0,
       errors
     };
   }
