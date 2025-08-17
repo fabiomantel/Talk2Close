@@ -9,6 +9,7 @@ import Upload from './pages/Upload';
 import Customers from './pages/Customers';
 import Analysis from './pages/Analysis';
 import Configuration from './pages/Configuration';
+import BatchProcessing from './pages/BatchProcessing';
 import Debug from './pages/Debug';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
@@ -81,6 +82,7 @@ function App() {
                   <Route path="/customers" element={<Customers />} />
                   <Route path="/analysis" element={<Analysis />} />
                   <Route path="/configuration" element={<Configuration />} />
+                  <Route path="/batch-processing" element={<BatchProcessing />} />
                   {isDebugEnabled && <Route path="/debug" element={<Debug />} />}
                 </Routes>
               </main>
