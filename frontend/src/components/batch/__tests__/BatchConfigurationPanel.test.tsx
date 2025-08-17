@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import BatchConfigurationPanel from '../BatchConfigurationPanel';
+import { getUIText } from '../../../utils/hebrewUtils';
 
 // Mock the API service
 jest.mock('../../../services/api', () => ({
@@ -55,39 +56,39 @@ describe('BatchConfigurationPanel', () => {
     renderWithQueryClient(<BatchConfigurationPanel />);
     
     await waitFor(() => {
-      expect(screen.getByText('Batch Processing Configuration')).toBeInTheDocument();
+      expect(screen.getByText(getUIText('batch_processing_configuration'))).toBeInTheDocument();
     });
     
-    expect(screen.getByText('Configure global settings for batch processing operations')).toBeInTheDocument();
+    expect(screen.getByText(getUIText('batch_config_description'))).toBeInTheDocument();
   });
 
   it('displays processing settings section', async () => {
     renderWithQueryClient(<BatchConfigurationPanel />);
     
     await waitFor(() => {
-      expect(screen.getByText('Processing Settings')).toBeInTheDocument();
+      expect(screen.getByText(getUIText('processing_settings'))).toBeInTheDocument();
     });
     
-    expect(screen.getByText('Max Concurrent Files')).toBeInTheDocument();
-    expect(screen.getByText('Processing Triggers')).toBeInTheDocument();
+    expect(screen.getByText(getUIText('max_concurrent_files'))).toBeInTheDocument();
+    expect(screen.getByText(getUIText('processing_triggers'))).toBeInTheDocument();
   });
 
   it('displays retry configuration section', async () => {
     renderWithQueryClient(<BatchConfigurationPanel />);
     
     await waitFor(() => {
-      expect(screen.getByText('Retry Configuration')).toBeInTheDocument();
+      expect(screen.getByText(getUIText('retry_configuration'))).toBeInTheDocument();
     });
     
-    expect(screen.getByText('Enable automatic retries for failed files')).toBeInTheDocument();
+    expect(screen.getByText(getUIText('enable_automatic_retries'))).toBeInTheDocument();
   });
 
   it('shows save and reset buttons', async () => {
     renderWithQueryClient(<BatchConfigurationPanel />);
     
     await waitFor(() => {
-      expect(screen.getByText('Reset to Default')).toBeInTheDocument();
-      expect(screen.getByText('Save Configuration')).toBeInTheDocument();
+      expect(screen.getByText(getUIText('reset_to_default'))).toBeInTheDocument();
+      expect(screen.getByText(getUIText('save_configuration'))).toBeInTheDocument();
     });
   });
 
@@ -106,7 +107,7 @@ describe('BatchConfigurationPanel', () => {
     renderWithQueryClient(<BatchConfigurationPanel />);
     
     await waitFor(() => {
-      const retryCheckbox = screen.getByRole('checkbox', { name: /enable automatic retries/i });
+      const retryCheckbox = screen.getByRole('checkbox', { name: new RegExp(getUIText('enable_automatic_retries'), 'i') });
       expect(retryCheckbox).toBeInTheDocument();
       expect(retryCheckbox).toBeChecked();
     });
@@ -116,9 +117,9 @@ describe('BatchConfigurationPanel', () => {
     renderWithQueryClient(<BatchConfigurationPanel />);
     
     await waitFor(() => {
-      expect(screen.getByText('Performance Information')).toBeInTheDocument();
-      expect(screen.getByText(/Processing capacity/)).toBeInTheDocument();
-      expect(screen.getByText(/Memory usage/)).toBeInTheDocument();
+      expect(screen.getByText(getUIText('performance_information'))).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(getUIText('processing_capacity'), 'i'))).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(getUIText('memory_usage'), 'i'))).toBeInTheDocument();
     });
   });
 
@@ -128,7 +129,7 @@ describe('BatchConfigurationPanel', () => {
     
     // Wait for the component to load
     await waitFor(() => {
-      expect(screen.getByText('Batch Processing Configuration')).toBeInTheDocument();
+      expect(screen.getByText(getUIText('batch_processing_configuration'))).toBeInTheDocument();
     });
     
     // The callback should be called when configuration is saved, not on load

@@ -20,10 +20,10 @@ const Sidebar: React.FC = () => {
     { name: getUIText('upload_nav'), href: '/upload', icon: CloudArrowUpIcon },
     { name: getUIText('customers_nav'), href: '/customers', icon: UsersIcon },
     { name: getUIText('analysis_nav'), href: '/analysis', icon: ChartBarIcon },
-    { name: 'Batch Processing', href: '/batch', icon: FolderIcon },
+    { name: getUIText('batch_processing_nav'), href: '/batch', icon: FolderIcon },
     { name: getUIText('configuration'), href: '/configuration', icon: Cog6ToothIcon },
     // Only show debug navigation if debug mode is enabled
-    ...(isDebugEnabled ? [{ name: 'Debug', href: '/debug', icon: BugAntIcon }] : []),
+    ...(isDebugEnabled ? [{ name: getUIText('debug'), href: '/debug', icon: BugAntIcon }] : []),
   ];
 
   return (
