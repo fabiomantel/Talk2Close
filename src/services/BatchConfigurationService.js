@@ -351,15 +351,17 @@ class BatchConfigurationService {
         throw new Error(`Invalid notification configuration: ${validation.errors.join(', ')}`);
       }
 
-      // Test notification provider
-      const testResult = await providerFactory.testProvider(
-        'notification',
-        notificationConfig.type,
-        notificationConfig.config
-      );
+      // Test notification provider (skip in development if requested)
+      if (!notificationConfig.skipTest) {
+        const testResult = await providerFactory.testProvider(
+          'notification',
+          notificationConfig.type,
+          notificationConfig.config
+        );
 
-      if (!testResult.success) {
-        throw new Error(`Notification provider test failed: ${testResult.error}`);
+        if (!testResult.success) {
+          throw new Error(`Notification provider test failed: ${testResult.error}`);
+        }
       }
 
       // Create notification config
@@ -413,8 +415,8 @@ class BatchConfigurationService {
         throw new Error(`Invalid notification configuration: ${validation.errors.join(', ')}`);
       }
 
-      // Test provider if config changed
-      if (updates.config) {
+      // Test provider if config changed (skip in development if requested)
+      if (updates.config && !updates.skipTest) {
         const testResult = await providerFactory.testProvider(
           'notification',
           updatedConfig.type,

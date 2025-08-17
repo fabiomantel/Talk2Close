@@ -16,6 +16,8 @@ const EventBasedMonitor = require('./providers/monitors/EventBasedMonitor');
 // Notification Providers
 const WebhookNotificationProvider = require('./providers/notifications/WebhookNotificationProvider');
 const EmailNotificationProvider = require('./providers/notifications/EmailNotificationProvider');
+const SlackNotificationProvider = require('./providers/notifications/SlackNotificationProvider');
+const SMSNotificationProvider = require('./providers/notifications/SMSNotificationProvider');
 
 /**
  * Register all available providers
@@ -34,6 +36,8 @@ function registerAllProviders() {
   // Register Notification Providers
   providerRegistry.registerNotificationProvider('webhook', new WebhookNotificationProvider());
   providerRegistry.registerNotificationProvider('email', new EmailNotificationProvider());
+  providerRegistry.registerNotificationProvider('slack', new SlackNotificationProvider());
+  providerRegistry.registerNotificationProvider('sms', new SMSNotificationProvider());
 
   console.log('✅ All providers registered successfully');
   console.log('📊 Provider Registry Stats:', providerRegistry.getStats());
@@ -90,7 +94,7 @@ function validateProviderAvailability() {
   });
 
   // Check notification providers
-  const requiredNotificationProviders = ['webhook', 'email'];
+  const requiredNotificationProviders = ['webhook', 'email', 'slack', 'sms'];
   requiredNotificationProviders.forEach(provider => {
     const available = providerRegistry.hasNotificationProvider(provider);
     results.notification[provider] = available;

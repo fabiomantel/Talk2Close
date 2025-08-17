@@ -444,7 +444,7 @@ class ApiService {
     return this.request('/batch-config/notifications');
   }
 
-  getBatchNotificationConfigs = async (): Promise<{ success: boolean; data: { notifications: any[] } }> => {
+  getBatchNotificationConfigs = async (): Promise<{ success: boolean; data: { configs: any[] } }> => {
     return this.request('/batch-config/notifications');
   }
 

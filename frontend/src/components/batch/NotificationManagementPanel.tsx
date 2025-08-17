@@ -42,7 +42,7 @@ const NotificationManagementPanel: React.FC<NotificationManagementPanelProps> = 
     queryFn: async () => {
       try {
         const response = await apiService.getBatchNotificationConfigs();
-        return response.data?.notifications || [];
+        return response.data?.configs || [];
       } catch (error) {
         console.error('Failed to load notification configurations:', error);
         return [];
@@ -328,12 +328,13 @@ interface NotificationFormProps {
 }
 
 const NotificationForm: React.FC<NotificationFormProps> = ({ config, onSave, onCancel }) => {
-  const [formData, setFormData] = useState<Omit<NotificationConfig, 'id'>>({
+  const [formData, setFormData] = useState<Omit<NotificationConfig, 'id'> & { skipTest?: boolean }>({
     type: config?.type || 'email',
     name: config?.name || '',
     config: config?.config || {},
     conditions: config?.conditions || ['file_failed', 'batch_completed'],
-    isActive: config?.isActive ?? true
+    isActive: config?.isActive ?? true,
+    skipTest: false
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -373,16 +374,29 @@ const NotificationForm: React.FC<NotificationFormProps> = ({ config, onSave, onC
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <label className="block text-sm font-medium text-gray-700">From Email</label>
               <input
                 type="email"
-                value={formData.config.email || ''}
+                value={formData.config.fromEmail || ''}
                 onChange={(e) => setFormData(prev => ({
                   ...prev,
-                  config: { ...prev.config, email: e.target.value }
+                  config: { ...prev.config, fromEmail: e.target.value }
                 }))}
                 className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="user@example.com"
+                placeholder="sender@example.com"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">To Email</label>
+              <input
+                type="email"
+                value={formData.config.toEmail || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  config: { ...prev.config, toEmail: e.target.value }
+                }))}
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="recipient@example.com"
               />
             </div>
             <div>
@@ -469,13 +483,26 @@ const NotificationForm: React.FC<NotificationFormProps> = ({ config, onSave, onC
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+              <label className="block text-sm font-medium text-gray-700">From Number</label>
               <input
                 type="tel"
-                value={formData.config.phoneNumber || ''}
+                value={formData.config.fromNumber || ''}
                 onChange={(e) => setFormData(prev => ({
                   ...prev,
-                  config: { ...prev.config, phoneNumber: e.target.value }
+                  config: { ...prev.config, fromNumber: e.target.value }
+                }))}
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="+1234567890"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">To Number</label>
+              <input
+                type="tel"
+                value={formData.config.toNumber || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  config: { ...prev.config, toNumber: e.target.value }
                 }))}
                 className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="+1234567890"
@@ -569,8 +596,7 @@ const NotificationForm: React.FC<NotificationFormProps> = ({ config, onSave, onC
               { value: 'file_failed', label: 'File Processing Failed' },
               { value: 'batch_completed', label: 'Batch Job Completed' },
               { value: 'batch_failed', label: 'Batch Job Failed' },
-              { value: 'folder_scan_completed', label: 'Folder Scan Completed' },
-              { value: 'system_error', label: 'System Error' }
+              { value: 'file_processed', label: 'File Processed Successfully' }
             ].map((condition) => (
               <div key={condition.value} className="flex items-center">
                 <input
@@ -611,6 +637,20 @@ const NotificationForm: React.FC<NotificationFormProps> = ({ config, onSave, onC
           />
           <label htmlFor="isActive" className="ml-2 text-sm text-gray-700">
             Active (enable this notification)
+          </label>
+        </div>
+
+        {/* Skip Test Option (Development) */}
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="skipTest"
+            checked={formData.skipTest || false}
+            onChange={(e) => setFormData(prev => ({ ...prev, skipTest: e.target.checked }))}
+            className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+          />
+          <label htmlFor="skipTest" className="ml-2 text-sm text-gray-700">
+            Skip provider test (development only)
           </label>
         </div>
 
