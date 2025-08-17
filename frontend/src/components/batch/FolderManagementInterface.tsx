@@ -356,22 +356,50 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
 
       {/* Test Results */}
       {testMutation.data && (
-        <div className={`fixed top-4 right-4 p-4 rounded-md shadow-lg ${
+        <div className={`fixed top-4 right-4 p-4 rounded-md shadow-lg max-w-md ${
           testMutation.data.success 
             ? 'bg-green-50 border border-green-200' 
             : 'bg-red-50 border border-red-200'
         }`}>
-          <div className="flex items-center">
+          <div className="flex items-start">
             {testMutation.data.success ? (
-              <CheckIcon className="w-5 h-5 text-green-400 mr-2" />
+              <CheckIcon className="w-5 h-5 text-green-400 mr-2 mt-0.5" />
             ) : (
-              <XMarkIcon className="w-5 h-5 text-red-400 mr-2" />
+              <XMarkIcon className="w-5 h-5 text-red-400 mr-2 mt-0.5" />
             )}
-            <span className={`text-sm font-medium ${
-              testMutation.data.success ? 'text-green-800' : 'text-red-800'
-            }`}>
-              {testMutation.data.message}
-            </span>
+            <div className="flex-1">
+              <span className={`text-sm font-medium ${
+                testMutation.data.success ? 'text-green-800' : 'text-red-800'
+              }`}>
+                {testMutation.data.success ? 'Folder test passed' : 'Folder test failed'}
+              </span>
+              {testMutation.data.data && testMutation.data.data.tests && (
+                <div className="mt-2 space-y-1">
+                  {testMutation.data.data.tests.storage && (
+                    <div className="text-xs">
+                      <span className="font-medium">Storage:</span> 
+                      <span className={testMutation.data.data.tests.storage.success ? 'text-green-600' : 'text-red-600'}>
+                        {testMutation.data.data.tests.storage.success ? ' ✓' : ' ✗'}
+                      </span>
+                      {!testMutation.data.data.tests.storage.success && testMutation.data.data.tests.storage.error && (
+                        <span className="text-red-600 ml-1">({testMutation.data.data.tests.storage.error})</span>
+                      )}
+                    </div>
+                  )}
+                  {testMutation.data.data.tests.monitor && (
+                    <div className="text-xs">
+                      <span className="font-medium">Monitor:</span> 
+                      <span className={testMutation.data.data.tests.monitor.success ? 'text-green-600' : 'text-red-600'}>
+                        {testMutation.data.data.tests.monitor.success ? ' ✓' : ' ✗'}
+                      </span>
+                      {!testMutation.data.data.tests.monitor.success && testMutation.data.data.tests.monitor.error && (
+                        <span className="text-red-600 ml-1">({testMutation.data.data.tests.monitor.error})</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
