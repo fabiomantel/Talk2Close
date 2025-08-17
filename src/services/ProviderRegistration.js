@@ -96,31 +96,34 @@ function validateProviderAvailability() {
 
 /**
  * Initialize provider system
+ * @returns {Promise<boolean>} - Promise that resolves to initialization success status
  */
 function initializeProviderSystem() {
-  try {
-    console.log('🚀 Initializing provider system...');
-    
-    // Register all providers
-    registerAllProviders();
-    
-    // Validate availability
-    const validation = validateProviderAvailability();
-    
-    if (validation.overall) {
-      console.log('✅ Provider system initialized successfully');
-      console.log('📋 Provider Status:', getProviderStatus());
-    } else {
-      console.warn('⚠️ Some required providers are missing');
-      console.log('🔍 Validation Results:', validation);
+  return new Promise((resolve) => {
+    try {
+      console.log('🚀 Initializing provider system...');
+      
+      // Register all providers
+      registerAllProviders();
+      
+      // Validate availability
+      const validation = validateProviderAvailability();
+      
+      if (validation.overall) {
+        console.log('✅ Provider system initialized successfully');
+        console.log('📋 Provider Status:', getProviderStatus());
+      } else {
+        console.warn('⚠️ Some required providers are missing');
+        console.log('🔍 Validation Results:', validation);
+      }
+      
+      resolve(validation.overall);
+      
+    } catch (error) {
+      console.error('❌ Failed to initialize provider system:', error.message);
+      resolve(false);
     }
-    
-    return validation.overall;
-    
-  } catch (error) {
-    console.error('❌ Failed to initialize provider system:', error.message);
-    return false;
-  }
+  });
 }
 
 module.exports = {
