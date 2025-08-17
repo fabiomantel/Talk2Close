@@ -7,6 +7,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import BatchProcessingDashboard from '../BatchProcessingDashboard';
+import { getUIText } from '../../../utils/hebrewUtils';
 
 // Mock the API service
 jest.mock('../../../services/api', () => ({
@@ -84,7 +85,7 @@ describe('BatchProcessingDashboard', () => {
       </QueryClientProvider>
     );
 
-    expect(screen.getByText('Batch Processing Dashboard')).toBeInTheDocument();
+    expect(screen.getByText(getUIText('batch_processing_dashboard'))).toBeInTheDocument();
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 

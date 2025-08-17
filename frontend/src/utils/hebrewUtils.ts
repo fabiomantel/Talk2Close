@@ -78,6 +78,9 @@ export const getUIText = (key: string): string => {
     'upload': 'העלאת שיחת מכירה',
     'batch_processing': 'עיבוד מרוכז',
     'configuration': 'הגדרות',
+    'folders': 'תיקיות',
+    'notifications': 'התראות',
+    'batch_processing_page_description': 'עבד אוטומטית מספר רב של הקלטות שיחות מכירה בעברית מתיקיות חיצוניות',
     
     // Common Labels
     'name': 'שם',

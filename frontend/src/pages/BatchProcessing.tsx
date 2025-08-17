@@ -3,6 +3,7 @@ import BatchProcessingDashboard from '../components/batch/BatchProcessingDashboa
 import FolderManagementInterface from '../components/batch/FolderManagementInterface';
 import BatchConfigurationPanel from '../components/batch/BatchConfigurationPanel';
 import NotificationManagementPanel from '../components/batch/NotificationManagementPanel';
+import { getUIText } from '../utils/hebrewUtils';
 import { 
   FolderIcon, 
   ChartBarIcon, 
@@ -18,27 +19,27 @@ const BatchProcessing: React.FC = () => {
   const tabs = [
     {
       id: 'dashboard' as TabType,
-      name: 'Dashboard',
+      name: getUIText('dashboard'),
       icon: ChartBarIcon,
-      description: 'Monitor batch processing activities'
+      description: getUIText('batch_processing_description')
     },
     {
       id: 'folders' as TabType,
-      name: 'Folders',
+      name: getUIText('folders'),
       icon: FolderIcon,
-      description: 'Manage external folders'
+      description: getUIText('folder_management_description')
     },
     {
       id: 'configuration' as TabType,
-      name: 'Configuration',
+      name: getUIText('configuration'),
       icon: CogIcon,
-      description: 'System settings and preferences'
+      description: getUIText('batch_config_description')
     },
     {
       id: 'notifications' as TabType,
-      name: 'Notifications',
+      name: getUIText('notifications'),
       icon: BellIcon,
-      description: 'Alert and notification settings'
+      description: getUIText('notification_description')
     }
   ];
 
@@ -110,9 +111,9 @@ const BatchProcessing: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Batch Processing</h1>
-          <p className="mt-2 text-gray-600">
-            Automatically process multiple Hebrew sales call recordings from external folders
+          <h1 className="text-3xl font-bold text-gray-900 hebrew-content">{getUIText('batch_processing')}</h1>
+          <p className="mt-2 text-gray-600 hebrew-content">
+            {getUIText('batch_processing_page_description')}
           </p>
         </div>
 
@@ -131,7 +132,7 @@ const BatchProcessing: React.FC = () => {
                     isActive
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm flex items-center`}
+                  } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm flex items-center hebrew-content`}
                 >
                   <Icon className="w-4 h-4 mr-2" />
                   {tab.name}
