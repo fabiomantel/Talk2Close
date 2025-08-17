@@ -388,6 +388,17 @@ class ApiService {
     return this.request('/batch/stats');
   }
 
+  getBatchConfig = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch-config');
+  }
+
+  updateBatchConfig = async (config: any): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch-config', {
+      method: 'PUT',
+      body: JSON.stringify(config),
+    });
+  }
+
   // Batch Configuration APIs
   getExternalFolders = async (): Promise<{ success: boolean; data: { folders: any[] } }> => {
     return this.request('/batch-config/folders');
@@ -433,7 +444,18 @@ class ApiService {
     return this.request('/batch-config/notifications');
   }
 
+  getBatchNotificationConfigs = async (): Promise<{ success: boolean; data: { notifications: any[] } }> => {
+    return this.request('/batch-config/notifications');
+  }
+
   createNotificationConfig = async (notificationData: any): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch-config/notifications', {
+      method: 'POST',
+      body: JSON.stringify(notificationData),
+    });
+  }
+
+  createBatchNotificationConfig = async (notificationData: any): Promise<{ success: boolean; data: any }> => {
     return this.request('/batch-config/notifications', {
       method: 'POST',
       body: JSON.stringify(notificationData),
@@ -447,13 +469,32 @@ class ApiService {
     });
   }
 
+  updateBatchNotificationConfig = async (notificationId: number, notificationData: any): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/notifications/${notificationId}`, {
+      method: 'PUT',
+      body: JSON.stringify(notificationData),
+    });
+  }
+
   deleteNotificationConfig = async (notificationId: number): Promise<{ success: boolean; data: any }> => {
     return this.request(`/batch-config/notifications/${notificationId}`, {
       method: 'DELETE',
     });
   }
 
+  deleteBatchNotificationConfig = async (notificationId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/notifications/${notificationId}`, {
+      method: 'DELETE',
+    });
+  }
+
   testNotificationConfig = async (notificationId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/notifications/${notificationId}/test`, {
+      method: 'POST',
+    });
+  }
+
+  testBatchNotificationConfig = async (notificationId: number): Promise<{ success: boolean; data: any }> => {
     return this.request(`/batch-config/notifications/${notificationId}/test`, {
       method: 'POST',
     });

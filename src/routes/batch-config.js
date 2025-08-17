@@ -401,13 +401,74 @@ router.post('/notifications/:id/test', async (req, res, next) => {
 });
 
 // ============================================================================
-// System Configuration
+// Global Batch Configuration
 // ============================================================================
 
 /**
- * GET /api/batch-config/summary
- * Get system configuration summary
+ * GET /api/batch-config
+ * Get global batch processing configuration
  */
+router.get('/', async (req, res, next) => {
+  try {
+    const config = await batchConfigurationService.getGlobalConfiguration();
+
+    res.json({
+      success: true,
+      data: config
+    });
+
+  } catch (error) {
+    console.error('❌ Error getting global configuration:', error);
+    next(error);
+  }
+});
+
+/**
+ * PUT /api/batch-config
+ * Update global batch processing configuration
+ */
+router.put('/', 
+  [
+    body('maxConcurrentFiles').optional().isInt({ min: 1, max: 20 }).withMessage('Max concurrent files must be between 1 and 20'),
+    body('retryConfig').optional().isObject().withMessage('Retry configuration must be an object'),
+    body('autoStart').optional().isBoolean().withMessage('Auto start must be a boolean'),
+    body('immediateProcessing').optional().isBoolean().withMessage('Immediate processing must be a boolean'),
+    body('backgroundProcessing').optional().isBoolean().withMessage('Background processing must be a boolean')
+  ],
+  async (req, res, next) => {
+    try {
+      // Check validation errors
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          error: 'Validation failed',
+          details: errors.array()
+        });
+      }
+
+      const config = req.body;
+      const updatedConfig = await batchConfigurationService.updateGlobalConfiguration(config);
+
+      res.json({
+        success: true,
+        data: updatedConfig,
+        message: 'Global configuration updated successfully'
+      });
+
+    } catch (error) {
+      console.error('❌ Error updating global configuration:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+);
+
+// ============================================================================
+// System Configuration
+// ============================================================================
 router.get('/summary', async (req, res, next) => {
   try {
     const summary = await batchConfigurationService.getConfigurationSummary();

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import BatchProcessingDashboard from '../components/batch/BatchProcessingDashboard';
 import FolderManagementInterface from '../components/batch/FolderManagementInterface';
+import BatchConfigurationPanel from '../components/batch/BatchConfigurationPanel';
+import NotificationManagementPanel from '../components/batch/NotificationManagementPanel';
 import { 
   FolderIcon, 
   ChartBarIcon, 
@@ -84,19 +86,19 @@ const BatchProcessing: React.FC = () => {
         );
       case 'configuration':
         return (
-          <div className="text-center py-12">
-            <CogIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">Configuration</h3>
-            <p className="mt-1 text-sm text-gray-500">System configuration settings coming soon.</p>
-          </div>
+          <BatchConfigurationPanel
+            onConfigurationChange={(config) => {
+              console.log('Configuration changed:', config);
+            }}
+          />
         );
       case 'notifications':
         return (
-          <div className="text-center py-12">
-            <BellIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">Notifications</h3>
-            <p className="mt-1 text-sm text-gray-500">Notification settings coming soon.</p>
-          </div>
+          <NotificationManagementPanel
+            onNotificationChange={(config) => {
+              console.log('Notification changed:', config);
+            }}
+          />
         );
       default:
         return null;

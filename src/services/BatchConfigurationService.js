@@ -10,6 +10,18 @@ const providerFactory = require('./ProviderFactory');
 class BatchConfigurationService {
   constructor() {
     this.validator = new ConfigurationValidator();
+    this.defaultGlobalConfig = {
+      maxConcurrentFiles: 5,
+      retryConfig: {
+        enabled: true,
+        maxRetries: 3,
+        delaySeconds: 60,
+        exponentialBackoff: true
+      },
+      autoStart: true,
+      immediateProcessing: true,
+      backgroundProcessing: true
+    };
   }
 
   /**
@@ -576,6 +588,67 @@ class BatchConfigurationService {
 
     } catch (error) {
       console.error(`❌ Failed to get configuration summary: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Get global batch processing configuration
+   * @returns {Promise<Object>} - Global configuration
+   */
+  async getGlobalConfiguration() {
+    try {
+      // For now, return default configuration
+      // In the future, this could be stored in database or config file
+      return this.defaultGlobalConfig;
+    } catch (error) {
+      console.error(`❌ Failed to get global configuration: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Update global batch processing configuration
+   * @param {Object} config - New configuration
+   * @returns {Promise<Object>} - Updated configuration
+   */
+  async updateGlobalConfiguration(config) {
+    try {
+      console.log('📝 Updating global batch processing configuration');
+
+      // Validate configuration
+      if (config.maxConcurrentFiles && (config.maxConcurrentFiles < 1 || config.maxConcurrentFiles > 20)) {
+        throw new Error('Max concurrent files must be between 1 and 20');
+      }
+
+      if (config.retryConfig) {
+        if (config.retryConfig.maxRetries && (config.retryConfig.maxRetries < 0 || config.retryConfig.maxRetries > 10)) {
+          throw new Error('Max retries must be between 0 and 10');
+        }
+
+        if (config.retryConfig.delaySeconds && (config.retryConfig.delaySeconds < 10 || config.retryConfig.delaySeconds > 300)) {
+          throw new Error('Delay seconds must be between 10 and 300');
+        }
+      }
+
+      // Merge with existing configuration
+      const updatedConfig = {
+        ...this.defaultGlobalConfig,
+        ...config,
+        retryConfig: {
+          ...this.defaultGlobalConfig.retryConfig,
+          ...config.retryConfig
+        }
+      };
+
+      // Update default config (in memory for now)
+      this.defaultGlobalConfig = updatedConfig;
+
+      console.log('✅ Global configuration updated successfully');
+      return updatedConfig;
+
+    } catch (error) {
+      console.error(`❌ Failed to update global configuration: ${error.message}`);
       throw error;
     }
   }
