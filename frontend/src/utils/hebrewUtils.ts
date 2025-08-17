@@ -104,6 +104,9 @@ export const getUIText = (key: string): string => {
     'customers_nav': 'לקוחות',
     'analysis_nav': 'ניתוח',
     'upload_nav': 'העלאה',
+    'settings_nav': 'הגדרות',
+    'scoring_settings': 'הגדרות ציון',
+    'batch_settings': 'הגדרות עיבוד מאוחד',
     
     // Dashboard
     'recent_activity': 'פעילות אחרונה',
