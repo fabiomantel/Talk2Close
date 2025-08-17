@@ -56,6 +56,16 @@
   text-align: right;
 }
 
+/* Nested Navigation Styles */
+.rtl-navigation .nested-item {
+  border-right: 2px solid transparent;
+  margin-right: 1rem;
+}
+
+.rtl-navigation .nested-item.active {
+  border-right-color: #3b82f6;
+}
+
 .rtl-form {
   direction: rtl;
   text-align: right;
