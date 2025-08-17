@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiService } from '../../services/api';
 import { getUIText } from '../../utils/hebrewUtils';
+import { useErrorDialog, handleApiError } from '../../hooks/useErrorDialog';
+import ErrorDialog from '../common/ErrorDialog';
 import { CogIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface ProcessingConfig {
@@ -38,6 +40,7 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const { error: dialogError, isOpen, showError, hideError } = useErrorDialog();
 
   // Load configuration from API
   const { data: configData, isLoading } = useQuery({
@@ -69,6 +72,7 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
       setTimeout(() => setSuccess(null), 3000);
     },
     onError: (error) => {
+      handleApiError(error, showError);
       setError(getUIText('failed_to_save_configuration'));
       setSuccess(null);
     }
@@ -102,6 +106,7 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
       setTimeout(() => setSuccess(null), 3000);
     },
     onError: (error) => {
+      handleApiError(error, showError);
       setError(getUIText('failed_to_reset_configuration'));
       setSuccess(null);
     }
@@ -375,6 +380,14 @@ const BatchConfigurationPanel: React.FC<BatchConfigurationPanelProps> = ({ onCon
           )}
         </div>
       </div>
+
+      {/* Error Dialog */}
+      <ErrorDialog
+        isOpen={isOpen}
+        onClose={hideError}
+        error={dialogError}
+        title={getUIText('configuration_error')}
+      />
     </div>
   );
 };

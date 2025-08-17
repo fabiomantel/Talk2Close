@@ -394,7 +394,18 @@ export const getUIText = (key: string): string => {
     'to_number': 'מספר מקבל',
     'twilio_account_sid': 'מזהה חשבון Twilio',
     'twilio_auth_token': 'אסימון אימות Twilio',
-    'auth_token': 'אסימון אימות'
+    'auth_token': 'אסימון אימות',
+    
+    // Additional Error Messages
+    'error_occurred': 'אירעה שגיאה',
+    'folder_management_error': 'שגיאה בניהול תיקיות',
+    'configuration_error': 'שגיאה בהגדרות',
+    'notification_error': 'שגיאה בהתראות',
+    'processing_error': 'שגיאה בעיבוד',
+    'invalid_configuration': 'הגדרות לא תקינות',
+    'connection_failed': 'החיבור נכשל',
+    'timeout_error': 'שגיאת פסק זמן',
+    'unknown_error': 'שגיאה לא ידועה'
   };
   
   return translations[key] || key;

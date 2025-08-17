@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiService } from '../../services/api';
 import { getUIText } from '../../utils/hebrewUtils';
+import { useErrorDialog, handleApiError } from '../../hooks/useErrorDialog';
+import ErrorDialog from '../common/ErrorDialog';
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -72,6 +74,7 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFolder, setEditingFolder] = useState<ExternalFolder | null>(null);
+  const { error, isOpen, showError, hideError } = useErrorDialog();
   const [formData, setFormData] = useState<FolderFormData>({
     name: '',
     storage: {
@@ -139,6 +142,9 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['external-folders'] });
       closeModal();
+    },
+    onError: (error) => {
+      handleApiError(error, showError);
     }
   });
 
@@ -147,12 +153,18 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
     mutationFn: (folderId: number) => apiService.deleteExternalFolder(folderId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['external-folders'] });
+    },
+    onError: (error) => {
+      handleApiError(error, showError);
     }
   });
 
   // Test folder mutation
   const testMutation = useMutation({
-    mutationFn: (folderId: number) => apiService.testExternalFolder(folderId)
+    mutationFn: (folderId: number) => apiService.testExternalFolder(folderId),
+    onError: (error) => {
+      handleApiError(error, showError);
+    }
   });
 
   const openModal = (folder?: ExternalFolder) => {
@@ -683,6 +695,14 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
           </div>
         </div>
       )}
+
+      {/* Error Dialog */}
+      <ErrorDialog
+        isOpen={isOpen}
+        onClose={hideError}
+        error={error}
+        title={getUIText('folder_management_error')}
+      />
     </div>
   );
 };

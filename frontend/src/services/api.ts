@@ -180,9 +180,23 @@ class ApiService {
       console.log(`📡 API Response: ${response.status} ${response.statusText}`);
 
       if (!response.ok) {
+        let errorData: any = {};
         const errorText = await response.text();
-        console.error(`❌ API Error: ${response.status} ${response.statusText}`, errorText);
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText };
+        }
+        
+        console.error(`❌ API Error: ${response.status} ${response.statusText}`, errorData);
+        
+        // Create a custom error with more details
+        const apiError = new Error(errorData.error || errorData.message || `API request failed: ${response.status} ${response.statusText}`);
+        (apiError as any).statusCode = response.status;
+        (apiError as any).endpoint = endpoint;
+        (apiError as any).details = errorData;
+        throw apiError;
       }
 
       const data = await response.json();

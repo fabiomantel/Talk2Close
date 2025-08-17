@@ -4,6 +4,8 @@ import { apiService } from '../services/api';
 import FileUpload from '../components/upload/FileUpload';
 import CustomerForm from '../components/upload/CustomerForm';
 import UploadProgress from '../components/upload/UploadProgress';
+import { useErrorDialog, handleApiError } from '../hooks/useErrorDialog';
+import ErrorDialog from '../components/common/ErrorDialog';
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import { getUIText } from '../utils/hebrewUtils';
 
@@ -18,6 +20,7 @@ const Upload: React.FC = () => {
   });
   const [uploading, setUploading] = useState(false);
   const queryClient = useQueryClient();
+  const { error: dialogError, isOpen, showError, hideError } = useErrorDialog();
 
   console.log('📁 Upload State:', { file: file?.name, customerData, uploading });
 
@@ -48,7 +51,7 @@ const Upload: React.FC = () => {
     },
     onError: (error) => {
       console.error('❌ Upload Mutation Error:', error);
-      alert('❌ Upload failed. Please try again.');
+      handleApiError(error, showError);
       setUploading(false);
     },
     onMutate: () => {
@@ -63,7 +66,7 @@ const Upload: React.FC = () => {
     
     if (!file || !customerData.name || !customerData.phone) {
       console.warn('⚠️ Upload Validation Failed: Missing required fields');
-      alert('Please select a file and fill in customer details');
+      showError('Please select a file and fill in customer details');
       return;
     }
 
@@ -109,6 +112,14 @@ const Upload: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Error Dialog */}
+      <ErrorDialog
+        isOpen={isOpen}
+        onClose={hideError}
+        error={dialogError}
+        title={getUIText('upload_error')}
+      />
     </div>
   );
 };
