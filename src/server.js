@@ -13,6 +13,11 @@ const dashboardRoutes = require('./routes/dashboard');
 const audioRoutes = require('./routes/audio');
 const configurationRoutes = require('./routes/configuration');
 const debugRoutes = require('./routes/debug');
+const batchRoutes = require('./routes/batch');
+const batchConfigRoutes = require('./routes/batch-config');
+
+// Initialize provider system
+const { initializeProviderSystem } = require('./services/ProviderRegistration');
 
 const app = express();
 const prisma = new PrismaClient();
@@ -141,6 +146,8 @@ app.get('/', (req, res) => {
       dashboard: '/api/dashboard',
       audio: '/api/audio',
       configuration: '/api/configuration',
+      batch: '/api/batch',
+      batchConfig: '/api/batch-config',
       ...(process.env.DEBUG_TRACKING === 'true' && { debug: '/api/debug' })
     },
     features: [
@@ -150,6 +157,9 @@ app.get('/', (req, res) => {
       'Customer prioritization',
       'Real-time dashboard',
       'Dynamic configuration management',
+      'Multi-file batch processing',
+      'External folder monitoring',
+      'Notification system',
       ...(process.env.DEBUG_TRACKING === 'true' ? ['Debug dashboard'] : [])
     ]
   });
@@ -180,6 +190,8 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/audio', audioRoutes);
 app.use('/api/configuration', configurationRoutes);
+app.use('/api/batch', batchRoutes);
+app.use('/api/batch-config', batchConfigRoutes);
 app.use('/api/debug', debugRoutes);
 
 // 404 handler
@@ -219,11 +231,21 @@ process.on('SIGINT', async () => {
 
 // Start server only if this file is run directly (not imported)
 if (require.main === module) {
-  app.listen(PORT, () => {
-    const serverUrl = getServerUrl();
-    console.log(`🚀 Hebrew Sales Call Analysis Server running on port ${PORT}`);
-    console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔗 Health check: ${serverUrl}/health`);
+  // Initialize provider system before starting server
+  initializeProviderSystem().then(success => {
+    if (success) {
+      console.log('✅ Provider system initialized successfully');
+    } else {
+      console.warn('⚠️ Provider system initialization had issues');
+    }
+    
+    app.listen(PORT, () => {
+      const serverUrl = getServerUrl();
+      console.log(`🚀 Hebrew Sales Call Analysis Server running on port ${PORT}`);
+      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🔗 Health check: ${serverUrl}/health`);
+      console.log(`📦 Multi-file processing: ${serverUrl}/api/batch/status`);
+    });
   });
 }
 
