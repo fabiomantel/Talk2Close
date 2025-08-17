@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { apiService } from '../../services/api';
 import { 
   PlayIcon, 
   StopIcon, 
@@ -56,22 +57,14 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
   // Fetch batch processing status
   const { data: statusData, isLoading: statusLoading } = useQuery({
     queryKey: ['batch-status'],
-    queryFn: async () => {
-      const response = await fetch('/api/batch/status');
-      if (!response.ok) throw new Error('Failed to fetch batch status');
-      return response.json();
-    },
+    queryFn: () => apiService.getBatchStatus(),
     refetchInterval: 5000 // Refresh every 5 seconds
   });
 
   // Fetch recent batch jobs
   const { data: jobsData, isLoading: jobsLoading } = useQuery({
     queryKey: ['batch-jobs'],
-    queryFn: async () => {
-      const response = await fetch('/api/batch/jobs?limit=10');
-      if (!response.ok) throw new Error('Failed to fetch batch jobs');
-      return response.json();
-    },
+    queryFn: () => apiService.getBatchJobs(10),
     refetchInterval: 10000 // Refresh every 10 seconds
   });
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiService } from '../../services/api';
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -76,21 +77,13 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
   // Fetch folders
   const { data: foldersData, isLoading } = useQuery({
     queryKey: ['external-folders'],
-    queryFn: async () => {
-      const response = await fetch('/api/batch-config/folders');
-      if (!response.ok) throw new Error('Failed to fetch folders');
-      return response.json();
-    }
+    queryFn: () => apiService.getExternalFolders()
   });
 
   // Fetch available providers
   const { data: providersData } = useQuery({
     queryKey: ['providers'],
-    queryFn: async () => {
-      const response = await fetch('/api/batch-config/providers');
-      if (!response.ok) throw new Error('Failed to fetch providers');
-      return response.json();
-    }
+    queryFn: () => apiService.getAvailableProviders()
   });
 
   const folders: ExternalFolder[] = foldersData?.data?.folders || [];
@@ -103,33 +96,24 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
   // Create/Update folder mutation
   const folderMutation = useMutation({
     mutationFn: async (data: FolderFormData) => {
-      const url = editingFolder 
-        ? `/api/batch-config/folders/${editingFolder.id}`
-        : '/api/batch-config/folders';
-      
-      const response = await fetch(url, {
-        method: editingFolder ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: data.name,
-          storage: {
-            type: data.storageType,
-            config: data.storageConfig
-          },
-          monitor: {
-            type: data.monitorType,
-            config: data.monitorConfig
-          },
-          processing: data.processingConfig
-        })
-      });
+      const folderData = {
+        name: data.name,
+        storage: {
+          type: data.storageType,
+          config: data.storageConfig
+        },
+        monitor: {
+          type: data.monitorType,
+          config: data.monitorConfig
+        },
+        processing: data.processingConfig
+      };
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to save folder');
+      if (editingFolder) {
+        return apiService.updateExternalFolder(editingFolder.id, folderData);
+      } else {
+        return apiService.createExternalFolder(folderData);
       }
-
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['external-folders'] });
@@ -139,18 +123,7 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
 
   // Delete folder mutation
   const deleteMutation = useMutation({
-    mutationFn: async (folderId: number) => {
-      const response = await fetch(`/api/batch-config/folders/${folderId}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to delete folder');
-      }
-
-      return response.json();
-    },
+    mutationFn: (folderId: number) => apiService.deleteExternalFolder(folderId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['external-folders'] });
     }
@@ -158,18 +131,7 @@ const FolderManagementInterface: React.FC<FolderManagementInterfaceProps> = ({
 
   // Test folder mutation
   const testMutation = useMutation({
-    mutationFn: async (folderId: number) => {
-      const response = await fetch(`/api/batch-config/folders/${folderId}/test`, {
-        method: 'POST'
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to test folder');
-      }
-
-      return response.json();
-    }
+    mutationFn: (folderId: number) => apiService.testExternalFolder(folderId)
   });
 
   const openModal = (folder?: ExternalFolder) => {
