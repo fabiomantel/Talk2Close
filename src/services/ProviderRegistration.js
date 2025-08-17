@@ -7,12 +7,14 @@ const providerRegistry = require('./ProviderRegistry');
 
 // Storage Providers
 const LocalStorageProvider = require('./providers/storage/LocalStorageProvider');
+const S3StorageProvider = require('./providers/storage/S3StorageProvider');
 
 // Monitor Providers
 const PollingMonitor = require('./providers/monitors/PollingMonitor');
 
 // Notification Providers
 const WebhookNotificationProvider = require('./providers/notifications/WebhookNotificationProvider');
+const EmailNotificationProvider = require('./providers/notifications/EmailNotificationProvider');
 
 /**
  * Register all available providers
@@ -22,12 +24,14 @@ function registerAllProviders() {
 
   // Register Storage Providers
   providerRegistry.registerStorageProvider('local', new LocalStorageProvider());
+  providerRegistry.registerStorageProvider('s3', new S3StorageProvider());
 
   // Register Monitor Providers
   providerRegistry.registerMonitorProvider('polling', new PollingMonitor());
 
   // Register Notification Providers
   providerRegistry.registerNotificationProvider('webhook', new WebhookNotificationProvider());
+  providerRegistry.registerNotificationProvider('email', new EmailNotificationProvider());
 
   console.log('✅ All providers registered successfully');
   console.log('📊 Provider Registry Stats:', providerRegistry.getStats());
@@ -68,7 +72,7 @@ function validateProviderAvailability() {
   };
 
   // Check storage providers
-  const requiredStorageProviders = ['local'];
+  const requiredStorageProviders = ['local', 's3'];
   requiredStorageProviders.forEach(provider => {
     const available = providerRegistry.hasStorageProvider(provider);
     results.storage[provider] = available;
@@ -84,7 +88,7 @@ function validateProviderAvailability() {
   });
 
   // Check notification providers
-  const requiredNotificationProviders = ['webhook'];
+  const requiredNotificationProviders = ['webhook', 'email'];
   requiredNotificationProviders.forEach(provider => {
     const available = providerRegistry.hasNotificationProvider(provider);
     results.notification[provider] = available;
