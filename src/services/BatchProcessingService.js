@@ -44,8 +44,18 @@ class BatchProcessingService {
         throw new Error(`External folder ${folder.name} is not active`);
       }
 
+      // Transform folder data to match validator expectations
+      const folderForValidation = {
+        id: folder.id,
+        name: folder.name,
+        storage: folder.storageConfig,
+        monitor: folder.monitorConfig,
+        processing: folder.processingConfig,
+        isActive: folder.isActive
+      };
+
       // Validate folder configuration
-      const validation = this.validator.validateFolderConfig(folder);
+      const validation = this.validator.validateFolderConfig(folderForValidation);
       if (!validation.valid) {
         throw new Error(`Invalid folder configuration: ${validation.errors.join(', ')}`);
       }
@@ -66,11 +76,13 @@ class BatchProcessingService {
       console.log(`📋 Created batch job ID: ${batchJob.id}`);
 
       // Create providers
+      console.log(`🔧 Creating storage provider: ${folder.storageConfig.type}`);
       const storageProvider = await providerFactory.createStorageProvider(
         folder.storageConfig.type,
         folder.storageConfig.config
       );
 
+      console.log(`🔧 Creating monitor provider: ${folder.monitorConfig.type}`);
       const monitorProvider = await providerFactory.createMonitorProvider(
         folder.monitorConfig.type,
         folder.monitorConfig.config
@@ -90,7 +102,9 @@ class BatchProcessingService {
       );
 
       // Start monitoring
+      console.log(`👀 Starting monitor with config:`, folder.monitorConfig.config);
       const monitorHandle = await monitorProvider.startMonitoring(folder.monitorConfig.config);
+      console.log(`✅ Monitor started with handle: ${monitorHandle}`);
 
       // Store job information
       this.activeJobs.set(batchJob.id, {

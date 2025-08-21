@@ -347,6 +347,18 @@ export const getUIText = (key: string): string => {
     'failed_to_update_notification': 'שגיאה בעדכון הגדרת התראה',
     'notification_configuration_deleted': 'הגדרת התראה נמחקה בהצלחה',
     'failed_to_delete_notification': 'שגיאה במחיקת הגדרת התראה',
+    
+    // Batch Job Creation
+    'start_new_batch_job': 'התחל תהליך עיבוד מרוכז חדש',
+    'select_folder': 'בחר תיקייה',
+    'priority': 'עדיפות',
+    'low_priority': 'עדיפות נמוכה',
+    'normal_priority': 'עדיפות רגילה',
+    'immediate_processing': 'עיבוד מיידי',
+    'no_active_folders': 'אין תיקיות פעילות',
+    'no_active_folders_warning': 'יש ליצור תיקייה פעילה לפני יצירת תהליך עיבוד מרוכז',
+    'start_job': 'התחל תהליך',
+    'creating': 'יוצר',
     'test_notification_sent': 'התראה לבדיקה נשלחה בהצלחה',
     'failed_to_send_test': 'שגיאה בשליחת התראה לבדיקה',
     'are_you_sure_delete_notification': 'האם אתה בטוח שברצונך למחוק הגדרת התראה זו?',

@@ -43,10 +43,7 @@ const BatchProcessing: React.FC = () => {
     }
   ];
 
-  const handleStartBatch = () => {
-    // TODO: Implement start batch functionality
-    console.log('Start batch processing');
-  };
+  // Removed handleStartBatch - now handled directly in BatchProcessingDashboard
 
   const handleStopBatch = (jobId: number) => {
     // TODO: Implement stop batch functionality
@@ -73,7 +70,6 @@ const BatchProcessing: React.FC = () => {
       case 'dashboard':
         return (
           <BatchProcessingDashboard
-            onStartBatch={handleStartBatch}
             onStopBatch={handleStopBatch}
             onViewDetails={handleViewDetails}
           />

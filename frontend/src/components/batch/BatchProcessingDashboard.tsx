@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from '../../services/api';
 import { getUIText } from '../../utils/hebrewUtils';
+import StartBatchJobModal from './StartBatchJobModal';
 import { 
   PlayIcon, 
   StopIcon, 
@@ -44,17 +45,16 @@ interface SystemStatus {
 }
 
 interface BatchProcessingDashboardProps {
-  onStartBatch?: () => void;
   onStopBatch?: (jobId: number) => void;
   onViewDetails?: (jobId: number) => void;
 }
 
 const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
-  onStartBatch,
   onStopBatch,
   onViewDetails
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [isStartModalOpen, setIsStartModalOpen] = useState(false);
 
   // Fetch batch processing status
   const { data: statusData, isLoading: statusLoading, refetch: refetchStatus } = useQuery({
@@ -73,6 +73,15 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
   // Manual refresh function
   const handleRefresh = async () => {
     await Promise.all([refetchStatus(), refetchJobs()]);
+  };
+
+  const handleStartBatch = () => {
+    setIsStartModalOpen(true);
+  };
+
+  const handleBatchJobCreated = (jobId: number) => {
+    console.log('✅ Batch job created successfully:', jobId);
+    // The modal will handle closing itself and invalidating queries
   };
 
   const systemStatus: SystemStatus = statusData?.data?.systemStatus || {
@@ -163,16 +172,14 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
             <ArrowPathIcon className={`w-4 h-4 mr-2 ${statusLoading || jobsLoading ? 'animate-spin' : ''}`} />
             {getUIText('refresh')}
           </button>
-          {onStartBatch && (
-            <button
-              onClick={onStartBatch}
-              disabled={systemStatus.isProcessing}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <PlayIcon className="w-4 h-4 mr-2" />
-              {getUIText('start_new_batch')}
-            </button>
-          )}
+          <button
+            onClick={handleStartBatch}
+            disabled={systemStatus.isProcessing}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <PlayIcon className="w-4 h-4 mr-2" />
+            {getUIText('start_new_batch')}
+          </button>
         </div>
       </div>
 
@@ -389,6 +396,13 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
           )}
         </div>
       </div>
+
+      {/* Start Batch Job Modal */}
+      <StartBatchJobModal
+        isOpen={isStartModalOpen}
+        onClose={() => setIsStartModalOpen(false)}
+        onSuccess={handleBatchJobCreated}
+      />
     </div>
   );
 };
