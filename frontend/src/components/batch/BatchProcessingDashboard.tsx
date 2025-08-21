@@ -10,7 +10,8 @@ import {
   ClockIcon,
   DocumentIcon,
   FolderIcon,
-  ChartBarIcon
+  ChartBarIcon,
+  ArrowPathIcon
 } from '@heroicons/react/24/outline';
 
 interface BatchJob {
@@ -56,18 +57,23 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
   // Fetch batch processing status
-  const { data: statusData, isLoading: statusLoading } = useQuery({
+  const { data: statusData, isLoading: statusLoading, refetch: refetchStatus } = useQuery({
     queryKey: ['batch-status'],
     queryFn: () => apiService.getBatchStatus(),
-    refetchInterval: 5000 // Refresh every 5 seconds
+    refetchInterval: false // Manual refresh only
   });
 
   // Fetch recent batch jobs
-  const { data: jobsData, isLoading: jobsLoading } = useQuery({
+  const { data: jobsData, isLoading: jobsLoading, refetch: refetchJobs } = useQuery({
     queryKey: ['batch-jobs'],
     queryFn: () => apiService.getBatchJobs(10),
-    refetchInterval: 10000 // Refresh every 10 seconds
+    refetchInterval: false // Manual refresh only
   });
+
+  // Manual refresh function
+  const handleRefresh = async () => {
+    await Promise.all([refetchStatus(), refetchJobs()]);
+  };
 
   const systemStatus: SystemStatus = statusData?.data?.systemStatus || {
     isProcessing: false,
@@ -146,8 +152,17 @@ const BatchProcessingDashboard: React.FC<BatchProcessingDashboardProps> = ({
         <div>
           <h1 className="text-2xl font-bold text-gray-900 hebrew-content">{getUIText('batch_processing_dashboard')}</h1>
           <p className="text-gray-600 hebrew-content">{getUIText('batch_processing_description')}</p>
+          <p className="text-sm text-gray-500 mt-1 hebrew-content">{getUIText('manual_refresh_only')}</p>
         </div>
         <div className="flex space-x-3">
+          <button
+            onClick={handleRefresh}
+            disabled={statusLoading || jobsLoading}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ArrowPathIcon className={`w-4 h-4 mr-2 ${statusLoading || jobsLoading ? 'animate-spin' : ''}`} />
+            {getUIText('refresh')}
+          </button>
           {onStartBatch && (
             <button
               onClick={onStartBatch}

@@ -405,7 +405,13 @@ export const getUIText = (key: string): string => {
     'invalid_configuration': 'הגדרות לא תקינות',
     'connection_failed': 'החיבור נכשל',
     'timeout_error': 'שגיאת פסק זמן',
-    'unknown_error': 'שגיאה לא ידועה'
+    'unknown_error': 'שגיאה לא ידועה',
+    
+    // Manual Refresh
+    'refresh': 'רענן',
+    'manual_refresh_only': 'רענון ידני בלבד - לחץ על כפתור הרענון לעדכון נתונים',
+    'auto_refresh': 'רענון אוטומטי',
+    'reload_page': 'רענן דף'
   };
   
   return translations[key] || key;
