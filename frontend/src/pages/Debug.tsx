@@ -14,6 +14,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { apiService } from '../services/api';
 import { config } from '../config/environment';
+import { getUIText } from '../utils/hebrewUtils';
 
 interface DebugSession {
   sessionId: string;
@@ -169,7 +170,7 @@ const Debug: React.FC = () => {
   const navigate = useNavigate();
   const isDebugEnabled = config.DEBUG_MODE;
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   // Fetch debug sessions
   const { data: sessionsData, refetch: refetchSessions } = useQuery({
@@ -266,13 +267,13 @@ const Debug: React.FC = () => {
                   onChange={(e) => setAutoRefresh(e.target.checked)}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className="ml-2 text-sm text-gray-700">Auto-refresh</span>
+                <span className="ml-2 text-sm text-gray-700">{getUIText('auto_refresh')}</span>
               </label>
               <button
                 onClick={() => refetchSessions()}
                 className="px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                Refresh
+                {getUIText('refresh')}
               </button>
             </div>
           </div>

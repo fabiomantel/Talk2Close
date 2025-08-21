@@ -180,9 +180,23 @@ class ApiService {
       console.log(`📡 API Response: ${response.status} ${response.statusText}`);
 
       if (!response.ok) {
+        let errorData: any = {};
         const errorText = await response.text();
-        console.error(`❌ API Error: ${response.status} ${response.statusText}`, errorText);
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText };
+        }
+        
+        console.error(`❌ API Error: ${response.status} ${response.statusText}`, errorData);
+        
+        // Create a custom error with more details
+        const apiError = new Error(errorData.error || errorData.message || `API request failed: ${response.status} ${response.statusText}`);
+        (apiError as any).statusCode = response.status;
+        (apiError as any).endpoint = endpoint;
+        (apiError as any).details = errorData;
+        throw apiError;
       }
 
       const data = await response.json();
@@ -334,6 +348,189 @@ class ApiService {
   // Health check
   healthCheck = async (): Promise<{ status: string }> => {
     return this.request('/health');
+  }
+
+  // Batch Processing APIs
+  getBatchStatus = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch/status');
+  }
+
+  getBatchJobs = async (limit?: number): Promise<{ success: boolean; data: { jobs: any[] } }> => {
+    const params = limit ? `?limit=${limit}` : '';
+    return this.request(`/batch/jobs${params}`);
+  }
+
+  getBatchJob = async (jobId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch/jobs/${jobId}`);
+  }
+
+  createBatchJob = async (jobData: any): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch/jobs', {
+      method: 'POST',
+      body: JSON.stringify(jobData),
+    });
+  }
+
+  cancelBatchJob = async (jobId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch/jobs/${jobId}/cancel`, {
+      method: 'PUT',
+    });
+  }
+
+  retryBatchJob = async (jobId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch/jobs/${jobId}/retry`, {
+      method: 'POST',
+    });
+  }
+
+  getBatchFiles = async (jobId?: number): Promise<{ success: boolean; data: { files: any[] } }> => {
+    const params = jobId ? `?jobId=${jobId}` : '';
+    return this.request(`/batch/files${params}`);
+  }
+
+  getBatchFile = async (fileId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch/files/${fileId}`);
+  }
+
+  retryBatchFile = async (fileId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch/files/${fileId}/retry`, {
+      method: 'POST',
+    });
+  }
+
+  getBatchStats = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch/stats');
+  }
+
+  getBatchConfig = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch-config');
+  }
+
+  updateBatchConfig = async (config: any): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch-config', {
+      method: 'PUT',
+      body: JSON.stringify(config),
+    });
+  }
+
+  // Batch Configuration APIs
+  getExternalFolders = async (): Promise<{ success: boolean; data: { folders: any[] } }> => {
+    return this.request('/batch-config/folders');
+  }
+
+  getExternalFolder = async (folderId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/folders/${folderId}`);
+  }
+
+  createExternalFolder = async (folderData: any): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch-config/folders', {
+      method: 'POST',
+      body: JSON.stringify(folderData),
+    });
+  }
+
+  updateExternalFolder = async (folderId: number, folderData: any): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/folders/${folderId}`, {
+      method: 'PUT',
+      body: JSON.stringify(folderData),
+    });
+  }
+
+  deleteExternalFolder = async (folderId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/folders/${folderId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  testExternalFolder = async (folderId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/folders/${folderId}/test`, {
+      method: 'POST',
+    });
+  }
+
+  scanExternalFolder = async (folderId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/folders/${folderId}/scan`, {
+      method: 'POST',
+    });
+  }
+
+  getNotificationConfigs = async (): Promise<{ success: boolean; data: { notifications: any[] } }> => {
+    return this.request('/batch-config/notifications');
+  }
+
+  getBatchNotificationConfigs = async (): Promise<{ success: boolean; data: { configs: any[] } }> => {
+    return this.request('/batch-config/notifications');
+  }
+
+  createNotificationConfig = async (notificationData: any): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch-config/notifications', {
+      method: 'POST',
+      body: JSON.stringify(notificationData),
+    });
+  }
+
+  createBatchNotificationConfig = async (notificationData: any): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch-config/notifications', {
+      method: 'POST',
+      body: JSON.stringify(notificationData),
+    });
+  }
+
+  updateNotificationConfig = async (notificationId: number, notificationData: any): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/notifications/${notificationId}`, {
+      method: 'PUT',
+      body: JSON.stringify(notificationData),
+    });
+  }
+
+  updateBatchNotificationConfig = async (notificationId: number, notificationData: any): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/notifications/${notificationId}`, {
+      method: 'PUT',
+      body: JSON.stringify(notificationData),
+    });
+  }
+
+  deleteNotificationConfig = async (notificationId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/notifications/${notificationId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  deleteBatchNotificationConfig = async (notificationId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/notifications/${notificationId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  testNotificationConfig = async (notificationId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/notifications/${notificationId}/test`, {
+      method: 'POST',
+    });
+  }
+
+  testBatchNotificationConfig = async (notificationId: number): Promise<{ success: boolean; data: any }> => {
+    return this.request(`/batch-config/notifications/${notificationId}/test`, {
+      method: 'POST',
+    });
+  }
+
+  getConfigurationSummary = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch-config/summary');
+  }
+
+  getAvailableProviders = async (): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch-config/providers');
+  }
+
+  testProvider = async (providerType: string, providerName: string, config: any): Promise<{ success: boolean; data: any }> => {
+    return this.request('/batch-config/providers/test', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: providerType,
+        name: providerName,
+        config: config
+      }),
+    });
   }
 }
 

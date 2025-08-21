@@ -1,0 +1,15 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "recent_activity": "Recent Activity",
+    "score_distribution": "Score Distribution",
+    "stats_overview": "Statistics Overview",
+    "stats": {
+      "total_customers": "Total Customers",
+      "total_analyses": "Total Analyses",
+      "average_score": "Average Score",
+      "high_priority": "High Priority"
+    },
+    "no_recent_activity": "No recent activity"
+  }
+}

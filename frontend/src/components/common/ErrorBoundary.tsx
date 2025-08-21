@@ -1,6 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-import { getUIText } from '../../utils/hebrewUtils';
 
 interface Props {
   children: ReactNode;
@@ -36,7 +35,9 @@ class ErrorBoundary extends Component<Props, State> {
         <div className="flex items-center justify-center min-h-screen bg-gray-50 rtl-layout">
           <div className="text-center">
             <ExclamationTriangleIcon className="mx-auto h-16 w-16 text-red-500" />
-            <h1 className="mt-4 text-2xl font-bold text-gray-900 hebrew-content">{getUIText('something_went_wrong')}</h1>
+            <h1 className="mt-4 text-2xl font-bold text-gray-900 hebrew-content">
+              Something went wrong
+            </h1>
             <p className="mt-2 text-gray-600 hebrew-content">
               אירעה שגיאה בלתי צפויה. אנא רענן את הדף ונסה שוב.
             </p>
@@ -54,7 +55,7 @@ class ErrorBoundary extends Component<Props, State> {
               onClick={() => window.location.reload()}
               className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 rtl-button"
             >
-              רענן דף
+              Reload Page
             </button>
           </div>
         </div>

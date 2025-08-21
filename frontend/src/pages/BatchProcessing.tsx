@@ -1,0 +1,152 @@
+import React, { useState } from 'react';
+import BatchProcessingDashboard from '../components/batch/BatchProcessingDashboard';
+import FolderManagementInterface from '../components/batch/FolderManagementInterface';
+import BatchConfigurationPanel from '../components/batch/BatchConfigurationPanel';
+import NotificationManagementPanel from '../components/batch/NotificationManagementPanel';
+import { getUIText } from '../utils/hebrewUtils';
+import { 
+  FolderIcon, 
+  ChartBarIcon, 
+  CogIcon,
+  BellIcon
+} from '@heroicons/react/24/outline';
+
+type TabType = 'dashboard' | 'folders' | 'configuration' | 'notifications';
+
+const BatchProcessing: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+
+  const tabs = [
+    {
+      id: 'dashboard' as TabType,
+      name: getUIText('dashboard'),
+      icon: ChartBarIcon,
+      description: getUIText('batch_processing_description')
+    },
+    {
+      id: 'folders' as TabType,
+      name: getUIText('folders'),
+      icon: FolderIcon,
+      description: getUIText('folder_management_description')
+    },
+    {
+      id: 'configuration' as TabType,
+      name: getUIText('configuration'),
+      icon: CogIcon,
+      description: getUIText('batch_config_description')
+    },
+    {
+      id: 'notifications' as TabType,
+      name: getUIText('notifications'),
+      icon: BellIcon,
+      description: getUIText('notification_description')
+    }
+  ];
+
+  // Removed handleStartBatch - now handled directly in BatchProcessingDashboard
+
+  const handleStopBatch = (jobId: number) => {
+    // TODO: Implement stop batch functionality
+    console.log('Stop batch job:', jobId);
+  };
+
+  const handleViewDetails = (jobId: number) => {
+    // TODO: Navigate to job details
+    console.log('View job details:', jobId);
+  };
+
+  const handleFolderSelect = (folderId: number) => {
+    // TODO: Handle folder selection
+    console.log('Select folder:', folderId);
+  };
+
+  const handleTestFolder = (folderId: number) => {
+    // TODO: Handle folder testing
+    console.log('Test folder:', folderId);
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return (
+          <BatchProcessingDashboard
+            onStopBatch={handleStopBatch}
+            onViewDetails={handleViewDetails}
+          />
+        );
+      case 'folders':
+        return (
+          <FolderManagementInterface
+            onFolderSelect={handleFolderSelect}
+            onTestFolder={handleTestFolder}
+          />
+        );
+      case 'configuration':
+        return (
+          <BatchConfigurationPanel
+            onConfigurationChange={(config) => {
+              console.log('Configuration changed:', config);
+            }}
+          />
+        );
+      case 'notifications':
+        return (
+          <NotificationManagementPanel
+            onNotificationChange={(config) => {
+              console.log('Notification changed:', config);
+            }}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 hebrew-content">{getUIText('batch_processing')}</h1>
+          <p className="mt-2 text-gray-600 hebrew-content">
+            {getUIText('batch_processing_page_description')}
+          </p>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="border-b border-gray-200 mb-8">
+          <nav className="-mb-px flex space-x-8">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`${
+                    isActive
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm flex items-center hebrew-content`}
+                >
+                  <Icon className="w-4 h-4 mr-2" />
+                  {tab.name}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            {renderTabContent()}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BatchProcessing;

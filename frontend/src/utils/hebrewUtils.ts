@@ -1,6 +1,7 @@
-export const getScoreCategory = (score: number): string => {
-  console.log('🎯 Score Category Calculation:', { score });
-  
+import { ScoreCategory, CategoryNames, CategoryDescriptions } from '../i18n/types/translationKeys';
+
+// Keep existing utility functions that don't need translation
+export const getScoreCategory = (score: number): ScoreCategory => {
   if (score >= 80) return 'high';
   if (score >= 60) return 'good';
   if (score >= 40) return 'medium';
@@ -14,29 +15,69 @@ export const getScoreColor = (score: number): string => {
   return 'text-red-600 bg-red-50';
 };
 
-export const getScoreLabel = (score: number): string => {
-  if (score >= 80) return 'מצוין';
-  if (score >= 60) return 'טוב';
-  if (score >= 40) return 'בינוני';
-  return 'נמוך';
+// Updated to use i18n system - now accepts translation function as parameter
+export const getScoreLabel = (score: number, t?: (key: string) => string): string => {
+  if (!t) {
+    // Fallback to English if no translation function provided
+    if (score >= 80) return 'Excellent';
+    if (score >= 60) return 'Good';
+    if (score >= 40) return 'Medium';
+    return 'Low';
+  }
+  
+  if (score >= 80) return String(t('analysis.excellent'));
+  if (score >= 60) return String(t('analysis.good'));
+  if (score >= 40) return String(t('analysis.medium'));
+  return String(t('analysis.low'));
 };
 
-export const formatHebrewDate = (dateString: string): string => {
-  console.log('📅 Hebrew Date Formatting:', { input: dateString });
+// Updated to use i18n system - now accepts translation function as parameter
+export const getCategoryName = (category: string, t?: (key: string) => string): string => {
+  if (!t) {
+    // Fallback to English if no translation function provided
+    const categoryMap: Record<string, string> = {
+      urgency: 'High',
+      budget: 'Medium',
+      interest: 'Good',
+      engagement: 'Excellent'
+    };
+    return categoryMap[category] || category;
+  }
   
-  const date = new Date(dateString);
-  const formatted = date.toLocaleDateString('he-IL', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  const categoryMap: Record<string, string> = {
+    urgency: String(t('analysis.high')),
+    budget: String(t('analysis.medium')),
+    interest: String(t('analysis.good')),
+    engagement: String(t('analysis.excellent'))
+  };
   
-  console.log('📅 Hebrew Date Result:', { formatted });
-  return formatted;
+  return categoryMap[category] || category;
 };
 
+// Updated to use i18n system - now accepts translation function as parameter
+export const getCategoryDescription = (category: string, t?: (key: string) => string): string => {
+  if (!t) {
+    // Fallback to English if no translation function provided
+    const descriptions: Record<string, string> = {
+      urgency: 'Weight for urgency indicators',
+      budget: 'Weight for budget indicators',
+      interest: 'Weight for interest indicators',
+      engagement: 'Weight for engagement indicators'
+    };
+    return descriptions[category] || '';
+  }
+  
+  const descriptions: Record<string, string> = {
+    urgency: String(t('config.urgency_weight_help')),
+    budget: String(t('config.budget_weight_help')),
+    interest: String(t('config.interest_weight_help')),
+    engagement: String(t('config.engagement_weight_help'))
+  };
+  
+  return descriptions[category] || '';
+};
+
+// Keep existing utility functions
 export const formatDuration = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
@@ -48,189 +89,101 @@ export const truncateHebrewText = (text: string, maxLength: number): string => {
   return text.substring(0, maxLength) + '...';
 };
 
-export const getCategoryName = (category: string): string => {
-  const categoryNames: Record<string, string> = {
-    urgency: 'דחיפות',
-    budget: 'תקציב',
-    interest: 'עניין',
-    engagement: 'מעורבות'
-  };
-  return categoryNames[category] || category;
-};
-
-export const getCategoryDescription = (category: string): string => {
-  const descriptions: Record<string, string> = {
-    urgency: 'מידת הדחיפות של הלקוח לרכישה',
-    budget: 'בהירות התקציב ומוכנות פיננסית',
-    interest: 'רמת העניין בנכס הספציפי',
-    engagement: 'רמת המעורבות והשתתפות בשיחה'
-  };
-  return descriptions[category] || '';
-};
-
-// UI Text Translations
-export const getUIText = (key: string): string => {
-  const translations: Record<string, string> = {
-    // Page Titles
-    'dashboard': 'לוח בקרה',
-    'customers': 'לקוחות',
-    'analysis': 'תוצאות ניתוח',
-    'upload': 'העלאת שיחת מכירה',
-    
-    // Common Labels
-    'name': 'שם',
-    'phone': 'טלפון',
-    'email': 'אימייל',
-    'status': 'סטטוס',
-    'date': 'תאריך',
-    'score': 'ציון',
-    'overall': 'כללי',
-    'details': 'פרטים',
-    'upload_action': 'העלאה',
-    'download': 'הורדה',
-    'delete': 'מחיקה',
-    'edit': 'עריכה',
-    'save': 'שמירה',
-    'cancel': 'ביטול',
-    'submit': 'שליחה',
-    'loading': 'טוען...',
-    'error': 'שגיאה',
-    'success': 'הצלחה',
-    'warning': 'אזהרה',
-    'info': 'מידע',
-    
-    // Navigation
-    'dashboard_nav': 'לוח בקרה',
-    'customers_nav': 'לקוחות',
-    'analysis_nav': 'ניתוח',
-    'upload_nav': 'העלאה',
-    
-    // Dashboard
-    'recent_activity': 'פעילות אחרונה',
-    'score_distribution': 'התפלגות ציונים',
-    'stats_overview': 'סקירת סטטיסטיקות',
-    'total_customers': 'סה"כ לקוחות',
-    'total_analyses': 'סה"כ ניתוחים',
-    'average_score': 'ציון ממוצע',
-    'high_priority': 'עדיפות גבוהה',
-    'no_recent_activity': 'אין פעילות אחרונה',
-    
-    // Upload
-    'upload_sales_call': 'העלאת שיחת מכירה',
-    'upload_description': 'העלה קובץ אודיו של שיחת מכירה לניתוח',
-    'select_file': 'בחר קובץ',
-    'drag_drop': 'גרור ושחרר קובץ כאן, או לחץ לבחירה',
-    'file_types': 'סוגי קבצים נתמכים: MP3, WAV',
-    'max_size': 'גודל מקסימלי: 50MB',
-    'customer_information': 'מידע לקוח',
-    'upload_progress': 'מתקדם בהעלאה...',
-    'upload_success': 'הקובץ הועלה בהצלחה',
-    'upload_error': 'שגיאה בהעלאת הקובץ',
-    
-    // Analysis
-    'analysis_results': 'תוצאות ניתוח',
-    'score_breakdown': 'פירוט ציונים',
-    'hebrew_insights': 'תובנות בעברית',
-    'transcript': 'תמלול',
-    'category_scores': 'ציוני קטגוריות',
-    'overall_score': 'ציון כללי',
-    'recent_analyses': 'ניתוחים אחרונים',
-    'no_analyses': 'אין ניתוחים זמינים',
-    
-    // Enhanced Analysis
-    'enhancedAnalysis': 'ניתוח מתקדם',
-    'enhancedAnalysisNotAvailable': 'ניתוח מתקדם לא זמין',
-    'enhancedAnalysisNotAvailableDesc': 'ניתוח GPT-4 לא זמין עבור ניתוח זה. ייתכן שהמפתח לא מוגדר או שהניתוח בוצע לפני הפעלת התכונה.',
-    'analysisVersion': 'גרסת ניתוח',
-    'sentimentAnalysis': 'ניתוח רגשי',
-    'conversationFlow': 'זרימת שיחה',
-    'speakerAnalysis': 'ניתוח דוברים',
-    'objectionAnalysis': 'ניתוח התנגדויות',
-    'contextInsights': 'תובנות הקשר',
-    'confidence': 'ביטחון',
-    'overallSentiment': 'רגש כללי',
-    'sentimentChanges': 'שינויי רגש',
-    'sentimentSummary': 'סיכום רגשי',
-    'positiveSentimentSummary': 'הלקוח מראה רגש חיובי כלפי המוצר והשיחה.',
-    'negativeSentimentSummary': 'הלקוח מראה רגש שלילי או חששות לגבי המוצר.',
-    'neutralSentimentSummary': 'הלקוח מראה רגש ניטרלי כלפי המוצר.',
-    'conversationPhases': 'שלבי שיחה',
-    'totalDuration': 'משך כולל',
-    'phases': 'שלבים',
-    'ofConversation': 'של השיחה',
-    'keyEvents': 'אירועים מרכזיים',
-    'conversationSummary': 'סיכום שיחה',
-    'totalPhases': 'סה"כ שלבים',
-    'avgPhaseDuration': 'משך ממוצע לשלב',
-    'totalEvents': 'סה"כ אירועים',
-    'customerAnalysis': 'ניתוח לקוח',
-    'engagementLevel': 'רמת מעורבות',
-    'customerObjections': 'התנגדויות לקוח',
-    'buyingSignals': 'סימני רכישה',
-    'agentAnalysis': 'ניתוח נציג',
-    'effectivenessLevel': 'רמת יעילות',
-    'effectiveTechniques': 'טכניקות יעילות',
-    'areasForImprovement': 'תחומים לשיפור',
-    'interactionSummary': 'סיכום אינטראקציה',
-    'customerEngagement': 'מעורבות לקוח',
-    'agentEffectiveness': 'יעילות נציג',
-    'objectionsRaised': 'התנגדויות שהועלו',
-    'strength': 'עוצמה',
-    'suggestedResponse': 'תגובה מוצעת',
-    'keyInsights': 'תובנות מרכזיות',
-    'recommendations': 'המלצות',
-    'riskFactors': 'גורמי סיכון',
-    'opportunities': 'הזדמנויות',
-    'high': 'גבוה',
-    'medium': 'בינוני',
-    'low': 'נמוך',
-    'excellent': 'מצוין',
-    'good': 'טוב',
-    'fair': 'הוגן',
-    'poor': 'חלש',
-    
-    // Configuration
-    'configuration': 'הגדרות',
-    'configurationDescription': 'הגדר משקלים ומילים בעברית לניתוח שיחות מכירה',
-    'configurationHelp': 'עזרה בהגדרות',
-    'scoringWeights': 'משקלי ציון',
-    'urgencyWeightHelp': 'דחיפות - מידת הדחיפות של הלקוח לרכישה',
-    'budgetWeightHelp': 'תקציב - בהירות התקציב ומוכנות פיננסית',
-    'interestWeightHelp': 'עניין - רמת העניין בנכס הספציפי',
-    'engagementWeightHelp': 'מעורבות - רמת המעורבות והשתתפות בשיחה',
-    'hebrewPhrases': 'מילים בעברית',
-    'phraseHelp1': 'הוסף מילים בעברית לזיהוי דחיפות',
-    'phraseHelp2': 'הגדר מילים לזיהוי תקציב ומוכנות פיננסית',
-    'phraseHelp3': 'הוסף מילים לזיהוי עניין בנכס',
-    'phraseHelp4': 'הגדר מילים לזיהוי מעורבות בשיחה',
-    
-    // Customers
-    'customer_list': 'רשימת לקוחות',
-    'customer_details': 'פרטי לקוח',
-    'add_customer': 'הוספת לקוח',
-    'search_customers': 'חיפוש לקוחות',
-    'filter_customers': 'סינון לקוחות',
-    'no_customers': 'אין לקוחות זמינים',
-    'created_at': 'נוצר ב',
-    'last_analysis': 'ניתוח אחרון',
-    
-    // Status
-    'online': 'מחובר',
-    'offline': 'מנותק',
-    'processing': 'מעבד',
-    'completed': 'הושלם',
-    'failed': 'נכשל',
-    'pending': 'ממתין',
-    
-    // Error Messages
-    'something_went_wrong': 'משהו השתבש',
-    'try_again': 'נסה שוב',
-    'contact_support': 'צור קשר עם התמיכה',
-    'file_too_large': 'הקובץ גדול מדי',
-    'invalid_file_type': 'סוג קובץ לא נתמך',
-    'network_error': 'שגיאת רשת',
-    'server_error': 'שגיאת שרת'
-  };
+// Updated date formatting to use i18n - now accepts language as parameter
+export const formatHebrewDate = (dateString: string, currentLanguage?: string): string => {
+  const date = new Date(dateString);
   
-  return translations[key] || key;
+  return date.toLocaleDateString(
+    currentLanguage === 'he' ? 'he-IL' : 'en-US',
+    {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }
+  );
+};
+
+// Legacy function for backward compatibility - now accepts translation function as parameter
+export const getUIText = (key: string, t?: (key: string) => string): string => {
+  if (!t) {
+    // Fallback to English if no translation function provided
+    const fallbackTexts: Record<string, string> = {
+      'something_went_wrong': 'Something went wrong',
+      'reload_page': 'Reload Page',
+      'loading': 'Loading...',
+      'error': 'Error',
+      'success': 'Success',
+      'save': 'Save',
+      'cancel': 'Cancel',
+      'delete': 'Delete',
+      'edit': 'Edit',
+      'view': 'View',
+      'submit': 'Submit',
+      'select': 'Select',
+      'refresh': 'Refresh',
+      'stop': 'Stop',
+      'test': 'Test',
+      'create': 'Create',
+      'update': 'Update'
+    };
+    return fallbackTexts[key] || key;
+  }
+  return String(t(key as any)); // Type assertion for backward compatibility
+};
+
+// New utility functions for the i18n system - now accept translation functions as parameters
+export const getScoreLabels = (t?: (key: string) => string): Record<ScoreCategory, string> => {
+  if (!t) {
+    return {
+      high: 'High',
+      good: 'Good',
+      medium: 'Medium',
+      low: 'Low',
+    };
+  }
+  
+  return {
+    high: String(t('analysis.high')),
+    good: String(t('analysis.good')),
+    medium: String(t('analysis.medium')),
+    low: String(t('analysis.low')),
+  };
+};
+
+export const getCategoryNames = (t?: (key: string) => string): CategoryNames => {
+  if (!t) {
+    return {
+      urgency: 'Urgency',
+      budget: 'Budget',
+      interest: 'Interest',
+      engagement: 'Engagement',
+    };
+  }
+  
+  return {
+    urgency: String(t('config.weights.urgency')),
+    budget: String(t('config.weights.budget')),
+    interest: String(t('config.weights.interest')),
+    engagement: String(t('config.weights.engagement')),
+  };
+};
+
+export const getCategoryDescriptions = (t?: (key: string) => string): CategoryDescriptions => {
+  if (!t) {
+    return {
+      urgency: 'Weight for urgency indicators',
+      budget: 'Weight for budget indicators',
+      interest: 'Weight for interest indicators',
+      engagement: 'Weight for engagement indicators',
+    };
+  }
+  
+  return {
+    urgency: String(t('config.urgency_weight_help')),
+    budget: String(t('config.budget_weight_help')),
+    interest: String(t('config.interest_weight_help')),
+    engagement: String(t('config.engagement_weight_help')),
+  };
 }; 
