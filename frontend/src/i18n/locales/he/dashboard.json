@@ -1,0 +1,15 @@
+{
+  "dashboard": {
+    "title": "לוח בקרה",
+    "recent_activity": "פעילות אחרונה",
+    "score_distribution": "התפלגות ציונים",
+    "stats_overview": "סקירת סטטיסטיקות",
+    "stats": {
+      "total_customers": "סה\"כ לקוחות",
+      "total_analyses": "סה\"כ ניתוחים",
+      "average_score": "ציון ממוצע",
+      "high_priority": "עדיפות גבוהה"
+    },
+    "no_recent_activity": "אין פעילות אחרונה"
+  }
+}

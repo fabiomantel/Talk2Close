@@ -1,0 +1,23 @@
+{
+  "config": {
+    "title": "Configuration",
+    "description": "Configure weights and Hebrew phrases for sales call analysis",
+    "help": "Configuration Help",
+    "scoring_weights": "Scoring Weights",
+    "hebrew_phrases": "Hebrew Phrases",
+    "weights": {
+      "urgency": "Urgency",
+      "budget": "Budget",
+      "interest": "Interest",
+      "engagement": "Engagement"
+    },
+    "urgency_weight_help": "Urgency - Customer's urgency to purchase",
+    "budget_weight_help": "Budget - Clarity of budget and financial readiness",
+    "interest_weight_help": "Interest - Level of interest in the specific property",
+    "engagement_weight_help": "Engagement - Level of engagement and participation in conversation",
+    "phrase_help_1": "Add Hebrew words to identify urgency",
+    "phrase_help_2": "Set words to identify budget and financial readiness",
+    "phrase_help_3": "Add words to identify interest in property",
+    "phrase_help_4": "Set words to identify engagement in conversation"
+  }
+}

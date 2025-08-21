@@ -1,0 +1,18 @@
+{
+  "customers": {
+    "title": "Customers",
+    "list": "Customer List",
+    "add": "Add Customer",
+    "search": "Search Customers",
+    "filter": "Filter Customers",
+    "no_customers": "No customers available",
+    "details": {
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email"
+    },
+    "search_customers": "Search customers",
+    "filter_customers": "Filter customers",
+    "all_status": "All Statuses"
+  }
+}

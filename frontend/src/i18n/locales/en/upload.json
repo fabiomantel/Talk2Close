@@ -1,0 +1,14 @@
+{
+  "upload": {
+    "title": "Upload Sales Call",
+    "description": "Upload an audio file of a sales call for analysis",
+    "select_file": "Select File",
+    "drag_drop": "Drag and drop file here, or click to select",
+    "file_types": "Supported file types: MP3, WAV",
+    "max_size": "Maximum size: 50MB",
+    "customer_information": "Customer Information",
+    "progress": "Uploading...",
+    "success": "File uploaded successfully",
+    "error": "Error uploading file"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "customers": {
+    "title": "לקוחות",
+    "list": "רשימת לקוחות",
+    "add": "הוסף לקוח",
+    "search": "חיפוש לקוחות",
+    "filter": "סינון לקוחות",
+    "no_customers": "אין לקוחות זמינים",
+    "details": {
+      "name": "שם",
+      "phone": "טלפון",
+      "email": "אימייל"
+    },
+    "search_customers": "חיפוש לקוחות",
+    "filter_customers": "סינון לקוחות",
+    "all_status": "כל הסטטוסים"
+  }
+}
